@@ -19,7 +19,8 @@
 
 struct DirectionLight
 {
-    float3 lightdir;
+
+    float3 lightDir;
     float pad;
     float4 lightColor;
 };
@@ -28,8 +29,7 @@ struct DirectionLight
 cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
-    float3 ambientColor;
-    float pad;
+    float4 ambientColor;
 };
 
 ////////////////////////////////////////////////
@@ -103,7 +103,7 @@ float4 PSMain(SPSIn In) : SV_Target0
     //   float3 ambient = float3(0.3, 0.3, 0.3);
     //   albedoColor.xyz *= ambient;
 
-    float3 ligColor = ambientColor;
+    const float3 ligColor = ambientColor.xyz;
 
     albedoColor.xyz *= ligColor;
 
