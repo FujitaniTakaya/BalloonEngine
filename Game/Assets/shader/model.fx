@@ -30,6 +30,8 @@ cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
     float4 ambientColor;
+    float3 eyePos;
+    float pad;
 };
 
 ////////////////////////////////////////////////
