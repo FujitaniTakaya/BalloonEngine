@@ -6,7 +6,7 @@
 #include "Transform.h"
 
 
-namespace BalloonEngineLow
+namespace balloonEngineLow
 {
 	Transform::Transform(Vector3 position, Quaternion rotation, Vector3 scale)
 		: m_position(position)

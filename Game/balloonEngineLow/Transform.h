@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace BalloonEngineLow
+namespace balloonEngineLow
 {
 	/**
 	 * @brief 変換情報を保持するクラス

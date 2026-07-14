@@ -9,7 +9,7 @@
 #include <cstdint>
 
 
-namespace BalloonEngine
+namespace balloonEngine
 {
 	namespace
 	{
@@ -81,7 +81,7 @@ namespace BalloonEngine
 	}
 
 
-	void SpriteRender::SetTRS(const BalloonEngineLow::Transform& transform)
+	void SpriteRender::SetTRS(const balloonEngineLow::Transform& transform)
 	{
 		m_transform = transform;
 	}
@@ -105,7 +105,7 @@ namespace BalloonEngine
 	}
 
 
-	const BalloonEngineLow::Transform& SpriteRender::GetTransform() const
+	const balloonEngineLow::Transform& SpriteRender::GetTransform() const
 	{
 		return m_transform;
 	}
