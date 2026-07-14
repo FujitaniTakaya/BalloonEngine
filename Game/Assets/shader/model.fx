@@ -103,7 +103,17 @@ float4 PSMain(SPSIn In) : SV_Target0
     //   float3 ambient = float3(0.3, 0.3, 0.3);
     //   albedoColor.xyz *= ambient;
 
-    const float3 ligColor = ambientColor.xyz;
+    // 法線、ライトの方向を正規化
+    float3 normal = normalize(In.normal);
+    float3 lightDir = normalize(dirLight.lightDir);
+
+    // 明るさを計算（Lambertの法則）
+    const float NdotL = max(dot(normal, lightDir) * -1, 0.0f);
+    const float3 diffuse = dirLight.lightColor.xyz * NdotL;
+
+
+    // ライトカラーに環境光、拡散反射光を加算
+    const float3 ligColor = ambientColor.xyz + diffuse;
 
     albedoColor.xyz *= ligColor;
 
