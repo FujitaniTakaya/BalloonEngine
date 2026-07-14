@@ -1,9 +1,9 @@
 /**
  * @file SpriteRender.h
- * @brief スプライト描画クラスの実装
+ * @brief スプライト描画クラスの宣言
  */
 #pragma once
-#include "Source/Core/Transform.h"
+#include "balloonEngineLow/Transform.h"
 
 
 namespace BalloonEngine
@@ -35,13 +35,13 @@ namespace BalloonEngine
 
 
 		/**
-		 * @更新関数
+		 * @brief 更新関数
 		 */
 		void Update();
 
 
 		/**
-		 * @描画関数
+		 * @brief 描画関数
 		 */
 		void Draw(RenderContext& rc);
 
@@ -56,52 +56,32 @@ namespace BalloonEngine
 		 * @param rotation 回転角度
 		 * @param scale 拡大率
 		 */
-		inline void SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
-		{
-			m_transform.m_position = position;
-			m_transform.m_rotation = rotation;
-			m_transform.m_scale = scale;
-		}
+		void SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
 		/**
 		 * @brief 座標・回転・拡大を設定
 		 * @param transform トランスフォーム
 		 */
-		inline void SetTRS(const app::core::Transform& transform)
-		{
-			m_transform = transform;
-		}
+		void SetTRS(const BalloonEngineLow::Transform& transform);
 		/**
 		 * @brief 座標を設定
 		 * @param position 座標
 		 */
-		inline void SetPosition(const Vector3& position)
-		{
-			m_transform.m_position = position;
-		}
+		void SetPosition(const Vector3& position);
 		/**
 		 * @brief 回転を設定
 		 * @param rotation 回転角度
 		 */
-		inline void SetRotation(const Quaternion& rotation)
-		{
-			m_transform.m_rotation = rotation;
-		}
+		void SetRotation(const Quaternion& rotation);
 		/**
 		 * @brief 拡大を設定
 		 * @param scale 拡大率
 		 */
-		inline void SetScale(const Vector3& scale)
-		{
-			m_transform.m_scale = scale;
-		}
+		void SetScale(const Vector3& scale);
 		/**
 		 * @brief トランスフォームを取得
 		 * @return トランスフォーム
 		 */
-		inline const app::core::Transform& GetTransform() const
-		{
-			return m_transform;
-		}
+		const BalloonEngineLow::Transform& GetTransform() const;
 
 
 		//=======================================================================
@@ -112,18 +92,12 @@ namespace BalloonEngine
 		 * @brief 乗算色を設定
 		 * @param mulColor 乗算色
 		 */
-		inline void SetMulColor(const Vector4& mulColor)
-		{
-			m_mulColor = mulColor;
-		}
+		void SetMulColor(const Vector4& mulColor);
 		/**
 		 * @brief 乗算色を取得
 		 * @return 乗算色
 		 */
-		inline const Vector4& GetMulColor() const
-		{
-			return m_mulColor;
-		}
+		const Vector4& GetMulColor() const;
 
 
 		//=======================================================================
@@ -139,10 +113,7 @@ namespace BalloonEngine
 		 * @brief 基点を取得
 		 * @return 基点
 		 */
-		inline const Vector2& GetPivot() const
-		{
-			return m_pivot;
-		}
+		const Vector2& GetPivot() const;
 
 
 	private:
@@ -151,7 +122,7 @@ namespace BalloonEngine
 		/** スプライトデータ */
 		Sprite m_sprite;
 		/** トランスフォーム */
-		app::core::Transform m_transform;
+		BalloonEngineLow::Transform m_transform;
 		/** 乗算色 */
 		Vector4 m_mulColor;
 		/** 基点 */

@@ -31,6 +31,7 @@
     <ProjectGuid>{282445E9-421F-46C0-9165-6C90D7C7EFC4}</ProjectGuid>
     <RootNamespace>Game</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>balloonEngine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -225,9 +226,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BalloonEngineLow\Transform.cpp" />
+    <ClCompile Include="BalloonEngine\SpriteRender.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Source\Render\SpriteRender.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -237,8 +238,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BalloonEngineLow\Transform.h" />
+    <ClInclude Include="BalloonEngine\SpriteRender.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Source\Render\SpriteRender.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\system.h" />
   </ItemGroup>
