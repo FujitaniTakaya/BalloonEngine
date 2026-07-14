@@ -14,6 +14,6 @@ public:
 	void Render(RenderContext& rc);
 
 private:
-	Sprite m_sprite;
 	SpriteInitData m_spriteInitData;
+	Sprite m_sprite;
 };
