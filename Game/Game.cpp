@@ -1,0 +1,30 @@
+#include "stdafx.h"
+#include "Game.h"
+
+
+bool Game::Start()
+{
+	// Load resources and set up your objects here (called once).
+	m_spriteInitData.m_ddsFilePath = { "Assets/modelData/building.DDS" };
+	m_spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
+	m_spriteInitData.m_width = 520.0f;
+	m_spriteInitData.m_height = 720.0f;
+	//m_spriteInitData.m_vsEntryPointFunc = "VSMain";
+	//m_spriteInitData.m_psEntryPoinFunc = "PSMain";
+
+
+	m_sprite.Init(m_spriteInitData);
+	return true;
+}
+
+void Game::Update()
+{
+	// Per-frame logic goes here.
+}
+
+void Game::Render(RenderContext& rc)
+{
+	// Your drawing code goes here.
+	// K2EngineLow already cleared the screen to gray before this is called.
+	m_sprite.Draw(rc);
+}
