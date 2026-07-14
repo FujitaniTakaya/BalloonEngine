@@ -6,7 +6,7 @@
 #include "balloonEngineLow/Transform.h"
 
 
-namespace BalloonEngine
+namespace balloonEngine
 {
 	/**
 	 * @brief スプライト描画クラス

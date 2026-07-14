@@ -9,7 +9,7 @@
 #include <cstdint>
 
 
-namespace BalloonEngine
+namespace balloonEngine
 {
 	namespace
 	{
