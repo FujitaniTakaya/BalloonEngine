@@ -4,14 +4,11 @@
     <Filter Include="system">
       <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source">
-      <UniqueIdentifier>{c15e8143-0afd-47b1-b47d-581af035d76e}</UniqueIdentifier>
+    <Filter Include="balloonEngineLow">
+      <UniqueIdentifier>{f97df0e8-0996-46f7-bac7-03719a2d878c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Core">
-      <UniqueIdentifier>{9d83e47c-96d5-4613-8386-f7afbc044d75}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Render">
-      <UniqueIdentifier>{61e376c0-21c3-4cc5-a464-fa5eabec8349}</UniqueIdentifier>
+    <Filter Include="balloonEngine">
+      <UniqueIdentifier>{c6af1bb1-fdb5-44f1-b26c-5a3b72256c86}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -21,8 +18,11 @@
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="Source\Core\Transform.cpp">
-      <Filter>Source\Core</Filter>
+    <ClCompile Include="BalloonEngineLow\Transform.cpp">
+      <Filter>balloonEngineLow</Filter>
+    </ClCompile>
+    <ClCompile Include="BalloonEngine\SpriteRender.cpp">
+      <Filter>balloonEngine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,8 +31,11 @@
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="Game.h" />
-    <ClInclude Include="Source\Core\Transform.h">
-      <Filter>Source\Core</Filter>
+    <ClInclude Include="BalloonEngineLow\Transform.h">
+      <Filter>balloonEngineLow</Filter>
+    </ClInclude>
+    <ClInclude Include="BalloonEngine\SpriteRender.h">
+      <Filter>balloonEngine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

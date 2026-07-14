@@ -1,4 +1,6 @@
 #pragma once
+#include "BalloonEngine/SpriteRender.h"
+
 
 // The starting point of your game.
 // This is a plain IGameObject running on K2EngineLow only.
@@ -9,11 +11,10 @@ class Game : public IGameObject
 public:
 	Game() {}
 	~Game() {}
-	bool Start();
-	void Update();
-	void Render(RenderContext& rc);
+	bool Start() override;
+	void Update() override;
+	void Render(RenderContext& rc) override;
 
 private:
-	SpriteInitData m_spriteInitData;
-	Sprite m_sprite;
+	BalloonEngine::SpriteRender m_spriteRender;
 };
