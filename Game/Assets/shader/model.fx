@@ -19,6 +19,7 @@
 
 struct DirectionLight
 {
+
     float3 lightDir;
     float pad;
     float4 lightColor;
@@ -29,7 +30,7 @@ cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
     float4 ambientColor;
-}
+};
 
 ////////////////////////////////////////////////
 // Pixel shader input.
