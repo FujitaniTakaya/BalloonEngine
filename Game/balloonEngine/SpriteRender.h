@@ -61,7 +61,7 @@ namespace BalloonEngine
 		 * @brief 座標・回転・拡大を設定
 		 * @param transform トランスフォーム
 		 */
-		void SetTRS(const BalloonEngineLow::Transform& transform);
+		void SetTRS(const balloonEngineLow::Transform& transform);
 		/**
 		 * @brief 座標を設定
 		 * @param position 座標
@@ -81,7 +81,7 @@ namespace BalloonEngine
 		 * @brief トランスフォームを取得
 		 * @return トランスフォーム
 		 */
-		const BalloonEngineLow::Transform& GetTransform() const;
+		const balloonEngineLow::Transform& GetTransform() const;
 
 
 		//=======================================================================
@@ -122,7 +122,7 @@ namespace BalloonEngine
 		/** スプライトデータ */
 		Sprite m_sprite;
 		/** トランスフォーム */
-		BalloonEngineLow::Transform m_transform;
+		balloonEngineLow::Transform m_transform;
 		/** 乗算色 */
 		Vector4 m_mulColor;
 		/** 基点 */
