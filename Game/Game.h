@@ -1,5 +1,4 @@
 #pragma once
-#include "BalloonEngine/SpriteRender.h"
 
 
 // The starting point of your game.
@@ -16,5 +15,8 @@ public:
 	void Render(RenderContext& rc) override;
 
 private:
-	BalloonEngine::SpriteRender m_spriteRender;
+	/** モデルの初期化データ */
+	ModelInitData m_modelInitData;
+	/** モデル */
+	Model m_model;
 };
