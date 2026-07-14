@@ -1,10 +1,16 @@
 #include "stdafx.h"
 #include "Game.h"
 
+#include "balloonEngineLow/Light.h"
+
 
 bool Game::Start()
 {
 	// Load resources and set up your objects here (called once).
+
+	auto& ligMng = balloonEngineLow::LightManager::Get();
+
+
 	m_modelRender.Init("Assets/modelData/unityChan.tkm", enModelUpAxisZ);
 	m_modelRender.SetPosition(Vector3(-100.0f, 0.0f, 0.0f));
 	Quaternion rot;
