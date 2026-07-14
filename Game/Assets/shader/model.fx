@@ -17,6 +17,20 @@
  *       k2Engine's job, which you are now replacing).
  */
 
+struct DirectionLight
+{
+    float3 lightDir;
+    float pad;
+    float4 lightColor;
+};
+
+
+cbuffer LightCb : register(b1)
+{
+    DirectionLight dirLight;
+    float4 ambientColor;
+}
+
 ////////////////////////////////////////////////
 // Pixel shader input.
 ////////////////////////////////////////////////
@@ -87,6 +101,10 @@ float4 PSMain(SPSIn In) : SV_Target0
     // TODO: add lighting. For example, start with ambient:
     //   float3 ambient = float3(0.3, 0.3, 0.3);
     //   albedoColor.xyz *= ambient;
+
+    const float3 ligColor = ambientColor.xyz;
+
+    albedoColor.xyz *= ligColor;
 
     return albedoColor;
 }
