@@ -4,11 +4,14 @@
     <Filter Include="system">
       <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Render">
-      <UniqueIdentifier>{c6d33c92-65fe-4fbd-ab6f-f4dd7d710dc6}</UniqueIdentifier>
+    <Filter Include="Source">
+      <UniqueIdentifier>{c15e8143-0afd-47b1-b47d-581af035d76e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{3193f560-7255-4d99-9c31-821421db9df0}</UniqueIdentifier>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{9d83e47c-96d5-4613-8386-f7afbc044d75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Render">
+      <UniqueIdentifier>{61e376c0-21c3-4cc5-a464-fa5eabec8349}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -19,10 +22,7 @@
     </ClCompile>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Source\Core\Transform.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Render\SpriteRender.cpp">
-      <Filter>Render</Filter>
+      <Filter>Source\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,10 +32,7 @@
     </ClInclude>
     <ClInclude Include="Game.h" />
     <ClInclude Include="Source\Core\Transform.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Render\SpriteRender.h">
-      <Filter>Render</Filter>
+      <Filter>Source\Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
