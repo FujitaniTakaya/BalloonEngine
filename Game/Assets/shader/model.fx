@@ -64,9 +64,10 @@ struct SPSIn
 // The tkm material binds the albedo texture to t0.
 // (t1 = normal map, t2 = metallic/smooth — you can add them when you need them.)
 ///////////////////////////////////////
-Texture2D<float4> albedoTexture : register(t0);
-Texture2D<float4> specularTexture : register(t2);
-sampler Sampler : register(s0);
+Texture2D<float4> g_albedoTexture : register(t0);
+Texture2D<float4> g_normalTexture : register(t1);
+Texture2D<float4> g_specularTexture : register(t2);
+sampler g_sampler : register(s0);
 
 ////////////////////////////////////////////////
 // Vertex shader core (called by the VSMain* entry points in ModelVSCommon.h).
@@ -148,24 +149,38 @@ float3 CalcSpecularLighting(
 ////////////////////////////////////////////////
 float4 PSMain(SPSIn In) : SV_Target0
 {
-    float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
-    const float specPower = specularTexture.Sample(Sampler, In.uv).r;
+    float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.uv);
+    const float specPower = g_specularTexture.Sample(g_sampler, In.uv).r;
+    
+    // タンジェントスペースの法線を0~1の範囲から-1~1の範囲に変換
+    const float3 localNormal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
+    
+    // 
+    const float3 normal = 
+            In.tangent * localNormal.x + 
+            In.biNormal * localNormal.y + 
+            In.normal * localNormal.z;
 
     // ライトの方向と法線を正規化
     const float3 L = normalize(dirLight.lightDir);
-    const float3 N = normalize(In.normal);
+    
+    // ノーマルマップ使用
+    const float3 N = normalize(normal);
+    // ノーマルマップ使用しない
+    // const float3 N = normalize(In.normal);
 
 
     // 拡散反射光を計算
     const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
 
     // 鏡面反射光を計算
+    // スペキュラーマップを使用
     const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f) * specPower;
+    // スペキュラーマップを使用しない
     // const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f);
 
     // 反射光を合成
     const float3 refLight = diffuse + specular;
-
 
     // 教材通りのもの
     const float3 ligColor = ambientColor.xyz + refLight;
