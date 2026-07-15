@@ -1,3 +1,7 @@
+/**
+ * @file ModelRender.cpp
+ * @brief モデル描画クラスの実装
+ */
 #include "stdafx.h"
 #include "ModelRender.h"
 
@@ -44,5 +48,46 @@ namespace balloonEngine
 	void ModelRender::Draw(RenderContext& rc)
 	{
 		m_model.Draw(rc);
+	}
+
+
+	//=======================================================================
+	// トランスフォーム
+	//=======================================================================
+	void ModelRender::SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
+	{
+		m_transform.m_position = position;
+		m_transform.m_rotation = rotation;
+		m_transform.m_scale = scale;
+	}
+
+
+	void ModelRender::SetTRS(const balloonEngineLow::Transform& transform)
+	{
+		m_transform = transform;
+	}
+
+
+	void ModelRender::SetPosition(const Vector3& position)
+	{
+		m_transform.m_position = position;
+	}
+
+
+	void ModelRender::SetRotation(const Quaternion& rotation)
+	{
+		m_transform.m_rotation = rotation;
+	}
+
+
+	void ModelRender::SetScale(const Vector3& scale)
+	{
+		m_transform.m_scale = scale;
+	}
+
+
+	const balloonEngineLow::Transform& ModelRender::GetTransform() const
+	{
+		return m_transform;
 	}
 }

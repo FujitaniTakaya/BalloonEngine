@@ -1,3 +1,7 @@
+/**
+ * @file ModelRender.h
+ * @brief モデル描画クラスの宣言
+ */
 #pragma once
 #include "balloonEngineLow/Transform.h"
 
@@ -17,9 +21,8 @@ namespace balloonEngine
 	public:
 		/**
 		 * @brief 初期化関数
-		 * @param ddsFilePath 画像アセットのファイルパス
-		 * @param width 幅
-		 * @param height 高さ
+		 * @param tkmFilePath モデルアセットのファイルパス
+		 * @param upAxis モデルの上方向の軸
 		 * @param fxFilePath シェーダーアセットのファイルパス
 		 */
 		void Init(
@@ -27,12 +30,16 @@ namespace balloonEngine
 			EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisY,
 			const char* fxFilePath = "Assets/shader/model.fx"
 		);
+
+
 		/**
-		 * @更新関数
+		 * @brief 更新関数
 		 */
 		void Update();
+
+
 		/**
-		 * @描画関数
+		 * @brief 描画関数
 		 */
 		void Draw(RenderContext& rc);
 
@@ -42,51 +49,45 @@ namespace balloonEngine
 		//=======================================================================
 	public:
 		/**
-		 * @brief トランスフォームを設定
+		 * @brief 座標・回転・拡大を設定
+		 * @param position 座標
+		 * @param rotation 回転角度
+		 * @param scale 拡大率
+		 */
+		void SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
+		/**
+		 * @brief 座標・回転・拡大を設定
 		 * @param transform トランスフォーム
 		 */
-		inline void SetTransform(const balloonEngineLow::Transform& transform)
-		{
-			m_transform = transform;
-		}
+		void SetTRS(const balloonEngineLow::Transform& transform);
 		/**
 		 * @brief 座標を設定
 		 * @param position 座標
 		 */
-		inline void SetPosition(const Vector3& position)
-		{
-			m_transform.m_position = position;
-		}
+		void SetPosition(const Vector3& position);
 		/**
 		 * @brief 回転を設定
 		 * @param rotation 回転角度
 		 */
-		inline void SetRotation(const Quaternion& rotation)
-		{
-			m_transform.m_rotation = rotation;
-		}
+		void SetRotation(const Quaternion& rotation);
 		/**
 		 * @brief 拡大を設定
 		 * @param scale 拡大率
 		 */
-		void SetScale(const Vector3& scale)
-		{
-			m_transform.m_scale = scale;
-		}
+		void SetScale(const Vector3& scale);
 		/**
 		 * @brief トランスフォームを取得
 		 * @return トランスフォーム
 		 */
-		const balloonEngineLow::Transform& GetTransform() const
-		{
-			return m_transform;
-		}
+		const balloonEngineLow::Transform& GetTransform() const;
+
+
 	private:
-		/** トランスフォーム */
-		balloonEngineLow::Transform m_transform;
 		/** モデル初期化データ */
 		ModelInitData m_modelInitData;
 		/** モデルデータ */
 		Model m_model;
+		/** トランスフォーム */
+		balloonEngineLow::Transform m_transform;
 	};
 }
