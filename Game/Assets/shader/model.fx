@@ -52,6 +52,17 @@ struct SPSIn
     float3 worldPos : TEXCOORD1;    // World-space position  (for specular later).
 };
 
+
+/////////////////////////////////////////////////
+// Pixel shader output (G-Buffer).
+/////////////////////////////////////////////////
+struct SPSOut
+{
+    float4 albedo : SV_Target0;  // Albedo (base color).
+    float4 normal : SV_Target1;  // Normal (world-space, packed to 0~1).
+};
+
+
 ///////////////////////////////////////
 // Common vertex shader code.
 // Provides: ModelCb(b0: mWorld/mView/mProj), SVSIn, bone matrices (t3),
@@ -191,4 +202,18 @@ float4 PSMain(SPSIn In) : SV_Target0
     // albedoColor.xyz = finalColor;
 
     return albedoColor;
+}
+
+
+SPSOut PSMainDeferred(SPSIn In)
+{
+    // G-Bufferに出力
+    SPSOut psOut;
+
+    // アルベドカラーを出力
+    psOut.albedo = g_albedoTexture.Sample(g_sampler, In.uv);
+
+    // 法線を出力
+    psOut.normal = float4(((In.normal / 2.0f) + 0.5f), 1.0f);
+    return psOut;
 }

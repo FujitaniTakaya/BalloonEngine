@@ -21,12 +21,20 @@ namespace balloonEngine
 	void ModelRender::Init(
 		const char* tkmFilePath,
 		EnModelUpAxis upAxis,
+		const bool isDeferredRendering,
 		const char* fxFilePath
 	)
 	{
 		m_modelInitData.m_tkmFilePath = tkmFilePath;
 		m_modelInitData.m_modelUpAxis = upAxis;
 		m_modelInitData.m_fxFilePath = fxFilePath;
+
+		if (isDeferredRendering)
+		{
+			m_modelInitData.m_psEntryPointFunc = "PSMainDeferred";
+			m_modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			m_modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		}
 
 		m_modelInitData.m_expandConstantBuffer = balloonEngineLow::LightManager::Get().GetSceneLightAddress();
 		m_modelInitData.m_expandConstantBufferSize = sizeof(balloonEngineLow::LightData);

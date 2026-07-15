@@ -28,6 +28,7 @@ namespace balloonEngine
 		void Init(
 			const char* tkmFilePath,
 			EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisY,
+			const bool isDeferredRendering = false,
 			const char* fxFilePath = "Assets/shader/model.fx"
 		);
 
