@@ -65,6 +65,7 @@ struct SPSIn
 // (t1 = normal map, t2 = metallic/smooth — you can add them when you need them.)
 ///////////////////////////////////////
 Texture2D<float4> albedoTexture : register(t0);
+Texture2D<float4> specularTexture : register(t2);
 sampler Sampler : register(s0);
 
 ////////////////////////////////////////////////
@@ -102,7 +103,11 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 ////////////////////////////////////////////////
 // Lambert diffuse lighting calculation.
 ////////////////////////////////////////////////
-float3 CalcDiffuseLighting(const float3 normedNormal, const float3 normedLightDir, const float3 lightColor)
+float3 CalcDiffuseLighting(
+    const float3 normedNormal, 
+    const float3 normedLightDir, 
+    const float3 lightColor
+    )
 {
     // 内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
     const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
@@ -114,7 +119,14 @@ float3 CalcDiffuseLighting(const float3 normedNormal, const float3 normedLightDi
 ////////////////////////////////////////////////
 // Specular lighting calculation (Phong model).
 ////////////////////////////////////////////////
-float3 CalcSpecularLighting(const float3 normedNormal, const float3 normedLightDir, const float3 viewPos, const float3 worldPos, const float3 lightColor, const float shininess)
+float3 CalcSpecularLighting(
+    const float3 normedNormal, 
+    const float3 normedLightDir, 
+    const float3 viewPos, 
+    const float3 worldPos, 
+    const float3 lightColor, 
+    const float shininess
+    )
 {
     // 法線と
     // 反射ベクトルを計算
@@ -122,9 +134,9 @@ float3 CalcSpecularLighting(const float3 normedNormal, const float3 normedLightD
     // 視線ベクトルを計算
     const float3 V = normalize(viewPos - worldPos);
     // 反射ベクトルと視線ベクトルの内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
-    const float RdotV = max(dot(R, V) * -1, 0.0f);
+    const float RdotV = max(dot(R, V), 0.0f);
     // 鏡面反射光を計算
-    const float NdotL = max(dot(normedNormal, -normedLightDir), 0.0f);
+    const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
     const float specular = pow(RdotV, shininess) * step(0.0001f, NdotL);
     return lightColor * specular;
 }
@@ -137,6 +149,7 @@ float3 CalcSpecularLighting(const float3 normedNormal, const float3 normedLightD
 float4 PSMain(SPSIn In) : SV_Target0
 {
     float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
+    const float specPower = specularTexture.Sample(Sampler, In.uv).r;
 
     // ライトの方向と法線を正規化
     const float3 L = normalize(dirLight.lightDir);
@@ -147,7 +160,8 @@ float4 PSMain(SPSIn In) : SV_Target0
     const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
 
     // 鏡面反射光を計算
-    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 32.0f);
+    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f) * specPower;
+    // const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f);
 
     // 反射光を合成
     const float3 refLight = diffuse + specular;
