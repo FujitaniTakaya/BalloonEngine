@@ -10,12 +10,9 @@ bool Game::Start()
 
 
 	m_modelRender.Init("Assets/modelData/unityChan.tkm", enModelUpAxisZ);
-	m_modelRender.SetPosition(Vector3(-100.0f, 0.0f, 0.0f));
 	Quaternion rot;
 	rot.SetRotationDegY(180.0f);
 	m_modelRender.SetRotation(rot);
-	m_modelRender.SetScale(Vector3(1.5f, 1.5f, 1.5f));
-	m_modelRender.Update();
 
 	const Vector3 modelPos = m_modelRender.GetTransform().m_position;
 	const Vector3 lightPos = modelPos + Vector3(100.0f, 0.0f, 0.0f);
@@ -24,7 +21,6 @@ bool Game::Start()
 	light.SetLightColor(g_vec4Yellow);
 	light.SetLightDir(modelPos - lightPos);
 
-
 	return true;
 }
 
@@ -32,6 +28,12 @@ bool Game::Start()
 void Game::Update()
 {
 	// Per-frame logic goes here.
+
+	Quaternion rot = m_modelRender.GetTransform().m_rotation;
+
+	rot.AddRotationDegY(0.1);
+	m_modelRender.SetRotation(rot);
+	m_modelRender.Update();
 }
 
 

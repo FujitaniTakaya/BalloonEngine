@@ -17,19 +17,26 @@
  *       k2Engine's job, which you are now replacing).
  */
 
+/*!
+ * @brief   Directional light data. *
+ */
 struct DirectionLight
 {
-
     float3 lightDir;
     float pad;
     float4 lightColor;
 };
 
 
+/*!
+ * @brief   Constant buffer for lighting data.
+ */
 cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
     float4 ambientColor;
+    float3 eyePos;
+    float pad;
 };
 
 ////////////////////////////////////////////////
@@ -91,6 +98,38 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
     return psIn;
 }
 
+
+////////////////////////////////////////////////
+// Lambert diffuse lighting calculation.
+////////////////////////////////////////////////
+float3 CalcDiffuseLighting(const float3 normedNormal, const float3 normedLightDir, const float3 lightColor)
+{
+    // 内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
+    const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
+    // ライトカラーに拡散反射光を掛けて返す
+    return lightColor * NdotL;
+}
+
+
+////////////////////////////////////////////////
+// Specular lighting calculation (Phong model).
+////////////////////////////////////////////////
+float3 CalcSpecularLighting(const float3 normedNormal, const float3 normedLightDir, const float3 viewPos, const float3 worldPos, const float3 lightColor, const float shininess)
+{
+    // 法線と
+    // 反射ベクトルを計算
+    const float3 R = reflect(normedLightDir, normedNormal);
+    // 視線ベクトルを計算
+    const float3 V = normalize(viewPos - worldPos);
+    // 反射ベクトルと視線ベクトルの内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
+    const float RdotV = max(dot(R, V) * -1, 0.0f);
+    // 鏡面反射光を計算
+    const float NdotL = max(dot(normedNormal, -normedLightDir), 0.0f);
+    const float specular = pow(RdotV, shininess) * step(0.0001f, NdotL);
+    return lightColor * specular;
+}
+
+
 ////////////////////////////////////////////////
 // Pixel shader.
 // For now: just output the albedo texture. Add your lighting here.
@@ -99,23 +138,28 @@ float4 PSMain(SPSIn In) : SV_Target0
 {
     float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
 
-    // TODO: add lighting. For example, start with ambient:
-    //   float3 ambient = float3(0.3, 0.3, 0.3);
-    //   albedoColor.xyz *= ambient;
-
-    // 法線、ライトの方向を正規化
-    float3 normal = normalize(In.normal);
-    float3 lightDir = normalize(dirLight.lightDir);
-
-    // 明るさを計算（Lambertの法則）
-    const float NdotL = max(dot(normal, lightDir) * -1, 0.0f);
-    const float3 diffuse = dirLight.lightColor.xyz * NdotL;
+    // ライトの方向と法線を正規化
+    const float3 L = normalize(dirLight.lightDir);
+    const float3 N = normalize(In.normal);
 
 
-    // ライトカラーに環境光、拡散反射光を加算
-    const float3 ligColor = ambientColor.xyz + diffuse;
+    // 拡散反射光を計算
+    const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
 
+    // 鏡面反射光を計算
+    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 32.0f);
+
+    // 反射光を合成
+    const float3 refLight = diffuse + specular;
+
+
+    // 教材通りのもの
+    const float3 ligColor = ambientColor.xyz + refLight;
     albedoColor.xyz *= ligColor;
+
+    // 品質重視のもの
+    // const float3 finalColor = albedoColor.xyz * refLight + ambientColor.xyz;
+    // albedoColor.xyz = finalColor;
 
     return albedoColor;
 }
