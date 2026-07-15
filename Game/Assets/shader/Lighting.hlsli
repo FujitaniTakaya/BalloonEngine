@@ -69,7 +69,9 @@ float3 CalcNormalFromNormalMap(
     const float3 localNormal
     )
 {
-    return tangent * localNormal.x + biNormal * localNormal.y + normal * localNormal.z;
+    const float3 convertedNormal = (localNormal * 2.0f) - 1.0f; // Convert from [0,1] to [-1,1]
+    
+    return tangent * convertedNormal.x + biNormal * convertedNormal.y + normal * convertedNormal.z;
 }
 
 #endif // LIGHTING_H_INCLUDED

@@ -104,14 +104,8 @@ float4 PSMain(SPSIn In) : SV_Target0
     float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.uv);
     const float specPower = g_specularTexture.Sample(g_sampler, In.uv).r;
     
-    // タンジェントスペースの法線を0~1の範囲から-1~1の範囲に変換
-    const float3 localNormal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
-    
-    // 
-    const float3 normal = 
-            In.tangent * localNormal.x + 
-            In.biNormal * localNormal.y + 
-            In.normal * localNormal.z;
+    // 法線
+   const float3 normal = CalcNormalFromNormalMap(In.tangent, In.biNormal, In.normal, g_normalTexture.Sample(g_sampler, In.uv).xyz);
 
     // ライトの方向と法線を正規化
     const float3 L = normalize(dirLight.lightDir);
@@ -154,8 +148,11 @@ SPSOut PSMainDeferred(SPSIn In)
     // アルベドカラーを出力
     psOut.albedo = g_albedoTexture.Sample(g_sampler, In.uv);
 
+    const float3 normal = CalcNormalFromNormalMap(In.tangent, In.biNormal, In.normal, g_normalTexture.Sample(g_sampler, In.uv).xyz);
+
+    psOut.normal.w = g_specularTexture.Sample(g_sampler, In.uv).r; // スペキュラーマップをwに格納
     // 法線を出力
-    psOut.normal = float4(((In.normal / 2.0f) + 0.5f), 1.0f);
+    psOut.normal = float4(((normal / 2.0f) + 0.5f), 1.0f);
 
     // ワールド座標を出力
     psOut.worldPos = In.worldPos;

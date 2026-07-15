@@ -64,6 +64,7 @@ float4 PSMainDeferred(PSInput In) : SV_Target0
 	float4 albedo = g_albedoTexture.Sample(g_sampler, In.uv) * mulColor;
 	float3 normal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
 	float3 worldPos = g_worldPosTexture.Sample(g_sampler, In.uv).xyz;
+	float specPower = g_normalTexture.Sample(g_sampler, In.uv).w;
 
 	// ライトの方向と法線を正規化
 	const float3 N = normalize(normal);
@@ -72,7 +73,7 @@ float4 PSMainDeferred(PSInput In) : SV_Target0
 	const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
 	const float3 specular = CalcSpecularLighting(N, L, eyePos, worldPos, dirLight.lightColor.xyz, 64.0f);
 
-	const float3 refLight = diffuse + specular;
+	const float3 refLight = diffuse + (specular * specPower);
 
 	// 反射光を乗算し、環境光を加算する
 	const float3 finalColor = (albedo.xyz * refLight) + ambientColor.xyz;
