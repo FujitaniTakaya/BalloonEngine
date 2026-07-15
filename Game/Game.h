@@ -18,4 +18,14 @@ public:
 private:
 
 	balloonEngine::ModelRender m_modelRender;
+
+
+	SpriteInitData m_spriteInitData;
+	Sprite m_sprite;
+
+	RenderTarget m_albedoRT;
+	RenderTarget m_normalRT;
+	RenderTarget m_worldPosRT;
+
+	std::vector<RenderTarget*> m_rts;
 };

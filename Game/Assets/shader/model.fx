@@ -17,27 +17,9 @@
  *       k2Engine's job, which you are now replacing).
  */
 
-/*!
- * @brief   Directional light data. *
- */
-struct DirectionLight
-{
-    float3 lightDir;
-    float pad;
-    float4 lightColor;
-};
 
+#include "Lighting.hlsli"
 
-/*!
- * @brief   Constant buffer for lighting data.
- */
-cbuffer LightCb : register(b1)
-{
-    DirectionLight dirLight;
-    float4 ambientColor;
-    float3 eyePos;
-    float pad;
-};
 
 ////////////////////////////////////////////////
 // Pixel shader input.
@@ -60,6 +42,7 @@ struct SPSOut
 {
     float4 albedo : SV_Target0;  // Albedo (base color).
     float4 normal : SV_Target1;  // Normal (world-space, packed to 0~1).
+    float3 worldPos : SV_Target2; // World-space position.
 };
 
 
@@ -109,48 +92,6 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 
     psIn.uv = vsIn.uv;
     return psIn;
-}
-
-
-////////////////////////////////////////////////
-// Lambert diffuse lighting calculation.
-////////////////////////////////////////////////
-float3 CalcDiffuseLighting(
-    const float3 normedNormal, 
-    const float3 normedLightDir, 
-    const float3 lightColor
-    )
-{
-    // 内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
-    const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
-    // ライトカラーに拡散反射光を掛けて返す
-    return lightColor * NdotL;
-}
-
-
-////////////////////////////////////////////////
-// Specular lighting calculation (Phong model).
-////////////////////////////////////////////////
-float3 CalcSpecularLighting(
-    const float3 normedNormal, 
-    const float3 normedLightDir, 
-    const float3 viewPos, 
-    const float3 worldPos, 
-    const float3 lightColor, 
-    const float shininess
-    )
-{
-    // 法線と
-    // 反射ベクトルを計算
-    const float3 R = reflect(normedLightDir, normedNormal);
-    // 視線ベクトルを計算
-    const float3 V = normalize(viewPos - worldPos);
-    // 反射ベクトルと視線ベクトルの内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
-    const float RdotV = max(dot(R, V), 0.0f);
-    // 鏡面反射光を計算
-    const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
-    const float specular = pow(RdotV, shininess) * step(0.0001f, NdotL);
-    return lightColor * specular;
 }
 
 
@@ -215,5 +156,9 @@ SPSOut PSMainDeferred(SPSIn In)
 
     // 法線を出力
     psOut.normal = float4(((In.normal / 2.0f) + 0.5f), 1.0f);
+
+    // ワールド座標を出力
+    psOut.worldPos = In.worldPos;
+
     return psOut;
 }

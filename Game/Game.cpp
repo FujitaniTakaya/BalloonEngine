@@ -42,10 +42,21 @@ bool Game::Start()
 		DXGI_FORMAT_R8G8B8A8_UNORM,
 		DXGI_FORMAT_UNKNOWN
 	);
+
+	m_worldPosRT.Create(
+		FRAME_BUFFER_W,
+		FRAME_BUFFER_H,
+		1,
+		1,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		DXGI_FORMAT_UNKNOWN
+	);
+
 	m_rts =
 	{
 		&m_albedoRT,
 		&m_normalRT,
+		&m_worldPosRT
 	};
 
 	m_spriteInitData.m_width = FRAME_BUFFER_W;
@@ -54,6 +65,7 @@ bool Game::Start()
 	m_spriteInitData.m_psEntryPoinFunc = "PSMainDeferred";
 	m_spriteInitData.m_textures[0] = &m_albedoRT.GetRenderTargetTexture();
 	m_spriteInitData.m_textures[1] = &m_normalRT.GetRenderTargetTexture();
+	m_spriteInitData.m_textures[2] = &m_worldPosRT.GetRenderTargetTexture();
 
 	m_spriteInitData.m_expandConstantBuffer = light.GetSceneLightAddress();
 	m_spriteInitData.m_expandConstantBufferSize = sizeof(balloonEngineLow::LightData);

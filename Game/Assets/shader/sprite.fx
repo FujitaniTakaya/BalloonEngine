@@ -8,27 +8,7 @@ cbuffer cb : register(b0){
 };
 
 
-/*!
- * @brief   Directional light data. *
- */
-struct DirectionLight
-{
-    float3 lightDir;
-    float pad;
-    float4 lightColor;
-};
-
-
-/*!
- * @brief   Constant buffer for lighting data.
- */
-cbuffer LightCb : register(b1)
-{
-    DirectionLight dirLight;
-    float4 ambientColor;
-    float3 eyePos;
-    float pad;
-};
+#include "Lighting.hlsli"
 
 
 struct VSInput{
@@ -43,6 +23,7 @@ struct PSInput{
 
 Texture2D<float4> g_albedoTexture : register(t0);
 Texture2D<float4> g_normalTexture : register(t1);
+Texture2D<float4> g_worldPosTexture : register(t2);
 sampler g_sampler : register(s0);
 
 PSInput VSMain(VSInput In) 
@@ -82,7 +63,20 @@ float4 PSMainDeferred(PSInput In) : SV_Target0
 {
 	float4 albedo = g_albedoTexture.Sample(g_sampler, In.uv) * mulColor;
 	float3 normal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
+	float3 worldPos = g_worldPosTexture.Sample(g_sampler, In.uv).xyz;
 
-	float4 ligColor = dirLight.lightColor * max(0.0f, dot(normal, dirLight.lightDir) * -1.0f);
-	return (albedo * ligColor) + ambientColor;
+	// ライトの方向と法線を正規化
+	const float3 N = normalize(normal);
+	const float3 L = normalize(dirLight.lightDir);
+
+	const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
+	const float3 specular = CalcSpecularLighting(N, L, eyePos, worldPos, dirLight.lightColor.xyz, 64.0f);
+
+	const float3 refLight = diffuse + specular;
+
+	// 反射光を乗算し、環境光を加算する
+	const float3 finalColor = (albedo.xyz * refLight) + ambientColor.xyz;
+	albedo.xyz = finalColor;
+
+	return albedo;
 }
