@@ -58,4 +58,18 @@ float3 CalcSpecularLighting(
     return lightColor * specular;
 }
 
+
+///////////////////////////////////////////////////
+// Normal map to world space normal conversion.
+////////////////////////////////////////////////////
+float3 CalcNormalFromNormalMap(
+    const float3 tangent,
+    const float3 biNormal,
+    const float3 normal,
+    const float3 localNormal
+    )
+{
+    return tangent * localNormal.x + biNormal * localNormal.y + normal * localNormal.z;
+}
+
 #endif // LIGHTING_H_INCLUDED
