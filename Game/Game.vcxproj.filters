@@ -30,6 +30,9 @@
     <ClCompile Include="balloonEngine\ModelRender.cpp">
       <Filter>balloonEngine</Filter>
     </ClCompile>
+    <ClCompile Include="balloonEngineLow\LightColor.cpp">
+      <Filter>balloonEngineLow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -48,6 +51,9 @@
     </ClInclude>
     <ClInclude Include="balloonEngine\ModelRender.h">
       <Filter>balloonEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="balloonEngineLow\LightColor.h">
+      <Filter>balloonEngineLow</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
