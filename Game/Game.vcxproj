@@ -229,6 +229,7 @@
     <ClCompile Include="balloonEngineLow\LightColor.cpp" />
     <ClCompile Include="BalloonEngineLow\Transform.cpp" />
     <ClCompile Include="balloonEngine\ModelRender.cpp" />
+    <ClCompile Include="balloonEngine\RenderingEngine.cpp" />
     <ClCompile Include="BalloonEngine\SpriteRender.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -244,6 +245,7 @@
     <ClInclude Include="balloonEngineLow\LightColor.h" />
     <ClInclude Include="BalloonEngineLow\Transform.h" />
     <ClInclude Include="balloonEngine\ModelRender.h" />
+    <ClInclude Include="balloonEngine\RenderingEngine.h" />
     <ClInclude Include="BalloonEngine\SpriteRender.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="stdafx.h" />
