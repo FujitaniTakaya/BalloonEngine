@@ -34,6 +34,7 @@ namespace balloonEngine
 			m_modelInitData.m_psEntryPointFunc = "PSMainDeferred";
 			m_modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 			m_modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+			m_modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
 
 		m_modelInitData.m_expandConstantBuffer = balloonEngineLow::LightManager::Get().GetSceneLightAddress();
