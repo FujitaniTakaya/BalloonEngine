@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Git/BalloonEngine/k2EngineLow/**)",
+      "Read(//c/Git/BalloonEngine/Game/**)"
+    ]
+  }
+}

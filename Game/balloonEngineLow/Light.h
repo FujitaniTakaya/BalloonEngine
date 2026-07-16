@@ -3,6 +3,7 @@
  * @brief ライト関連
  */
 #pragma once
+#include "LightColor.h"
 
 
 namespace balloonEngineLow
@@ -20,11 +21,27 @@ namespace balloonEngineLow
 		/** パディング(HLSLの16バイトアライメント合わせ) */
 		float pad;
 		/** ライトの色 */
-		Vector4 lightColor;
+		ColorVec3 lightColor;
 
 
 		DirectionLight();
 		~DirectionLight() = default;
+	};
+
+
+
+
+	/**********************************************/
+
+
+	struct AmbientLight
+	{
+		/** 環境光の色 */
+		ColorVec3 lightColor;
+
+
+		AmbientLight();
+		~AmbientLight() = default;
 	};
 
 
@@ -42,7 +59,7 @@ namespace balloonEngineLow
 		/** ディレクションライト */
 		DirectionLight directionLight;
 		/** 環境光の色 */
-		Vector4 ambientColor;
+		AmbientLight ambientLight;
 		/** 視点(カメラ)位置。鏡面反射で使用 */
 		Vector3 eyePosition;
 		/** パディング */
@@ -93,15 +110,15 @@ namespace balloonEngineLow
 		 */
 		inline void SetLightColor(const Vector4& lightColor)
 		{
-			m_sceneLight.directionLight.lightColor.Set(lightColor);
+			m_sceneLight.directionLight.lightColor.m_colorVec3.Set(lightColor);
 		}
 		/**
 		 * @brief アンビエントカラーを設定
 		 * @param ambientColor アンビエントカラー
 		 */
-		inline void SetAmbientColor(const Vector4& ambientColor)
+		inline void SetAmbientColor(const Vector4& lightColor)
 		{
-			m_sceneLight.ambientColor.Set(ambientColor);
+			m_sceneLight.ambientLight.lightColor.m_colorVec3.Set(lightColor);
 		}
 		/**
 		 * @brief シーンライトを取得(読み取り用)

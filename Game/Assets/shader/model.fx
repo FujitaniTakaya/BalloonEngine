@@ -129,11 +129,11 @@ float4 PSMain(SPSIn In) : SV_Target0
     const float3 refLight = diffuse + specular;
 
     // 教材通りのもの
-    const float3 ligColor = ambientColor.xyz + refLight;
+    const float3 ligColor = ambientLight.lightColor.xyz + refLight;
     albedoColor.xyz *= ligColor;
 
     // 品質重視のもの
-    // const float3 finalColor = albedoColor.xyz * refLight + ambientColor.xyz;
+    // const float3 finalColor = albedoColor.xyz * refLight + ambientLight.lightColor.xyz;
     // albedoColor.xyz = finalColor;
 
     return albedoColor;

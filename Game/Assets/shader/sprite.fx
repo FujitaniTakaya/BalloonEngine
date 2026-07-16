@@ -35,20 +35,6 @@ PSInput VSMain(VSInput In)
 }
 float4 PSMain( PSInput In ) : SV_Target0
 {
-	// G-Bufferの内容を使ってライティング
-	float4 color = g_albedoTexture.Sample(g_sampler, In.uv);
-	float3 normal = g_normalTexture.Sample(g_sampler, In.uv).xyz;
-	normal = (normal * 2.0f) - 1.0f;
-
-	// ライトを計算
-	float3 lig = 0.0f;
-	float t = max(0.0f, dot(normal, dirLight.lightDir) * -1.0f);
-	lig = dirLight.lightColor.xyz * t;
-	float4 finalColor = color;
-	finalColor.xyz *= lig;
-	
-	return finalColor;
-
 	return g_albedoTexture.Sample(g_sampler, In.uv) * mulColor;
 }
 float4 PSMainGamma( PSInput In ) : SV_Target0
@@ -76,7 +62,7 @@ float4 PSMainDeferred(PSInput In) : SV_Target0
 	const float3 refLight = diffuse + (specular * specPower);
 
 	// 反射光を乗算し、環境光を加算する
-	const float3 finalColor = (albedo.xyz * refLight) + ambientColor.xyz;
+	const float3 finalColor = (albedo.xyz * refLight) + ambientLight.lightColor.xyz;
 	albedo.xyz = finalColor;
 
 	return albedo;

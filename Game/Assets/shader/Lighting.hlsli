@@ -10,9 +10,18 @@
 struct DirectionLight
 {
     float3 lightDir;
-    float pad;
-    float4 lightColor;
+    float pad1;
+    float3 lightColor;
+    float pad2;
 };
+
+
+struct AmbientLight
+{
+    float3 lightColor;
+    float pad;
+};
+
 
 /*!
  * @brief   Constant buffer for lighting data.
@@ -20,9 +29,9 @@ struct DirectionLight
 cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
-    float4 ambientColor;
+    AmbientLight ambientLight;
     float3 eyePos;
-    float pad;
+    float pad2;
 };
 
 ////////////////////////////////////////////////

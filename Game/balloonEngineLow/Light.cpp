@@ -7,7 +7,7 @@ namespace balloonEngineLow
 	DirectionLight::DirectionLight()
 		: lightDir(0.0f, -1.0f, 0.0f)	// ゼロベクトルは normalize で NaN になるため、真上からの光を初期値にする
 		, pad(0.0f)
-		, lightColor(g_vec4White)
+		, lightColor(LightColor::White)
 	{}
 
 
@@ -19,13 +19,23 @@ namespace balloonEngineLow
 	namespace
 	{
 		/** デフォルトの環境光の色 */
-		static const Vector4 DEFAULT_AMBIENT_COLOR = { 0.3f, 0.3f, 0.3f, 1.0f };
+		static const ColorVec3 DEFAULT_AMBIENT_COLOR = { 0.3f, 0.3f, 0.3f };
 	}
+
+
+	AmbientLight::AmbientLight()
+		: lightColor(DEFAULT_AMBIENT_COLOR)
+	{}
+
+
+
+
+	/***************************************/
 
 
 	LightData::LightData()
 		: directionLight()
-		, ambientColor(DEFAULT_AMBIENT_COLOR)
+		, ambientLight()
 		, eyePosition(g_vec3Zero)
 		, pad(0.0f)
 	{}
