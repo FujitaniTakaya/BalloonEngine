@@ -12,7 +12,7 @@ namespace balloonEngine
     class RenderingEngine
     {
 
-      private:
+    private:
         RenderingEngine();
         ~RenderingEngine() = default;
     };

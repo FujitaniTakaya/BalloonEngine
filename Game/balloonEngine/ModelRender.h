@@ -13,12 +13,12 @@ namespace balloonEngine
      */
     class ModelRender
     {
-      public:
+    public:
         ModelRender();
         ~ModelRender();
 
 
-      public:
+    public:
         /**
          * @brief 初期化関数
          * @param tkmFilePath モデルアセットのファイルパス
@@ -48,7 +48,7 @@ namespace balloonEngine
         //=======================================================================
         // トランスフォーム
         //=======================================================================
-      public:
+    public:
         /**
          * @brief 座標・回転・拡大を設定
          * @param position 座標
@@ -87,7 +87,7 @@ namespace balloonEngine
         const balloonEngineLow::Transform& GetTransform() const;
 
 
-      private:
+    private:
         /** モデル初期化データ */
         ModelInitData m_modelInitData;
         /** モデルデータ */

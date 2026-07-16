@@ -12,7 +12,7 @@ namespace balloonEngineLow
      */
     class Transform
     {
-      public:
+    public:
         Transform(
             Vector3 position = g_vec3Zero,
             Quaternion rotation = g_quatIdentity,
@@ -21,7 +21,7 @@ namespace balloonEngineLow
         ~Transform();
 
 
-      public:
+    public:
         /** 座標 */
         Vector3 m_position;
         /** 回転 */

@@ -84,7 +84,7 @@ namespace balloonEngineLow
         //=======================================================================
         // 更新
         //=======================================================================
-      public:
+    public:
         /**
          * @brief 更新関数(毎フレーム、モデルの描画より前に1回呼ぶ)
          * @note  視点位置をカメラから反映する。
@@ -95,7 +95,7 @@ namespace balloonEngineLow
         //=======================================================================
         // シーンライト
         //=======================================================================
-      public:
+    public:
         /**
          * @brief ライトの方向を設定
          * @param lightDir ライトの方向
@@ -139,7 +139,7 @@ namespace balloonEngineLow
         }
 
 
-      private:
+    private:
         /** シーンライト */
         LightData m_sceneLight;
 
@@ -147,7 +147,7 @@ namespace balloonEngineLow
         //=======================================================================
         // シングルトン
         //=======================================================================
-      public:
+    public:
         /**
          * @brief ライトマネージャーを取得
          * @return ライトマネージャー
@@ -158,7 +158,7 @@ namespace balloonEngineLow
             return instance;
         }
 
-      private:
+    private:
         LightManager() = default;
         ~LightManager() = default;
     };

@@ -14,7 +14,7 @@ namespace balloonEngineLow
      */
     class ColorVec3
     {
-      public:
+    public:
         ColorVec3() = default;
 
         /**
@@ -54,7 +54,7 @@ namespace balloonEngineLow
             return Vector4(m_colorVec3.x, m_colorVec3.y, m_colorVec3.z, w);
         }
 
-      public:
+    public:
         /** カラー */
         Vector3 m_colorVec3;
         /** HLSL側float3の16バイト境界に合わせるためのパディング */
@@ -68,11 +68,11 @@ namespace balloonEngineLow
      */
     class LightColor
     {
-      private:
+    private:
         using ColorVec4 = Vector4;
 
 
-      public:
+    public:
         static const ColorVec3 White;
         static const ColorVec3 Red;
         static const ColorVec3 Green;
@@ -83,11 +83,11 @@ namespace balloonEngineLow
         static const ColorVec3 Black;
 
 
-      public:
+    public:
         LightColor();
         ~LightColor() = default;
 
-      public:
+    public:
         /** 3次元ライトの色 */
         ColorVec3 m_colorVec3;
         /** 4次元ライトの色 */

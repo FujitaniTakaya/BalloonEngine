@@ -16,7 +16,7 @@ enum class EnRenderTargetType
 // Add your own rendering (a triangle, a sprite, a model...) step by step.
 class Game : public IGameObject
 {
-  public:
+public:
     Game()
     {}
     ~Game()
@@ -25,7 +25,7 @@ class Game : public IGameObject
     void Update() override;
     void Render(RenderContext& rc) override;
 
-  private:
+private:
     balloonEngine::ModelRender m_modelRender;
 
 

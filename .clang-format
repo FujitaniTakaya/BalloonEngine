@@ -52,6 +52,8 @@ IncludeIsMainRegex: '(Test)?$'
 # namespaceの中身を1段インデントする(Visual Studioと同じ見た目)
 NamespaceIndentation: All
 
+# アクセス修飾子(private: / public: / protected:)をクラスの { と同じ位置に置く
+AccessModifierOffset: -4
 
 # ============================================
 # 関数の引数

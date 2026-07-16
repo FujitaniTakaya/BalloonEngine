@@ -13,12 +13,12 @@ namespace balloonEngine
      */
     class SpriteRender
     {
-      public:
+    public:
         SpriteRender();
         ~SpriteRender();
 
 
-      public:
+    public:
         /**
          * @brief 初期化関数
          * @param ddsFilePath 画像アセットのファイルパス
@@ -49,7 +49,7 @@ namespace balloonEngine
         //=======================================================================
         // トランスフォーム
         //=======================================================================
-      public:
+    public:
         /**
          * @brief 座標・回転・拡大を設定
          * @param position 座標
@@ -91,7 +91,7 @@ namespace balloonEngine
         //=======================================================================
         // カラー
         //=======================================================================
-      public:
+    public:
         /**
          * @brief 乗算色を設定
          * @param mulColor 乗算色
@@ -107,7 +107,7 @@ namespace balloonEngine
         //=======================================================================
         // 基点
         //=======================================================================
-      public:
+    public:
         /**
          * @brief 基点を設定
          * @param pivot 基点
@@ -120,7 +120,7 @@ namespace balloonEngine
         const Vector2& GetPivot() const;
 
 
-      private:
+    private:
         /** スプライトのイニットデータ */
         SpriteInitData m_spriteInitData;
         /** スプライトデータ */
