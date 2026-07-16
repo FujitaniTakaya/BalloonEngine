@@ -51,7 +51,7 @@ struct SPSOut
 // Provides: ModelCb(b0: mWorld/mView/mProj), SVSIn, bone matrices (t3),
 //           and the entry points VSMain / VSMainSkin / VSMainInstancing, etc.
 ///////////////////////////////////////
-#include "ModelVSCommon.h"
+#include "ModelVSCommon.hlsli"
 
 ///////////////////////////////////////
 // Shader resources.
