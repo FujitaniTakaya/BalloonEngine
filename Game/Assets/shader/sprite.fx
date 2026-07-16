@@ -1,10 +1,10 @@
 /*!
- * @brief	スプライトシェーダー�?
+ * @brief    スプライトシェーダー。
  */
 
 cbuffer cb : register(b0){
-	float4x4 mvp;		// モ�?ルビュープロジェクション行�??
-	float4 mulColor;	// 乗算カラー。ピクセルシェーダーの出力結果に乗算されます�?
+    float4x4 mvp;       // モデルビュープロジェクション行列。
+    float4 mulColor;    // 乗算カラー。ピクセルシェーダーの出力結果に乗算されます。
 };
 
 
@@ -12,8 +12,8 @@ cbuffer cb : register(b0){
 
 
 struct VSInput{
-	float4 pos : POSITION;
-	float2 uv  : TEXCOORD0;
+    float4 pos : POSITION;
+    float2 uv  : TEXCOORD0;
 };
 
 struct PSInput{
