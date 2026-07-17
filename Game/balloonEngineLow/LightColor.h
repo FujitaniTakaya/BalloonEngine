@@ -23,16 +23,8 @@ namespace balloonEngineLow
          * @param g 緑成分(0.0f～1.0f)
          * @param b 青成分(0.0f～1.0f)
          */
-        ColorVec3(
-            float r,
-            float g,
-            float b
-        )
-            : m_colorVec3(
-                  r,
-                  g,
-                  b
-              )
+        ColorVec3(float r, float g, float b)
+            : m_colorVec3(r, g, b)
         {}
 
         /**
@@ -81,6 +73,7 @@ namespace balloonEngineLow
         static const ColorVec3 Cyan;
         static const ColorVec3 Magenta;
         static const ColorVec3 Black;
+        static const ColorVec3 Gray;
 
 
     public:
