@@ -2,14 +2,6 @@
 #include "balloonEngine/ModelRender.h"
 
 
-enum class EnRenderTargetType
-{
-    Albedo,
-    Normal,
-    WorldPos,
-    Max
-};
-
 // The starting point of your game.
 // This is a plain IGameObject running on K2EngineLow only.
 // Right now it draws nothing, so you will just see the gray clear color.

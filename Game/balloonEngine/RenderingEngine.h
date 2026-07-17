@@ -9,7 +9,6 @@ namespace balloonEngine
 {
     /** 前方宣言 */
     class ModelRender;
-    class SpriteRender;
 
 
     /**
@@ -46,8 +45,6 @@ namespace balloonEngine
     public:
         /** @brief 初期化関数 */
         void InitializeDeferredRendering();
-        /** @brief 更新関数 */
-        void UpdateDeferredRendering();
         /** @brief 遅延描画関数 */
         void RenderDeferredRendering();
         /**
@@ -57,12 +54,23 @@ namespace balloonEngine
         void Add3dObject(ModelRender* render3dObject);
 
 
+    private:
+        /**
+         * @brief レンダーターゲットの種類を指定して取得する。
+         * @param type レンダーターゲットの種類
+         * @return レンダーターゲット
+         */
+        RenderTarget& GetRenderTarget(RTType type)
+        {
+            return m_rts[static_cast<size_t>(type)];
+        }
+
 
     private:
         /** 遅延描画オブジェクトのリスト */
-        std::vector<ModelRender*> m_defferedRendering3dObjectList;
+        std::vector<ModelRender*> m_deferredRendering3dObjectList;
         /** 遅延描画用スプライト */
-        Sprite m_defferedRenderingSprite;
+        Sprite m_deferredRenderingSprite;
         /** 遅延描画用レンダーターゲット */
         std::array<RenderTarget, static_cast<size_t>(RTType::Max)> m_rts;
 
