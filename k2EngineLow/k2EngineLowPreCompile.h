@@ -4,27 +4,27 @@
 #pragma comment( lib, "xinput.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
-#include <winsock2.h>
+#include <algorithm>
+#include <array>
+#include <atlbase.h>
+#include <d3d12.h>
+#include <D3Dcompiler.h>
+#include <DirectXMath.h>
+#include <dxcapi.h>
+#include <dxgi.h>
+#include <dxgiformat.h>
+#include <dxgitype.h>
+#include <functional>
+#include <list>
+#include <map>
+#include <math.h>
+#include <memory>
 #include <stdio.h>
 #include <stdlib.h>
-#include <memory>
-#include <math.h>
 #include <vector>
-#include <list>
-#include <D3Dcompiler.h>
 #include <Windows.h>
-#include <d3d12.h>
-#include <map>
-#include <functional>
-#include <algorithm>
-#include <DirectXMath.h>
+#include <winsock2.h>
 #include <Xinput.h>
-#include <array>
-#include <dxcapi.h>
-#include <atlbase.h>
-#include <dxgi.h>
-#include <dxgitype.h>
-#include <dxgiformat.h>
 
 
 #include "DirectXTK/Inc/CommonStates.h"
@@ -81,11 +81,11 @@ static const int MAX_FPS = 60;	// Å‘åFPSBUSE_FPS_LIMITTER‚ª—LŒø‚È‚Æ‚«‚Ég—p‚³‚
 
 #include "graphics/GaussianBlur.h"
 
-const UINT FRAME_BUFFER_W = 1920;	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•B
-const UINT FRAME_BUFFER_H = 1080;	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³B
-const UINT UI_SPACE_WIDTH = 1920;	// UI‹óŠÔ‚Ì•B
-const UINT UI_SPACE_HEIGHT = 1080;	// UI‹óŠÔ‚Ì‚‚³B
-static const int MAX_BONE = 512;	// ƒ{[ƒ“‚ÌÅ‘å”B
+inline constexpr UINT FRAME_BUFFER_W = 1920;	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì•B
+inline constexpr UINT FRAME_BUFFER_H = 1080;	// ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‚‚³B
+inline constexpr UINT UI_SPACE_WIDTH = 1920;	// UI‹óŠÔ‚Ì•B
+inline constexpr UINT UI_SPACE_HEIGHT = 1080;	// UI‹óŠÔ‚Ì‚‚³B
+inline constexpr int MAX_BONE = 512;	// ƒ{[ƒ“‚ÌÅ‘å”B
 
 
 
