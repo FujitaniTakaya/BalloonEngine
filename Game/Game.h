@@ -27,11 +27,4 @@ public:
 
 private:
     balloonEngine::ModelRender m_modelRender;
-
-
-    SpriteInitData m_spriteInitData;
-    Sprite m_sprite;
-
-
-    std::array<RenderTarget, static_cast<size_t>(EnRenderTargetType::Max)> m_rts;
 };

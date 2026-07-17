@@ -4,6 +4,7 @@
 #include <dxgidebug.h>
 
 #include "Game.h"
+#include "balloonEngine/RenderingEngine.h"
 #include "system/system.h"
 
 
@@ -24,12 +25,7 @@ void ReportLiveObjects()
 ///////////////////////////////////////////////////////////////////
 // Windows application entry point.
 ///////////////////////////////////////////////////////////////////
-int WINAPI wWinMain(
-    HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPWSTR lpCmdLine,
-    int nCmdShow
-)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
     // Initialize the game (window + K2EngineLow).
     InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
@@ -39,6 +35,8 @@ int WINAPI wWinMain(
 
     // Create the Game object.
     NewGO<Game>(0, "game");
+
+    balloonEngine::RenderingEngine::Get().InitializeDeferredRendering();
 
     //////////////////////////////////////
     // End of start-up code.
@@ -57,7 +55,8 @@ int WINAPI wWinMain(
         g_engine->BeginFrame();    // Begin the frame: clear the screen, update input, etc.
         g_engine->ExecuteUpdate(); // Update all game objects (IGameObject::Update).
         g_engine->ExecuteRender(); // Render all game objects (IGameObject::Render).
-        g_engine->EndFrame();      // End the frame: present the back buffer.
+        balloonEngine::RenderingEngine::Get().RenderDeferredRendering();
+        g_engine->EndFrame(); // End the frame: present the back buffer.
     }
 
     // Shut down.
