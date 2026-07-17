@@ -3,6 +3,7 @@
  * @brief モデル描画クラスの宣言
  */
 #pragma once
+#include "IRenderObject.h"
 #include "balloonEngineLow/Transform.h"
 
 
@@ -11,11 +12,11 @@ namespace balloonEngine
     /**
      * @brief モデル描画クラス
      */
-    class ModelRender
+    class ModelRender : public IRenderObject
     {
     public:
         ModelRender();
-        ~ModelRender();
+        ~ModelRender() override;
 
 
     public:
@@ -55,11 +56,7 @@ namespace balloonEngine
          * @param rotation 回転角度
          * @param scale 拡大率
          */
-        void SetTRS(
-            const Vector3& position,
-            const Quaternion& rotation,
-            const Vector3& scale
-        );
+        void SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
         /**
          * @brief 座標・回転・拡大を設定
          * @param transform トランスフォーム
@@ -87,9 +84,18 @@ namespace balloonEngine
         const balloonEngineLow::Transform& GetTransform() const;
 
 
+        //=======================================================================
+        // モデルデータ
+        //=======================================================================
+    public:
+        /**
+         * @brief モデルデータを取得
+         * @return モデルデータ
+         */
+        Model& GetModel() const;
+
+
     private:
-        /** モデル初期化データ */
-        ModelInitData m_modelInitData;
         /** モデルデータ */
         Model m_model;
         /** トランスフォーム */
