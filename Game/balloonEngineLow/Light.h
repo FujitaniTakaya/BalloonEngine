@@ -10,9 +10,6 @@ namespace balloonEngineLow
 {
     /**
      * @brief ディレクションライト
-     * @note  定数バッファーとしてGPUへそのままコピーされるため、
-     *        仮想関数・継承・ポインタメンバーは禁止(PODを保つこと)。
-     *        メンバーの順番は model.fx の DirectionLight と完全に一致させること。
      */
     struct DirectionLight
     {
@@ -34,6 +31,9 @@ namespace balloonEngineLow
     /**********************************************/
 
 
+    /**
+     * @brief アンビエントライト
+     */
     struct AmbientLight
     {
         /** 環境光の色 */
@@ -77,9 +77,11 @@ namespace balloonEngineLow
 
 
     /**
-     * @brief ライトマネージャー
+     * @brief シーンライト
+     * @note  シーンライトはシングルトンで管理する。
+     *        シーンライトの更新は、モデルの描画より前に1回
      */
-    class LightManager : public Noncopyable
+    class SceneLight : public Noncopyable
     {
         //=======================================================================
         // 更新
@@ -133,7 +135,7 @@ namespace balloonEngineLow
          * @note  ModelRender::Init から m_expandConstantBuffer に渡すために使う。
          * @return シーンライトのアドレス
          */
-        inline LightData* GetSceneLightAddress()
+        inline LightData* GetAddress()
         {
             return &m_sceneLight;
         }
@@ -152,15 +154,15 @@ namespace balloonEngineLow
          * @brief ライトマネージャーを取得
          * @return ライトマネージャー
          */
-        static LightManager& Get()
+        static SceneLight& Get()
         {
-            static LightManager instance;
+            static SceneLight instance;
             return instance;
         }
 
     private:
-        LightManager() = default;
-        ~LightManager() = default;
+        SceneLight() = default;
+        ~SceneLight() = default;
     };
 
 } // namespace balloonEngineLow

@@ -24,7 +24,7 @@ namespace balloonEngineLow
     namespace
     {
         /** デフォルトの環境光の色 */
-        static const ColorVec3 DEFAULT_AMBIENT_COLOR = {0.3f, 0.3f, 0.3f};
+        static const ColorVec3 DEFAULT_AMBIENT_COLOR = { 0.3f, 0.3f, 0.3f };
     } // namespace
 
 
@@ -51,7 +51,7 @@ namespace balloonEngineLow
     /***************************************/
 
 
-    void LightManager::Update()
+    void SceneLight::Update()
     {
         // カメラ位置を毎フレーム反映(鏡面反射用)。
         // カメラの取得方法は自作エンジンの実装に合わせて置き換えること。
