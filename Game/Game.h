@@ -1,5 +1,4 @@
 #pragma once
-#include "balloonEngine/ModelRender.h"
 
 
 // The starting point of your game.
@@ -9,13 +8,14 @@
 class Game : public IGameObject
 {
 public:
-	Game() {}
-	~Game() {}
-	bool Start() override;
-	void Update() override;
-	void Render(RenderContext& rc) override;
+    Game()
+    {}
+    ~Game()
+    {}
+    bool Start() override;
+    void Update() override;
+    void Render(RenderContext& rc) override;
 
 private:
-
-	balloonEngine::ModelRender m_modelRender;
+    balloonEngine::ModelRender m_modelRender;
 };

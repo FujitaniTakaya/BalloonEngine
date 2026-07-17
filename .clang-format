@@ -1,0 +1,131 @@
+# ============================================
+# 基本設定
+# ============================================
+
+# 基本スタイル: Visual Studioに近いMicrosoftスタイル
+BasedOnStyle: Microsoft
+
+# 連続する空行を最大4行まで残す
+# (クラス間の「4行空け → コメントの壁 → 2行空け」の構造を守るため)
+MaxEmptyLinesToKeep: 4
+
+# 1行の最大文字数(これを超えると引数などが改行される)
+ColumnLimit: 110
+
+
+# ============================================
+# #include の整理
+# ============================================
+
+# #includeをアルファベット順に並べ替える
+SortIncludes: true
+
+# 空行を無視して、下のカテゴリルールに従い自動で再グループ化する
+IncludeBlocks: Regroup
+
+# インクルードの分類ルール(Priorityが小さい順に上から並ぶ)
+IncludeCategories:
+  # stdafx.h は必ず先頭
+  - Regex: '^"stdafx\.h"'
+    Priority: -1
+  # <vector> のような標準ヘッダー
+  - Regex: '^<[a-z_]+>'
+    Priority: 2
+  # <d3d12.h> のような .h 付きの外部ヘッダー
+  - Regex: '^<.*\.h>'
+    Priority: 3
+  # その他の <...> ヘッダー
+  - Regex: '^<.*>'
+    Priority: 2
+  # "ModelRender.h" のような自作ヘッダー
+  - Regex: '.*'
+    Priority: 4
+
+# 「対応するヘッダー」(ModelRender.cppに対するModelRender.h)の判定ルール
+IncludeIsMainRegex: '(Test)?$'
+
+
+# ============================================
+# インデント
+# ============================================
+
+# namespaceの中身を1段インデントする(Visual Studioと同じ見た目)
+NamespaceIndentation: All
+
+# アクセス修飾子(private: / public: / protected:)をクラスの { と同じ位置に置く
+AccessModifierOffset: -4
+
+
+# ============================================
+# 関数の引数
+# ============================================
+
+# 引数を中途半端に詰めない(全部1行 or 1つずつ縦のどちらかにする)
+BinPackParameters: false
+
+# 関数呼び出し側の引数も、改行時は1行に詰め込まない
+BinPackArguments: false
+
+# 引数を縦に並べたとき、閉じカッコ ) を独立した行に置く
+AlignAfterOpenBracket: BlockIndent
+
+# 改行する場合、引数全体を2行目にまとめる形を禁止(1つずつ縦に揃える)
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+
+# ============================================
+# コンストラクタの初期化リスト
+# ============================================
+
+# 初期化リストは常に1つずつ縦に並べる
+PackConstructorInitializers: Never
+
+# 改行位置をカンマの前にする(行頭に , が来るスタイル)
+BreakConstructorInitializers: BeforeComma
+
+# 初期化リストのインデント幅(: や , の左に付くスペース)
+ConstructorInitializerIndentWidth: 4
+
+
+# ============================================
+# 配列・構造体の初期化リスト ( = { ... } )
+# ============================================
+Cpp11BracedListStyle: false
+
+
+# ============================================
+# 波カッコ { } の配置
+# ============================================
+
+# ポインタの * を型側に付ける(const char* ddsFilePath)
+PointerAlignment: Left
+
+# 短い関数を1行にまとめない(すべての関数を同じ形にする)
+AllowShortFunctionsOnASingleLine: None
+
+# 波カッコの配置を下のBraceWrappingで個別指定する
+BreakBeforeBraces: Custom
+
+# 波カッコを新しい行に置くかどうかの個別設定
+BraceWrapping:
+  # class の { を次の行に置く
+  AfterClass: true
+  # if / for / while などの { を次の行に置く
+  AfterControlStatement: Always
+  # enum の { を次の行に置く
+  AfterEnum: true
+  # 関数の { を次の行に置く
+  AfterFunction: true
+  # namespace の { を次の行に置く
+  AfterNamespace: true
+  # struct の { を次の行に置く
+  AfterStruct: true
+  # union の { を次の行に置く
+  AfterUnion: true
+  # catch の前で改行する
+  BeforeCatch: true
+  # else の前で改行する
+  BeforeElse: true
+  # 空の関数本体は {} のまま1行にまとめる(分割しない)
+  SplitEmptyFunction: false

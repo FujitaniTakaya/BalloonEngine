@@ -17,27 +17,9 @@
  *       k2Engine's job, which you are now replacing).
  */
 
-/*!
- * @brief   Directional light data. *
- */
-struct DirectionLight
-{
-    float3 lightDir;
-    float pad;
-    float4 lightColor;
-};
 
+#include "Lighting.hlsli"
 
-/*!
- * @brief   Constant buffer for lighting data.
- */
-cbuffer LightCb : register(b1)
-{
-    DirectionLight dirLight;
-    float4 ambientColor;
-    float3 eyePos;
-    float pad;
-};
 
 ////////////////////////////////////////////////
 // Pixel shader input.
@@ -52,12 +34,24 @@ struct SPSIn
     float3 worldPos : TEXCOORD1;    // World-space position  (for specular later).
 };
 
+
+/////////////////////////////////////////////////
+// Pixel shader output (G-Buffer).
+/////////////////////////////////////////////////
+struct SPSOut
+{
+    float4 albedo : SV_Target0;  // Albedo (base color).
+    float4 normal : SV_Target1;  // Normal (world-space, packed to 0~1).
+    float3 worldPos : SV_Target2; // World-space position.
+};
+
+
 ///////////////////////////////////////
 // Common vertex shader code.
 // Provides: ModelCb(b0: mWorld/mView/mProj), SVSIn, bone matrices (t3),
 //           and the entry points VSMain / VSMainSkin / VSMainInstancing, etc.
 ///////////////////////////////////////
-#include "ModelVSCommon.h"
+#include "ModelVSCommon.hlsli"
 
 ///////////////////////////////////////
 // Shader resources.
@@ -102,48 +96,6 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 
 
 ////////////////////////////////////////////////
-// Lambert diffuse lighting calculation.
-////////////////////////////////////////////////
-float3 CalcDiffuseLighting(
-    const float3 normedNormal, 
-    const float3 normedLightDir, 
-    const float3 lightColor
-    )
-{
-    // 内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
-    const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
-    // ライトカラーに拡散反射光を掛けて返す
-    return lightColor * NdotL;
-}
-
-
-////////////////////////////////////////////////
-// Specular lighting calculation (Phong model).
-////////////////////////////////////////////////
-float3 CalcSpecularLighting(
-    const float3 normedNormal, 
-    const float3 normedLightDir, 
-    const float3 viewPos, 
-    const float3 worldPos, 
-    const float3 lightColor, 
-    const float shininess
-    )
-{
-    // 法線と
-    // 反射ベクトルを計算
-    const float3 R = reflect(normedLightDir, normedNormal);
-    // 視線ベクトルを計算
-    const float3 V = normalize(viewPos - worldPos);
-    // 反射ベクトルと視線ベクトルの内積を計算し、正負を反転(向きが逆なほど明るいため)、0未満は0にする(当たってない部分は暗くする)
-    const float RdotV = max(dot(R, V), 0.0f);
-    // 鏡面反射光を計算
-    const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
-    const float specular = pow(RdotV, shininess) * step(0.0001f, NdotL);
-    return lightColor * specular;
-}
-
-
-////////////////////////////////////////////////
 // Pixel shader.
 // For now: just output the albedo texture. Add your lighting here.
 ////////////////////////////////////////////////
@@ -152,14 +104,8 @@ float4 PSMain(SPSIn In) : SV_Target0
     float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.uv);
     const float specPower = g_specularTexture.Sample(g_sampler, In.uv).r;
     
-    // タンジェントスペースの法線を0~1の範囲から-1~1の範囲に変換
-    const float3 localNormal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
-    
-    // 
-    const float3 normal = 
-            In.tangent * localNormal.x + 
-            In.biNormal * localNormal.y + 
-            In.normal * localNormal.z;
+    // 法線
+   const float3 normal = CalcNormalFromNormalMap(In.tangent, In.biNormal, In.normal, g_normalTexture.Sample(g_sampler, In.uv).xyz);
 
     // ライトの方向と法線を正規化
     const float3 L = normalize(dirLight.lightDir);
@@ -183,12 +129,33 @@ float4 PSMain(SPSIn In) : SV_Target0
     const float3 refLight = diffuse + specular;
 
     // 教材通りのもの
-    const float3 ligColor = ambientColor.xyz + refLight;
+    const float3 ligColor = ambientLight.lightColor.xyz + refLight;
     albedoColor.xyz *= ligColor;
 
     // 品質重視のもの
-    // const float3 finalColor = albedoColor.xyz * refLight + ambientColor.xyz;
+    // const float3 finalColor = albedoColor.xyz * refLight + ambientLight.lightColor.xyz;
     // albedoColor.xyz = finalColor;
 
     return albedoColor;
+}
+
+
+SPSOut PSMainDeferred(SPSIn In)
+{
+    // G-Bufferに出力
+    SPSOut psOut;
+
+    // アルベドカラーを出力
+    psOut.albedo = g_albedoTexture.Sample(g_sampler, In.uv);
+
+    const float3 normal = CalcNormalFromNormalMap(In.tangent, In.biNormal, In.normal, g_normalTexture.Sample(g_sampler, In.uv).xyz);
+
+    psOut.normal.w = g_specularTexture.Sample(g_sampler, In.uv).r; // スペキュラーマップをwに格納
+    // 法線を出力
+    psOut.normal = float4(((normal / 2.0f) + 0.5f), 1.0f);
+
+    // ワールド座標を出力
+    psOut.worldPos = In.worldPos;
+
+    return psOut;
 }

@@ -1,14 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="system">
       <UniqueIdentifier>{22dd8095-74f9-46df-81a1-36675a040b1f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="balloonEngineLow">
-      <UniqueIdentifier>{f97df0e8-0996-46f7-bac7-03719a2d878c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="balloonEngine">
-      <UniqueIdentifier>{c6af1bb1-fdb5-44f1-b26c-5a3b72256c86}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -18,18 +12,6 @@
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="BalloonEngineLow\Transform.cpp">
-      <Filter>balloonEngineLow</Filter>
-    </ClCompile>
-    <ClCompile Include="BalloonEngine\SpriteRender.cpp">
-      <Filter>balloonEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="balloonEngineLow\Light.cpp">
-      <Filter>balloonEngineLow</Filter>
-    </ClCompile>
-    <ClCompile Include="balloonEngine\ModelRender.cpp">
-      <Filter>balloonEngine</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -37,17 +19,5 @@
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="Game.h" />
-    <ClInclude Include="BalloonEngineLow\Transform.h">
-      <Filter>balloonEngineLow</Filter>
-    </ClInclude>
-    <ClInclude Include="BalloonEngine\SpriteRender.h">
-      <Filter>balloonEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="balloonEngineLow\Light.h">
-      <Filter>balloonEngineLow</Filter>
-    </ClInclude>
-    <ClInclude Include="balloonEngine\ModelRender.h">
-      <Filter>balloonEngine</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

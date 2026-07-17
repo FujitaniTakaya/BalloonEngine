@@ -11,6 +11,21 @@
     <ClCompile Include="graphics\Model.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\ModelRender.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\IRenderObject.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\Light.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\RenderingEngine.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="graphics\SpriteRender.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
     <ClCompile Include="graphics\NullTextureMaps.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
@@ -146,6 +161,12 @@
     <ClCompile Include="math\Vector.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="math\LightColor.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Transform.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
     <ClCompile Include="physics\SphereCollider.cpp">
       <Filter>physics</Filter>
     </ClCompile>
@@ -247,6 +268,21 @@
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\Model.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\ModelRender.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\IRenderObject.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\Light.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\RenderingEngine.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\SpriteRender.h">
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="graphics\NullTextureMaps.h">
@@ -403,6 +439,12 @@
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="math\Matrix.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\LightColor.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Transform.h">
       <Filter>math</Filter>
     </ClInclude>
     <ClInclude Include="physics\RigidBody.h">
