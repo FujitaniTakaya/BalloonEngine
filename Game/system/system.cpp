@@ -12,12 +12,7 @@ static K2EngineLow* g_k2EngineLow = nullptr;
 ///////////////////////////////////////////////////////////////////
 // Window message procedure.
 ///////////////////////////////////////////////////////////////////
-LRESULT CALLBACK MsgProc(
-    HWND hWnd,
-    UINT msg,
-    WPARAM wParam,
-    LPARAM lParam
-)
+LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
@@ -54,7 +49,7 @@ void InitWindow(
         NULL,
         NULL,
         appName,
-        NULL
+        NULL,
     };
     RegisterClassEx(&wc);
 
@@ -102,8 +97,8 @@ void InitGame(
 
     // Give the 3D camera a sensible default position so that anything you draw
     // later shows up on screen. Change this freely once you have your own camera.
-    g_camera3D->SetPosition({0.0f, 100.0f, -200.0f});
-    g_camera3D->SetTarget({0.0f, 50.0f, 0.0f});
+    g_camera3D->SetPosition({ 0.0f, 100.0f, -200.0f });
+    g_camera3D->SetTarget({ 0.0f, 50.0f, 0.0f });
 }
 
 // Destroy the low-level engine.
@@ -116,7 +111,7 @@ void FinalizeGame()
 // Pump window messages. Returns false when the game should quit.
 bool DispatchWindowMessage()
 {
-    MSG msg = {0};
+    MSG msg = { 0 };
     while (WM_QUIT != msg.message)
     {
         if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

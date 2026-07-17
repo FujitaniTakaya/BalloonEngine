@@ -9,11 +9,7 @@
 
 namespace balloonEngineLow
 {
-    Transform::Transform(
-        Vector3 position,
-        Quaternion rotation,
-        Vector3 scale
-    )
+    Transform::Transform(Vector3 position, Quaternion rotation, Vector3 scale)
         : m_position(position)
         , m_rotation(rotation)
         , m_scale(scale)
