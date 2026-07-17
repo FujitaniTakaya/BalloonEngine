@@ -15,7 +15,7 @@ namespace balloonEngine
     namespace
     {
         /** デフォルトのピボット */
-        const Vector2 DEFAULT_PIVOT = {0.5f, 0.5f};
+        const Vector2 DEFAULT_PIVOT = { 0.5f, 0.5f };
         /** ピボットの最小値 */
         constexpr float MIN_PIVOT = 0.0f;
         /** ピボットの最大値 */
@@ -44,20 +44,19 @@ namespace balloonEngine
         const char* fxFilePath
     )
     {
-        m_spriteInitData.m_ddsFilePath.at(FIRST_TEXTURE) = ddsFilePath;
-        m_spriteInitData.m_fxFilePath = fxFilePath;
-        m_spriteInitData.m_width = width;
-        m_spriteInitData.m_height = height;
+        SpriteInitData initData;
+        initData.m_ddsFilePath.at(FIRST_TEXTURE) = ddsFilePath;
+        initData.m_fxFilePath = fxFilePath;
+        initData.m_width = width;
+        initData.m_height = height;
 
-        m_sprite.Init(m_spriteInitData);
+        m_sprite.Init(initData);
     }
 
 
     void SpriteRender::Update()
     {
-        m_sprite.Update(
-            m_transform.m_position, m_transform.m_rotation, m_transform.m_scale, m_pivot
-        );
+        m_sprite.Update(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale, m_pivot);
         m_sprite.SetMulColor(m_mulColor);
     }
 
@@ -71,11 +70,7 @@ namespace balloonEngine
     //=======================================================================
     // トランスフォーム
     //=======================================================================
-    void SpriteRender::SetTRS(
-        const Vector3& position,
-        const Quaternion& rotation,
-        const Vector3& scale
-    )
+    void SpriteRender::SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale)
     {
         m_transform.m_position = position;
         m_transform.m_rotation = rotation;

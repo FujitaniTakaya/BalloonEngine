@@ -3,6 +3,7 @@
  * @brief スプライト描画クラスの宣言
  */
 #pragma once
+#include "IRenderObject.h"
 #include "balloonEngineLow/Transform.h"
 
 
@@ -11,11 +12,11 @@ namespace balloonEngine
     /**
      * @brief スプライト描画クラス
      */
-    class SpriteRender
+    class SpriteRender : public IRenderObject
     {
     public:
         SpriteRender();
-        ~SpriteRender();
+        ~SpriteRender() override;
 
 
     public:
@@ -56,11 +57,7 @@ namespace balloonEngine
          * @param rotation 回転角度
          * @param scale 拡大率
          */
-        void SetTRS(
-            const Vector3& position,
-            const Quaternion& rotation,
-            const Vector3& scale
-        );
+        void SetTRS(const Vector3& position, const Quaternion& rotation, const Vector3& scale);
         /**
          * @brief 座標・回転・拡大を設定
          * @param transform トランスフォーム
@@ -121,8 +118,6 @@ namespace balloonEngine
 
 
     private:
-        /** スプライトのイニットデータ */
-        SpriteInitData m_spriteInitData;
         /** スプライトデータ */
         Sprite m_sprite;
         /** トランスフォーム */
