@@ -2,7 +2,7 @@
  * @file Transform.cpp
  * @brief 変換情報を保持するクラスの実装
  */
-#include "stdafx.h"
+#include "k2EngineLowPreCompile.h"
 
 #include "Transform.h"
 

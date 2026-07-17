@@ -3,7 +3,7 @@
  * @brief ライト関連
  */
 #pragma once
-#include "LightColor.h"
+#include "math/LightColor.h"
 
 
 namespace balloonEngineLow

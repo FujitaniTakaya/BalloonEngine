@@ -2,7 +2,7 @@
  * @file SpriteRender.cpp
  * @brief スプライト描画クラスの実装
  */
-#include "stdafx.h"
+#include "k2EngineLowPreCompile.h"
 
 #include "SpriteRender.h"
 

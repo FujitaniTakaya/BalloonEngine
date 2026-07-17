@@ -2,12 +2,12 @@
  * @file ModelRender.cpp
  * @brief モデル描画クラスの実装
  */
-#include "stdafx.h"
+#include "k2EngineLowPreCompile.h"
 
 #include "ModelRender.h"
 
 #include "RenderingEngine.h"
-#include "balloonEngineLow/Light.h"
+#include "Light.h"
 
 
 namespace balloonEngine
