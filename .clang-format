@@ -10,7 +10,7 @@ BasedOnStyle: Microsoft
 MaxEmptyLinesToKeep: 4
 
 # 1行の最大文字数(これを超えると引数などが改行される)
-ColumnLimit: 100
+ColumnLimit: 110
 
 
 # ============================================
@@ -55,18 +55,23 @@ NamespaceIndentation: All
 # アクセス修飾子(private: / public: / protected:)をクラスの { と同じ位置に置く
 AccessModifierOffset: -4
 
+
 # ============================================
 # 関数の引数
 # ============================================
 
-# 1行に収まらない場合、引数(仮引数)を必ず1つずつ縦に並べる
-BinPackParameters: AlwaysOnePerLine
+# 引数を中途半端に詰めない(全部1行 or 1つずつ縦のどちらかにする)
+BinPackParameters: false
 
 # 関数呼び出し側の引数も、改行時は1行に詰め込まない
 BinPackArguments: false
 
 # 引数を縦に並べたとき、閉じカッコ ) を独立した行に置く
 AlignAfterOpenBracket: BlockIndent
+
+# 改行する場合、引数全体を2行目にまとめる形を禁止(1つずつ縦に揃える)
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 
 
 # ============================================
@@ -81,6 +86,12 @@ BreakConstructorInitializers: BeforeComma
 
 # 初期化リストのインデント幅(: や , の左に付くスペース)
 ConstructorInitializerIndentWidth: 4
+
+
+# ============================================
+# 配列・構造体の初期化リスト ( = { ... } )
+# ============================================
+Cpp11BracedListStyle: false
 
 
 # ============================================
