@@ -23,12 +23,16 @@ namespace nsK2EngineLow
         /**
          * @brief 初期化関数
          * @param tkmFilePath モデルアセットのファイルパス
+         * @param isReceiveShadow 影を受けるかどうか
+         * @param isCastShadow 影を落とすかどうか
          * @param upAxis モデルの上方向の軸
          * @param fxFilePath シェーダーアセットのファイルパス
          */
         void Init(
             const char* tkmFilePath,
-            EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisY,
+            const bool isReceiveShadow = false,
+            const bool isCastShadow = false,
+            EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisZ,
             const bool isDeferredRendering = false,
             const char* fxFilePath = "Assets/shader/model.fx"
         );
@@ -98,7 +102,15 @@ namespace nsK2EngineLow
     private:
         /** モデルデータ */
         Model m_model;
+        /** シャドウモデルデータ */
+        Model m_shadowModel;
         /** トランスフォーム */
         Transform m_transform;
+        /** 影を受けるかどうか */
+        bool m_isReceiveShadow;
+        /** 影を落とすかどうか */
+        bool m_isCastShadow;
+        /** デファードレンダリングするかどうか */
+        bool m_isDeferred;
     };
 } // namespace nsK2EngineLow

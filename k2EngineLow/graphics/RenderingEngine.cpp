@@ -30,13 +30,18 @@ namespace nsK2EngineLow
         constexpr UINT width = FRAME_BUFFER_W;
         constexpr UINT height = FRAME_BUFFER_H;
 
-        GetRenderTarget(RTType::Albedo)
-            .Create(width, height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-        GetRenderTarget(RTType::Normal)
-            .Create(width, height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-        GetRenderTarget(RTType::WorldPos)
-            .Create(width, height, 1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN);
 
+        //========================================================================
+        // デファードレンダリング用のレンダーターゲットを初期化
+        //========================================================================
+        GetRenderTarget(RTType::Albedo).Create(width, height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+        GetRenderTarget(RTType::Normal).Create(width, height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+        GetRenderTarget(RTType::WorldPos).Create(width, height, 1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN);
+
+
+        //========================================================================
+        // デファードレンダリング用のスプライトを初期化
+        //========================================================================
 
         SpriteInitData initData;
         initData.m_width = width;
@@ -52,13 +57,65 @@ namespace nsK2EngineLow
         initData.m_expandConstantBufferSize = sizeof(LightData);
 
         m_deferredRenderingSprite.Init(initData);
+
+
+        //========================================================================
+        // シャドウマップ用のレンダーターゲットを初期化
+        //========================================================================
+
+        float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        m_shadowMap.Create(2048, 2048, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT, clearColor);
+
+
+        //========================================================================
+        // ライトカメラを初期化
+        //========================================================================
+
+        m_lightCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
+        m_lightCamera.SetWidth(2000.0f);
+        m_lightCamera.SetHeight(2000.0f);
+        InitializeLightCamera();
     }
 
 
     void RenderingEngine::Execute()
     {
-        // m_rts と名前を手打ちで対応させると RTType 追加時に取りこぼす恐れがあるため、
-        // インデックスから機械的にポインタ配列を構築する
+        auto& rc = g_graphicsEngine->GetRenderContext();
+
+        //========================================================================
+        // シャドウマップを描画
+        //========================================================================
+        rc.WaitUntilToPossibleSetRenderTarget(m_shadowMap);
+        rc.SetRenderTargetAndViewport(m_shadowMap);
+        rc.ClearRenderTargetView(m_shadowMap);
+        for (auto* model : m_shadowCasters)
+        {
+            // NOTE: シャドウマップ用の描画はライトカメラを使う
+            model->Draw(rc, m_lightCamera);
+        }
+        m_shadowCasters.clear();
+
+        rc.WaitUntilFinishDrawingToRenderTarget(m_shadowMap);
+
+        g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
+
+        // NOTE: これを書かないとうまくいかなかった
+        rc.SetViewportAndScissor(g_graphicsEngine->GetFrameBufferViewport());
+
+
+        for (auto* object : m_rendering3dObjects)
+        {
+            object->Draw(rc);
+        }
+        m_rendering3dObjects.clear();
+
+        //========================================================================
+        // デファードレンダリング用のレンダーターゲットを描画
+        //========================================================================
+        if (m_deferredRendering3dObjects.empty())
+        {
+            return;
+        }
         std::array<RenderTarget*, static_cast<size_t>(RTType::Max)> rts;
         for (size_t i = 0; i < rts.size(); ++i)
         {
@@ -66,7 +123,6 @@ namespace nsK2EngineLow
         }
         const int numRt = static_cast<int>(rts.size());
 
-        auto& rc = g_graphicsEngine->GetRenderContext();
 
         // レンダーターゲットとして設定できるようになるまで待つ
         rc.WaitUntilToPossibleSetRenderTargets(numRt, rts.data());
@@ -76,9 +132,9 @@ namespace nsK2EngineLow
         rc.ClearRenderTargetViews(numRt, rts.data());
 
         // 遅延描画オブジェクトを描画
-        for (ModelRender* render3dObject : m_rendering3dObjects)
+        for (auto* object : m_deferredRendering3dObjects)
         {
-            render3dObject->GetModel().Draw(rc);
+            object->Draw(rc);
         }
 
         // レンダーターゲットヘの書き込み待ち
@@ -89,11 +145,11 @@ namespace nsK2EngineLow
         m_deferredRenderingSprite.Draw(rc);
 
         // 描画オブジェクトのリストをクリア
-        m_rendering3dObjects.clear();
+        m_deferredRendering3dObjects.clear();
     }
 
 
-    void RenderingEngine::Add3dObject(ModelRender* render3dObject)
+    void RenderingEngine::Add3dObject(Model* render3dObject)
     {
         /** 最大数を超えたら追加しない */
         if (m_rendering3dObjects.size() >= DRAW_OBUJECT_MAX)
@@ -102,5 +158,54 @@ namespace nsK2EngineLow
         }
 
         m_rendering3dObjects.push_back(render3dObject);
+    }
+
+    void RenderingEngine::AddDeferredRendering3dObject(Model* render3dObject)
+    {
+        m_deferredRendering3dObjects.push_back(render3dObject);
+    }
+
+
+    //=======================================================================
+    // シャドウマップ
+    //=======================================================================
+    void RenderingEngine::AddShadowCaster(Model* model)
+    {
+        m_shadowCasters.push_back(model);
+    }
+
+
+    Camera& RenderingEngine::GetLightCamera()
+    {
+        return m_lightCamera;
+    }
+
+
+    Texture& RenderingEngine::GetShadowMapTexture()
+    {
+        return m_shadowMap.GetRenderTargetTexture();
+    }
+
+
+    void RenderingEngine::InitializeLightCamera()
+    {
+        auto& light = nsK2EngineLow::SceneLight::Get();
+
+        const Vector3 lightPos = { 500.0f, 500.0f, 0.0f };
+        // light.SetLightColor(g_vec4Yellow);
+        Vector3 lightVec = (Vector3::Zero - lightPos);
+        lightVec.Normalize();
+        light.SetLightDir(lightVec);
+
+
+        auto lightDir = light.GetSceneLight().directionLight.lightDir;
+
+        m_lightCamera.SetPosition(lightDir * -1000.0f);
+        m_lightCamera.SetTarget(Vector3::Zero);
+        m_lightCamera.SetUp({ 1.0f, 0.0f, 0.0f });
+        m_lightCamera.Update();
+
+        // ライトカメラから見た位置への変換行列をシーンライトに設定
+        light.SetLightLVP(m_lightCamera.GetViewProjectionMatrix());
     }
 } // namespace nsK2EngineLow
