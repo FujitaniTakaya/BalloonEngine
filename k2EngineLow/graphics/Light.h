@@ -6,7 +6,7 @@
 #include "math/LightColor.h"
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     /**
      * @brief ディレクションライト
@@ -165,4 +165,4 @@ namespace balloonEngineLow
         ~SceneLight() = default;
     };
 
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow

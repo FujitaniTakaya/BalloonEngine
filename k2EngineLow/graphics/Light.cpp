@@ -3,7 +3,7 @@
 #include "Light.h"
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     DirectionLight::DirectionLight()
         : lightDir(
@@ -57,4 +57,4 @@ namespace balloonEngineLow
         // カメラの取得方法は自作エンジンの実装に合わせて置き換えること。
         m_sceneLight.eyePosition.Set(g_camera3D->GetPosition());
     }
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow

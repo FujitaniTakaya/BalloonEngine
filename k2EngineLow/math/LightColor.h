@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     /**
      * @brief ライトの色情報を保持するクラス(3次元ベクトル版)
@@ -86,4 +86,4 @@ namespace balloonEngineLow
         /** 4次元ライトの色 */
         ColorVec4 m_colorVec4;
     };
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow

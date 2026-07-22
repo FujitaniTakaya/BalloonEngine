@@ -10,7 +10,7 @@
 #include "Light.h"
 
 
-namespace balloonEngine
+namespace nsK2EngineLow
 {
     ModelRender::ModelRender()
     {}
@@ -40,8 +40,8 @@ namespace balloonEngine
             modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
         }
 
-        modelInitData.m_expandConstantBuffer = balloonEngineLow::SceneLight::Get().GetAddress();
-        modelInitData.m_expandConstantBufferSize = sizeof(balloonEngineLow::LightData);
+        modelInitData.m_expandConstantBuffer = SceneLight::Get().GetAddress();
+        modelInitData.m_expandConstantBufferSize = sizeof(LightData);
 
         m_model.Init(modelInitData);
     }
@@ -71,7 +71,7 @@ namespace balloonEngine
     }
 
 
-    void ModelRender::SetTRS(const balloonEngineLow::Transform& transform)
+    void ModelRender::SetTRS(const Transform& transform)
     {
         m_transform = transform;
     }
@@ -95,7 +95,7 @@ namespace balloonEngine
     }
 
 
-    const balloonEngineLow::Transform& ModelRender::GetTransform() const
+    const Transform& ModelRender::GetTransform() const
     {
         return m_transform;
     }
@@ -105,4 +105,4 @@ namespace balloonEngine
     {
         return const_cast<Model&>(m_model);
     }
-} // namespace balloonEngine
+} // namespace nsK2EngineLow

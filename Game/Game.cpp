@@ -16,7 +16,7 @@ bool Game::Start()
     const Vector3 modelPos = m_modelRender.GetTransform().m_position;
     const Vector3 lightPos = modelPos + Vector3(100.0f, 100.0f, -100.0f);
 
-    auto& light = balloonEngineLow::SceneLight::Get();
+    auto& light = nsK2EngineLow::SceneLight::Get();
     light.Update();
 
     // light.SetLightColor(g_vec4Yellow);

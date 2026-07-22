@@ -6,18 +6,27 @@
 
 #include "RenderingEngine.h"
 
-#include "ModelRender.h"
 #include "Light.h"
+#include "ModelRender.h"
 
 
-namespace balloonEngine
+namespace nsK2EngineLow
 {
+    namespace
+    {
+        /** 描画するオブジェクトの最大数 */
+        inline constexpr UINT DRAW_OBUJECT_MAX = 1000;
+    } // namespace
+
+
     RenderingEngine::RenderingEngine()
     {}
 
 
-    void RenderingEngine::InitializeDeferredRendering()
+    void RenderingEngine::Initialize()
     {
+        m_rendering3dObjects.reserve(DRAW_OBUJECT_MAX);
+
         constexpr UINT width = FRAME_BUFFER_W;
         constexpr UINT height = FRAME_BUFFER_H;
 
@@ -38,22 +47,22 @@ namespace balloonEngine
         initData.m_textures[1] = &GetRenderTarget(RTType::Normal).GetRenderTargetTexture();
         initData.m_textures[2] = &GetRenderTarget(RTType::WorldPos).GetRenderTargetTexture();
 
-        auto& light = balloonEngineLow::SceneLight::Get();
+        auto& light = SceneLight::Get();
         initData.m_expandConstantBuffer = light.GetAddress();
-        initData.m_expandConstantBufferSize = sizeof(balloonEngineLow::LightData);
+        initData.m_expandConstantBufferSize = sizeof(LightData);
 
         m_deferredRenderingSprite.Init(initData);
     }
 
 
-    void RenderingEngine::RenderDeferredRendering()
+    void RenderingEngine::Execute()
     {
         // m_rts と名前を手打ちで対応させると RTType 追加時に取りこぼす恐れがあるため、
         // インデックスから機械的にポインタ配列を構築する
         std::array<RenderTarget*, static_cast<size_t>(RTType::Max)> rts;
         for (size_t i = 0; i < rts.size(); ++i)
         {
-            rts[i] = &m_rts[i];
+            rts.at(i) = &m_rts.at(i);
         }
         const int numRt = static_cast<int>(rts.size());
 
@@ -67,7 +76,7 @@ namespace balloonEngine
         rc.ClearRenderTargetViews(numRt, rts.data());
 
         // 遅延描画オブジェクトを描画
-        for (ModelRender* render3dObject : m_deferredRendering3dObjectList)
+        for (ModelRender* render3dObject : m_rendering3dObjects)
         {
             render3dObject->GetModel().Draw(rc);
         }
@@ -79,13 +88,19 @@ namespace balloonEngine
         // 遅延描画用スプライトを描画
         m_deferredRenderingSprite.Draw(rc);
 
-        // 遅延描画オブジェクトのリストをクリア
-        m_deferredRendering3dObjectList.clear();
+        // 描画オブジェクトのリストをクリア
+        m_rendering3dObjects.clear();
     }
 
 
     void RenderingEngine::Add3dObject(ModelRender* render3dObject)
     {
-        m_deferredRendering3dObjectList.push_back(render3dObject);
+        /** 最大数を超えたら追加しない */
+        if (m_rendering3dObjects.size() >= DRAW_OBUJECT_MAX)
+        {
+            return;
+        }
+
+        m_rendering3dObjects.push_back(render3dObject);
     }
-} // namespace balloonEngine
+} // namespace nsK2EngineLow

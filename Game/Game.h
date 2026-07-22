@@ -17,5 +17,5 @@ public:
     void Render(RenderContext& rc) override;
 
 private:
-    balloonEngine::ModelRender m_modelRender;
+    ModelRender m_modelRender;
 };

@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace balloonEngine
+namespace nsK2EngineLow
 {
     /** 前方宣言 */
     class ModelRender;
@@ -44,9 +44,9 @@ namespace balloonEngine
         //=======================================================================
     public:
         /** @brief 初期化関数 */
-        void InitializeDeferredRendering();
+        void Initialize();
         /** @brief 遅延描画関数 */
-        void RenderDeferredRendering();
+        void Execute();
         /**
          * @brief 遅延描画オブジェクトを追加する。
          * @param render3dObject 遅延描画オブジェクト
@@ -67,8 +67,8 @@ namespace balloonEngine
 
 
     private:
-        /** 遅延描画オブジェクトのリスト */
-        std::vector<ModelRender*> m_deferredRendering3dObjectList;
+        /** 描画オブジェクトのリスト */
+        std::vector<ModelRender*> m_rendering3dObjects;
         /** 遅延描画用スプライト */
         Sprite m_deferredRenderingSprite;
         /** 遅延描画用レンダーターゲット */
@@ -90,4 +90,4 @@ namespace balloonEngine
             return instance;
         }
     };
-} // namespace balloonEngine
+} // namespace nsK2EngineLow

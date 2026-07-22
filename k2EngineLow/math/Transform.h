@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     /**
      * @brief 変換情報を保持するクラス
@@ -29,4 +29,4 @@ namespace balloonEngineLow
         /**	拡大 */
         Vector3 m_scale;
     };
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow

@@ -7,7 +7,7 @@
 #include "math/Transform.h"
 
 
-namespace balloonEngine
+namespace nsK2EngineLow
 {
     /**
      * @brief スプライト描画クラス
@@ -62,7 +62,7 @@ namespace balloonEngine
          * @brief 座標・回転・拡大を設定
          * @param transform トランスフォーム
          */
-        void SetTRS(const balloonEngineLow::Transform& transform);
+        void SetTRS(const Transform& transform);
         /**
          * @brief 座標を設定
          * @param position 座標
@@ -82,7 +82,7 @@ namespace balloonEngine
          * @brief トランスフォームを取得
          * @return トランスフォーム
          */
-        const balloonEngineLow::Transform& GetTransform() const;
+        const Transform& GetTransform() const;
 
 
         //=======================================================================
@@ -121,10 +121,10 @@ namespace balloonEngine
         /** スプライトデータ */
         Sprite m_sprite;
         /** トランスフォーム */
-        balloonEngineLow::Transform m_transform;
+        Transform m_transform;
         /** 乗算色 */
         Vector4 m_mulColor;
         /** 基点 */
         Vector2 m_pivot;
     };
-} // namespace balloonEngine
+} // namespace nsK2EngineLow

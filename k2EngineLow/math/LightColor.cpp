@@ -7,7 +7,7 @@
 #include "LightColor.h"
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     // 静的メンバの実体定義
     const ColorVec3 LightColor::White = { 1.0f, 1.0f, 1.0f };
@@ -25,4 +25,4 @@ namespace balloonEngineLow
         : m_colorVec3(White)
         , m_colorVec4(g_vec4White)
     {}
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow
