@@ -10,7 +10,7 @@ BasedOnStyle: Microsoft
 MaxEmptyLinesToKeep: 4
 
 # 1行の最大文字数(これを超えると引数などが改行される)
-ColumnLimit: 110
+ColumnLimit: 0
 
 
 # ============================================
