@@ -61,6 +61,7 @@ struct SPSOut
 Texture2D<float4> g_albedoTexture : register(t0);
 Texture2D<float4> g_normalTexture : register(t1);
 Texture2D<float4> g_specularTexture : register(t2);
+Texture2D<float4> g_shadowMap : register(t10);
 sampler g_sampler : register(s0);
 
 ////////////////////////////////////////////////
@@ -135,6 +136,25 @@ float4 PSMain(SPSIn In) : SV_Target0
     // 品質重視のもの
     // const float3 finalColor = albedoColor.xyz * refLight + ambientLight.lightColor.xyz;
     // albedoColor.xyz = finalColor;
+
+
+
+
+    // ライトカメラから見た位置へ変換
+    float4 posInLVP = mul(mLVP, float4(In.worldPos, 1.0f));
+    float2 shadowMapUV = posInLVP.xy / posInLVP.w;
+
+    shadowMapUV *= float2(0.5f, -0.5f);
+    shadowMapUV += 0.5f;
+
+    if (shadowMapUV.x > 0.0f && shadowMapUV.x < 1.0f
+     && shadowMapUV.y > 0.0f && shadowMapUV.y < 1.0f
+     )
+     {
+        float3 shadow = g_shadowMap.Sample(g_sampler, shadowMapUV).xyz;
+        albedoColor.xyz *= shadow;
+     }
+
 
     return albedoColor;
 }

@@ -6,7 +6,7 @@
 #include "math/LightColor.h"
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     /**
      * @brief ディレクションライト
@@ -64,6 +64,8 @@ namespace balloonEngineLow
         Vector3 eyePosition;
         /** パディング */
         float pad;
+        /** ライトカメラから見た位置への変換行列 */
+        Matrix LVP;
 
 
         LightData();
@@ -102,43 +104,34 @@ namespace balloonEngineLow
          * @brief ライトの方向を設定
          * @param lightDir ライトの方向
          */
-        inline void SetLightDir(const Vector3& lightDir)
-        {
-            m_sceneLight.directionLight.lightDir.Set(lightDir);
-        }
+        void SetLightDir(const Vector3& lightDir);
         /**
          * @brief ライトの色を設定
          * @param lightColor ライトの色
          */
-        inline void SetLightColor(const Vector4& lightColor)
-        {
-            m_sceneLight.directionLight.lightColor.m_colorVec3.Set(lightColor);
-        }
+        void SetLightColor(const Vector4& lightColor);
         /**
          * @brief アンビエントカラーを設定
          * @param ambientColor アンビエントカラー
          */
-        inline void SetAmbientColor(const Vector4& lightColor)
-        {
-            m_sceneLight.ambientLight.lightColor.m_colorVec3.Set(lightColor);
-        }
+        void SetAmbientColor(const Vector4& lightColor);
         /**
          * @brief シーンライトを取得(読み取り用)
          * @return シーンライト
          */
-        inline const LightData& GetSceneLight() const
-        {
-            return m_sceneLight;
-        }
+        const LightData& GetSceneLight() const;
         /**
          * @brief シーンライトのアドレスを取得(定数バッファー登録用)
          * @note  ModelRender::Init から m_expandConstantBuffer に渡すために使う。
          * @return シーンライトのアドレス
          */
-        inline LightData* GetAddress()
-        {
-            return &m_sceneLight;
-        }
+        LightData* GetAddress();
+        /**
+         * @brief ライトカメラから見た位置への変換行列を設定
+         * @param lvp ライトカメラから見た位置への変換行列
+         */
+        void SetLightLVP(const Matrix& lvp);
+
 
 
     private:
@@ -165,4 +158,4 @@ namespace balloonEngineLow
         ~SceneLight() = default;
     };
 
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow

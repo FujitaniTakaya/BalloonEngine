@@ -5,7 +5,7 @@
 #pragma once
 
 
-namespace balloonEngine
+namespace nsK2EngineLow
 {
     /**
      * @brief 描画オブジェクトインターフェースクラス

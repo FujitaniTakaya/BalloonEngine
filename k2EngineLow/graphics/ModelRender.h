@@ -7,7 +7,7 @@
 #include "math/Transform.h"
 
 
-namespace balloonEngine
+namespace nsK2EngineLow
 {
     /**
      * @brief モデル描画クラス
@@ -23,12 +23,16 @@ namespace balloonEngine
         /**
          * @brief 初期化関数
          * @param tkmFilePath モデルアセットのファイルパス
+         * @param isReceiveShadow 影を受けるかどうか
+         * @param isCastShadow 影を落とすかどうか
          * @param upAxis モデルの上方向の軸
          * @param fxFilePath シェーダーアセットのファイルパス
          */
         void Init(
             const char* tkmFilePath,
-            EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisY,
+            const bool isReceiveShadow = false,
+            const bool isCastShadow = false,
+            EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisZ,
             const bool isDeferredRendering = false,
             const char* fxFilePath = "Assets/shader/model.fx"
         );
@@ -61,7 +65,7 @@ namespace balloonEngine
          * @brief 座標・回転・拡大を設定
          * @param transform トランスフォーム
          */
-        void SetTRS(const balloonEngineLow::Transform& transform);
+        void SetTRS(const Transform& transform);
         /**
          * @brief 座標を設定
          * @param position 座標
@@ -81,7 +85,7 @@ namespace balloonEngine
          * @brief トランスフォームを取得
          * @return トランスフォーム
          */
-        const balloonEngineLow::Transform& GetTransform() const;
+        const Transform& GetTransform() const;
 
 
         //=======================================================================
@@ -98,7 +102,15 @@ namespace balloonEngine
     private:
         /** モデルデータ */
         Model m_model;
+        /** シャドウモデルデータ */
+        Model m_shadowModel;
         /** トランスフォーム */
-        balloonEngineLow::Transform m_transform;
+        Transform m_transform;
+        /** 影を受けるかどうか */
+        bool m_isReceiveShadow;
+        /** 影を落とすかどうか */
+        bool m_isCastShadow;
+        /** デファードレンダリングするかどうか */
+        bool m_isDeferred;
     };
-} // namespace balloonEngine
+} // namespace nsK2EngineLow

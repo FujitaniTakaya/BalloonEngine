@@ -35,7 +35,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     // Create the Game object.
     NewGO<Game>(0, "game");
 
-    balloonEngine::RenderingEngine::Get().InitializeDeferredRendering();
+    RenderingEngine::Get().Initialize();
 
     //////////////////////////////////////
     // End of start-up code.
@@ -54,7 +54,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         g_engine->BeginFrame();    // Begin the frame: clear the screen, update input, etc.
         g_engine->ExecuteUpdate(); // Update all game objects (IGameObject::Update).
         g_engine->ExecuteRender(); // Render all game objects (IGameObject::Render).
-        balloonEngine::RenderingEngine::Get().RenderDeferredRendering();
+        RenderingEngine::Get().Execute();
         g_engine->EndFrame(); // End the frame: present the back buffer.
     }
 

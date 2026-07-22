@@ -3,7 +3,7 @@
 #include "Light.h"
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     DirectionLight::DirectionLight()
         : lightDir(
@@ -43,6 +43,7 @@ namespace balloonEngineLow
         , ambientLight()
         , eyePosition(g_vec3Zero)
         , pad(0.0f)
+        , LVP(Matrix::Identity)
     {}
 
 
@@ -57,4 +58,45 @@ namespace balloonEngineLow
         // カメラの取得方法は自作エンジンの実装に合わせて置き換えること。
         m_sceneLight.eyePosition.Set(g_camera3D->GetPosition());
     }
-} // namespace balloonEngineLow
+
+
+
+
+    /***************************************/
+
+
+    void SceneLight::SetLightDir(const Vector3& lightDir)
+    {
+        m_sceneLight.directionLight.lightDir.Set(lightDir);
+    }
+
+
+    void SceneLight::SetLightColor(const Vector4& lightColor)
+    {
+        m_sceneLight.directionLight.lightColor.m_colorVec3.Set(lightColor);
+    }
+
+
+    void SceneLight::SetAmbientColor(const Vector4& lightColor)
+    {
+        m_sceneLight.ambientLight.lightColor.m_colorVec3.Set(lightColor);
+    }
+
+
+    const LightData& SceneLight::GetSceneLight() const
+    {
+        return m_sceneLight;
+    }
+
+
+    LightData* SceneLight::GetAddress()
+    {
+        return &m_sceneLight;
+    }
+
+
+    void SceneLight::SetLightLVP(const Matrix& lvp)
+    {
+        m_sceneLight.LVP = lvp;
+    }
+} // namespace nsK2EngineLow

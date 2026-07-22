@@ -7,7 +7,7 @@
 #include "Transform.h"
 
 
-namespace balloonEngineLow
+namespace nsK2EngineLow
 {
     Transform::Transform(Vector3 position, Quaternion rotation, Vector3 scale)
         : m_position(position)
@@ -18,4 +18,4 @@ namespace balloonEngineLow
 
     Transform::~Transform()
     {}
-} // namespace balloonEngineLow
+} // namespace nsK2EngineLow

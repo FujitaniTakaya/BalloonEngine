@@ -32,6 +32,7 @@ cbuffer LightCb : register(b1)
     AmbientLight ambientLight;
     float3 eyePos;
     float pad2;
+    float4x4 mLVP;
 };
 
 ////////////////////////////////////////////////
