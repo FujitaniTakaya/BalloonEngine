@@ -25,8 +25,8 @@ IncludeBlocks: Regroup
 
 # インクルードの分類ルール(Priorityが小さい順に上から並ぶ)
 IncludeCategories:
-  # stdafx.h は必ず先頭
-  - Regex: '^"stdafx\.h"'
+  # プリコンパイル済みヘッダは必ず先頭
+  - Regex: '^"(stdafx|k2EngineLowPreCompile)\.h"'
     Priority: -1
   # <vector> のような標準ヘッダー
   - Regex: '^<[a-z_]+>'
