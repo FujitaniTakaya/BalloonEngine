@@ -32,6 +32,7 @@ struct SPSIn
     float3 biNormal : BINORMAL;     // World-space binormal  (for normal mapping later).
     float2 uv       : TEXCOORD0;    // UV.
     float3 worldPos : TEXCOORD1;    // World-space position  (for specular later).
+    float4 posInLVP : TEXCOORD2;    // Light View Projection space position.
 };
 
 
@@ -151,8 +152,20 @@ float4 PSMain(SPSIn In) : SV_Target0
      && shadowMapUV.y > 0.0f && shadowMapUV.y < 1.0f
      )
      {
-        float3 shadow = g_shadowMap.Sample(g_sampler, shadowMapUV).xyz;
-        albedoColor.xyz *= shadow;
+        // 投影シャドウ
+        // float3 shadow = g_shadowMap.Sample(g_sampler, shadowMapUV).xyz;
+        // albedoColor.xyz *= shadow;
+
+
+        // デプスシャドウ
+        float zInLVP = posInLVP.z / posInLVP.w;
+        float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV).r;
+
+        if (zInLVP > zInShadowMap + 0.001f)
+        {
+            // 自分より手前にないかある
+            albedoColor.xyz *= 0.5f;
+        }
      }
 
 

@@ -64,7 +64,7 @@ namespace nsK2EngineLow
         //========================================================================
 
         float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-        m_shadowMap.Create(2048, 2048, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT, clearColor);
+        m_shadowMap.Create(1024, 1024, 1, 1, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_D32_FLOAT, clearColor);
 
 
         //========================================================================
