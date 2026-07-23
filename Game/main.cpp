@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include <InitGUID.h>
 #include <dxgidebug.h>
+#include <InitGUID.h>
 
 #include "Game.h"
 #include "system/system.h"
@@ -33,7 +33,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     //////////////////////////////////////
 
     // Create the Game object.
-    NewGO<Game>(0, "game");
+    NewGO<app::Game>(0, "game");
 
     RenderingEngine::Get().Initialize();
 
