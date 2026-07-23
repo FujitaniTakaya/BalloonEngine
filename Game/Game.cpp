@@ -39,6 +39,8 @@ namespace app
         m_gameCamera->SetTargetPosition(modelPos);
         m_gameCamera->Start();
 
+        SceneLight::Get().SetAmbientColor({ 0.5f, 0.5f, 0.5f, 1.0f });
+
         return true;
     }
 
