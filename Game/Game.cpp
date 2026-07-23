@@ -2,45 +2,65 @@
 
 #include "Game.h"
 
+#include "Camera/GameCamera.h"
 
-bool Game::Start()
+
+namespace app
 {
-    // Load resources and set up your objects here (called once).
+    Game::Game()
+    {}
 
 
-    m_modelRender.Init("Assets/modelData/unityChan.tkm", false, true);
-    Quaternion rot;
-    rot.SetRotationDegY(180.0f);
-    m_modelRender.SetRotation(rot);
-
-    const Vector3 modelPos = m_modelRender.GetTransform().m_position;
-    const Vector3 lightPos = modelPos + Vector3(100.0f, 100.0f, -100.0f);
+    Game::~Game()
+    {}
 
 
-    m_bgModelRender.Init("Assets/modelData/ground.tkm", true, false);
-    m_bgModelRender.Update();
-
-    return true;
-}
+    bool Game::Start()
+    {
+        // Load resources and set up your objects here (called once).
 
 
-void Game::Update()
-{
-    // Per-frame logic goes here.
+        m_modelRender.Init("Assets/modelData/unityChan.tkm", false, true);
+        Quaternion rot;
+        rot.SetRotationDegY(180.0f);
+        m_modelRender.SetRotation(rot);
 
-    Quaternion rot = m_modelRender.GetTransform().m_rotation;
-
-    rot.AddRotationDegY(0.1);
-    m_modelRender.SetRotation(rot);
-    m_modelRender.Update();
-}
+        const Vector3 modelPos = m_modelRender.GetTransform().m_position;
+        const Vector3 lightPos = modelPos + Vector3(100.0f, 100.0f, -100.0f);
 
 
-void Game::Render(RenderContext& rc)
-{
-    // Your drawing code goes here.
-    // K2EngineLow already cleared the screen to gray before this is called.
+        m_bgModelRender.Init("Assets/modelData/ground.tkm", true, false);
+        m_bgModelRender.Update();
 
-    m_modelRender.Draw(rc);
-    m_bgModelRender.Draw(rc);
-}
+        m_gameCamera = std::make_unique<camera::GameCamera>();
+        m_gameCamera->SetTargetPosition(modelPos);
+        m_gameCamera->Start();
+
+        return true;
+    }
+
+
+    void Game::Update()
+    {
+        // Per-frame logic goes here.
+
+        Quaternion rot = m_modelRender.GetTransform().m_rotation;
+
+        rot.AddRotationDegY(0.1);
+        m_modelRender.SetRotation(rot);
+        m_modelRender.Update();
+
+        m_gameCamera->SetTargetPosition(m_modelRender.GetTransform().m_position);
+        m_gameCamera->Update();
+    }
+
+
+    void Game::Render(RenderContext& rc)
+    {
+        // Your drawing code goes here.
+        // K2EngineLow already cleared the screen to gray before this is called.
+
+        m_modelRender.Draw(rc);
+        m_bgModelRender.Draw(rc);
+    }
+} // namespace app
