@@ -64,6 +64,7 @@ Texture2D<float4> g_normalTexture : register(t1);
 Texture2D<float4> g_specularTexture : register(t2);
 Texture2D<float4> g_shadowMap : register(t10);
 sampler g_sampler : register(s0);
+SamplerComparisonState g_shadowMapSampler : register(s1);
 
 ////////////////////////////////////////////////
 // Vertex shader core (called by the VSMain* entry points in ModelVSCommon.h).
@@ -130,17 +131,6 @@ float4 PSMain(SPSIn In) : SV_Target0
     // 反射光を合成
     const float3 refLight = diffuse + specular;
 
-    // 教材通りのもの
-    const float3 ligColor = ambientLight.lightColor.xyz + refLight;
-    albedoColor.xyz *= ligColor;
-
-    // 品質重視のもの
-    // const float3 finalColor = albedoColor.xyz * refLight + ambientLight.lightColor.xyz;
-    // albedoColor.xyz = finalColor;
-
-
-
-
     // ライトカメラから見た位置へ変換
     float4 posInLVP = mul(mLVP, float4(In.worldPos, 1.0f));
     float2 shadowMapUV = posInLVP.xy / posInLVP.w;
@@ -148,25 +138,26 @@ float4 PSMain(SPSIn In) : SV_Target0
     shadowMapUV *= float2(0.5f, -0.5f);
     shadowMapUV += 0.5f;
 
+    // 影(0=影なし、1=影)。アンビエントには掛けず、直接光(refLight)だけを減衰させる。
+    float shadow = 0.0f;
+
     if (shadowMapUV.x > 0.0f && shadowMapUV.x < 1.0f
      && shadowMapUV.y > 0.0f && shadowMapUV.y < 1.0f
      )
      {
-        // 投影シャドウ
-        // float3 shadow = g_shadowMap.Sample(g_sampler, shadowMapUV).xyz;
-        // albedoColor.xyz *= shadow;
-
-
-        // デプスシャドウ
         float zInLVP = posInLVP.z / posInLVP.w;
-        float zInShadowMap = g_shadowMap.Sample(g_sampler, shadowMapUV).r;
 
-        if (zInLVP > zInShadowMap + 0.001f)
-        {
-            // 自分より手前にないかある
-            albedoColor.xyz *= 0.5f;
-        }
+        // PCF
+        // 傾斜依存バイアス(これを使わないと、モデルに模様が出る)
+        float bias = max(0.005f * (1.0f - dot(N, -L)), 0.0001f);
+
+        shadow = g_shadowMap.SampleCmpLevelZero(
+        g_shadowMapSampler, shadowMapUV, zInLVP - bias);
      }
+
+    // アンビエントは影の影響を受けない。直接光だけを影で減衰させる。
+    const float3 ligColor = ambientLight.lightColor.xyz + refLight * (1.0f - shadow);
+    albedoColor.xyz *= ligColor;
 
 
     return albedoColor;
