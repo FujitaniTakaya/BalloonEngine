@@ -19,20 +19,30 @@ namespace app
     {
         // Load resources and set up your objects here (called once).
 
+        m_animationClips[0].Load("Assets/animData/idle.tka");
+        m_animationClips[0].SetLoopFlag(true);
+        m_animationClips[1].Load("Assets/animData/run.tka");
+        m_animationClips[1].SetLoopFlag(true);
 
-        m_modelRender.Init("Assets/modelData/unityChan.tkm", true, true);
+
+        m_modelRender.Init(
+            "Assets/modelData/unityChan.tkm",
+            m_animationClips,
+            2,
+            EnModelUpAxis::enModelUpAxisY,
+            true,
+            true
+        );
         Quaternion rot;
         rot.SetRotationDegY(180.0f);
         m_modelRender.SetRotation(rot);
 
+        m_modelRender.PlayAnimation(1);
+
         const Vector3 modelPos = m_modelRender.GetTransform().m_position;
 
-        m_modelRender2.Init("Assets/modelData/unityChan.tkm", true, true);
-        m_modelRender2.SetRotation(rot);
-        m_modelRender2.SetPosition(modelPos + Vector3(50.0f, 0.0f, 0.0f));
-        m_modelRender2.Update();
 
-        m_bgModelRender.Init("Assets/modelData/ground.tkm", true, false);
+        m_bgModelRender.Init("Assets/modelData/ground.tkm", nullptr, 0, EnModelUpAxis::enModelUpAxisZ, true, false);
         m_bgModelRender.Update();
 
         m_gameCamera = std::make_unique<camera::GameCamera>();
@@ -66,7 +76,6 @@ namespace app
         // K2EngineLow already cleared the screen to gray before this is called.
 
         m_modelRender.Draw(rc);
-        m_modelRender2.Draw(rc);
         m_bgModelRender.Draw(rc);
     }
 } // namespace app
