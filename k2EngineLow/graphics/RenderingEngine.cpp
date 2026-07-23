@@ -72,8 +72,10 @@ namespace nsK2EngineLow
         //========================================================================
 
         m_lightCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
-        m_lightCamera.SetWidth(2000.0f);
-        m_lightCamera.SetHeight(2000.0f);
+        // NOTE: シーン内のキャラクター(数百単位)に対して大きすぎると、シャドウマップ上で
+        //       キャラクターが小さく・低解像度にしか映らなくなるため、スケールに合わせている。
+        m_lightCamera.SetWidth(500.0f);
+        m_lightCamera.SetHeight(500.0f);
         InitializeLightCamera();
     }
 
@@ -200,7 +202,10 @@ namespace nsK2EngineLow
 
         auto lightDir = light.GetSceneLight().directionLight.lightDir;
 
-        m_lightCamera.SetPosition(lightDir * -1000.0f);
+        // NOTE: ターゲットからの距離が近すぎると、キャラクターの上半身などが
+        //       ニアクリップ面より手前(カメラの後ろ側)に入ってしまい、影が途中で欠けてしまう。
+        //       キャラクターのバウンディングサイズより十分離す。
+        m_lightCamera.SetPosition(lightDir * -500.0f);
         m_lightCamera.SetTarget(Vector3::Zero);
         m_lightCamera.SetUp({ 1.0f, 0.0f, 0.0f });
         m_lightCamera.Update();
