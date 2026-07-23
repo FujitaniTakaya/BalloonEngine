@@ -30,9 +30,11 @@ namespace nsK2EngineLow
          */
         void Init(
             const char* tkmFilePath,
+            AnimationClip* animationClips = nullptr,
+            const uint8_t animationClipNum = 0,
+            const EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisZ,
             const bool isReceiveShadow = false,
             const bool isCastShadow = false,
-            EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisZ,
             const bool isDeferredRendering = false,
             const char* fxFilePath = "Assets/shader/model.fx"
         );
@@ -99,17 +101,71 @@ namespace nsK2EngineLow
         Model& GetModel() const;
 
 
+        //=======================================================================
+        // アニメーション
+        //=======================================================================
+    public:
+        /**
+         * @brief アニメーションを再生する
+         * @param clipIndex 再生するアニメーションクリップのインデックス
+         * @param interpolateTime インターポレーション時間
+         */
+        void PlayAnimation(const uint8_t clipIndex, const float interpolateTime = 0.0f);
+
+
+        /**
+         * @brief アニメーション再生速度を設定する
+         * @param speed 再生速度
+         */
+        void SetAnimationSpeed(const float speed);
+
+
+        //=======================================================================
+        // ヘルパー
+        //=======================================================================
     private:
+        /**
+         * @brief スケルトンを初期化する
+         * @param tkmFilePath モデルアセットのファイルパス
+         * @param animationClips アニメーションクリップの配列
+         * @param animationClipNum アニメーションクリップの数
+         */
+        void InitSkeleton(const char* tkmFilePath, AnimationClip* animationClips, const uint8_t animationClipNum);
+
+
+        /**
+         * @brief シャドウを初期化する
+         * @param tkmFilePath モデルアセットのファイルパス
+         * @param modelInitData モデル初期化データ
+         */
+        void InitShadow(const char* tkmFilePath, ModelInitData& modelInitData);
+
+
+    private:
+        /** モデルのボーン */
+        Skeleton m_skeleton;
+        /** アニメーション */
+        Animation m_animation;
+        /** アニメーション再生速度 */
+        float m_animationSpeed;
+        /** アニメーションを渡されたか */
+        bool m_isAnimated;
+
+
         /** モデルデータ */
         Model m_model;
         /** シャドウモデルデータ */
         Model m_shadowModel;
         /** トランスフォーム */
         Transform m_transform;
+
+
         /** 影を受けるかどうか */
         bool m_isReceiveShadow;
         /** 影を落とすかどうか */
         bool m_isCastShadow;
+
+
         /** デファードレンダリングするかどうか */
         bool m_isDeferred;
     };
