@@ -294,6 +294,9 @@ paket-files/
 # CodeRush
 .cr/
 
+# Game/tools/sync_vcxproj.py が使うローカルキャッシュ(マシンごとの状態なのでコミットしない)
+Game/tools/.vcxproj_sync_manifest.json
+
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
