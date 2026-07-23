@@ -1,23 +1,9 @@
 #include "color.hlsli"
 
 
-// モデル用の定数バッファー
-cbuffer ModelCb : register(b0)
-{
-    float4x4 mWorld;
-    float4x4 mView;
-    float4x4 mProj;
-};
-
 ////////////////////////////////////////////////
 // 構造体
 ////////////////////////////////////////////////
-
-// 頂点シェーダーへの入力
-struct SVSIn
-{
-    float4 pos : POSITION;          //頂点座標。
-};
 
 
 // 頂点シェーダーへの入力
@@ -28,7 +14,7 @@ struct SPSIn
 };
 
 
-
+#include "ModelVSCommon.hlsli"
 
 
 /**
@@ -36,11 +22,11 @@ struct SPSIn
  * @param vsIn 頂点シェーダーへの入力
  * @return ピクセルシェーダーへの出力
  */
-SPSIn VSMain(SVSIn vsIn)
+SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputedVertexBuffer)
 {
     // mul()は、第一引数に行列を入れる。でないと、行列の転置が必要になるので注意。
     SPSIn psIn;
-    psIn.pos = mul(mWorld, vsIn.pos);
+    psIn.pos = mul(mWorldLocal, vsIn.pos);
     psIn.pos = mul(mView, psIn.pos);
     psIn.pos = mul(mProj, psIn.pos);
     psIn.posInLVP = psIn.pos;

@@ -28,10 +28,12 @@ namespace app
 
     private:
         ModelRender m_modelRender;
-        ModelRender m_modelRender2;
         ModelRender m_bgModelRender;
 
         /** ゲームカメラ */
         std::unique_ptr<camera::GameCamera> m_gameCamera;
+
+
+        AnimationClip m_animationClips[2];
     };
 } // namespace app
