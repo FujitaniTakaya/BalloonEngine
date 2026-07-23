@@ -28,6 +28,7 @@ namespace app
 
     private:
         ModelRender m_modelRender;
+        ModelRender m_modelRender2;
         ModelRender m_bgModelRender;
 
         /** ゲームカメラ */

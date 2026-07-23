@@ -1,32 +1,49 @@
 #include "color.hlsli"
 
 
+// モデル用の定数バッファー
+cbuffer ModelCb : register(b0)
+{
+    float4x4 mWorld;
+    float4x4 mView;
+    float4x4 mProj;
+};
+
+////////////////////////////////////////////////
+// 構造体
+////////////////////////////////////////////////
+
+// 頂点シェーダーへの入力
+struct SVSIn
+{
+    float4 pos : POSITION;          //頂点座標。
+};
+
+
 // 頂点シェーダーへの入力
 struct SPSIn
 {
     float4 pos      : SV_POSITION;  // Clip-space position.
-    float3 normal   : NORMAL;       // World-space normal.
-    float3 tangent  : TANGENT;      // World-space tangent   (for normal mapping later).
-    float3 biNormal : BINORMAL;     // World-space binormal  (for normal mapping later).
-    float2 uv       : TEXCOORD0;    // UV.
-    float3 worldPos : TEXCOORD1;    // World-space position  (for specular later).
+    float4 posInLVP : TEXCOORD2;    // Light View Projection space position.
 };
 
 
-#include "ModelVSCommon.hlsli"
 
 
-////////////////////////////////////////////////
-// Vertex shader core (called by the VSMain* entry points in ModelVSCommon.h).
-////////////////////////////////////////////////
-SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputedVertexBuffer)
+
+/**
+ * @brief 頂点シェーダーのメイン関数
+ * @param vsIn 頂点シェーダーへの入力
+ * @return ピクセルシェーダーへの出力
+ */
+SPSIn VSMain(SVSIn vsIn)
 {
+    // mul()は、第一引数に行列を入れる。でないと、行列の転置が必要になるので注意。
     SPSIn psIn;
-    psIn.pos = CalcVertexPositionInWorldSpace(vsIn.pos, mWorldLocal, isUsePreComputedVertexBuffer);
+    psIn.pos = mul(mWorld, vsIn.pos);
     psIn.pos = mul(mView, psIn.pos);
     psIn.pos = mul(mProj, psIn.pos);
-    psIn.uv = vsIn.uv;
-    psIn.normal = mul((float3x3)mWorldLocal, vsIn.normal);
+    psIn.posInLVP = psIn.pos;
     return psIn;
 }
 
@@ -40,5 +57,6 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
  */
 float4 PSMain(SPSIn psIn) : SV_Target0
 {
-    return g_colorBlack;
+    // 深度(ライトから近いほど小さい値)を「色」として書き込む
+    return psIn.posInLVP.z / psIn.posInLVP.w;
 }
