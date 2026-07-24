@@ -37,7 +37,7 @@ namespace app
         rot.SetRotationDegY(180.0f);
         m_modelRender.SetRotation(rot);
 
-        m_modelRender.PlayAnimation(1);
+        m_modelRender.PlayAnimation(0, 0.0f);
 
         const Vector3 modelPos = m_modelRender.GetTransform().m_position;
 
@@ -58,6 +58,16 @@ namespace app
     void Game::Update()
     {
         // Per-frame logic goes here.
+
+        if (g_pad[0]->IsPress(enButtonA))
+        {
+            m_modelRender.PlayAnimation(1, 0.3f);
+        }
+        else
+        {
+            m_modelRender.PlayAnimation(0, 0.3f);
+        }
+
 
         Quaternion rot = m_modelRender.GetTransform().m_rotation;
 
