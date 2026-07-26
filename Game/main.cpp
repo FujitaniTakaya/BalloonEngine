@@ -64,8 +64,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         g_engine->ExecuteRender(); // Render all game objects (IGameObject::Render).
         RenderingEngine::Get().Execute();
 
-        ImGui::ShowDemoWindow();
-
         // imgui‚Ì•`‰æ
         ImGui::Render();
         auto* cmdList = g_graphicsEngine->GetCommandList();

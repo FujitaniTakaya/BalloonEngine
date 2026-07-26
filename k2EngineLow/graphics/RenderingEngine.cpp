@@ -53,7 +53,7 @@ namespace nsK2EngineLow
         initData.m_textures[2] = &GetRenderTarget(RTType::WorldPos).GetRenderTargetTexture();
 
         auto& light = SceneLight::Get();
-        initData.m_expandConstantBuffer = light.GetAddress();
+        initData.m_expandConstantBuffer = &light.m_sceneLight;
         initData.m_expandConstantBufferSize = sizeof(LightData);
 
         m_deferredRenderingSprite.Init(initData);
@@ -194,13 +194,13 @@ namespace nsK2EngineLow
         auto& light = nsK2EngineLow::SceneLight::Get();
 
         const Vector3 lightPos = { 500.0f, 500.0f, 0.0f };
-        // light.SetLightColor(g_vec4Yellow);
+        // light.m_sceneLight.directionLight.lightColor.m_colorVec3.Set(g_vec4Yellow);
         Vector3 lightVec = (Vector3::Zero - lightPos);
         lightVec.Normalize();
-        light.SetLightDir(lightVec);
+        light.m_sceneLight.directionLight.lightDir.Set(lightVec);
 
 
-        auto lightDir = light.GetSceneLight().directionLight.lightDir;
+        auto lightDir = light.m_sceneLight.directionLight.lightDir;
 
         // NOTE: ターゲットからの距離が近すぎると、キャラクターの上半身などが
         //       ニアクリップ面より手前(カメラの後ろ側)に入ってしまい、影が途中で欠けてしまう。
@@ -211,6 +211,6 @@ namespace nsK2EngineLow
         m_lightCamera.Update();
 
         // ライトカメラから見た位置への変換行列をシーンライトに設定
-        light.SetLightLVP(m_lightCamera.GetViewProjectionMatrix());
+        light.m_sceneLight.LVP = m_lightCamera.GetViewProjectionMatrix();
     }
 } // namespace nsK2EngineLow

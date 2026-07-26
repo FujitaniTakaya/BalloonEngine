@@ -64,6 +64,12 @@ namespace nsK2EngineLow
         Vector3 eyePosition;
         /** パディング */
         float pad;
+        /** 鏡面反射の強さ */
+        float shininess;
+        /** ローカルバイアス */
+        float localBias;
+        /** パディング */
+        float pad2[2];
         /** ライトカメラから見た位置への変換行列 */
         Matrix LVP;
 
@@ -100,41 +106,6 @@ namespace nsK2EngineLow
         // シーンライト
         //=======================================================================
     public:
-        /**
-         * @brief ライトの方向を設定
-         * @param lightDir ライトの方向
-         */
-        void SetLightDir(const Vector3& lightDir);
-        /**
-         * @brief ライトの色を設定
-         * @param lightColor ライトの色
-         */
-        void SetLightColor(const Vector4& lightColor);
-        /**
-         * @brief アンビエントカラーを設定
-         * @param ambientColor アンビエントカラー
-         */
-        void SetAmbientColor(const Vector4& lightColor);
-        /**
-         * @brief シーンライトを取得(読み取り用)
-         * @return シーンライト
-         */
-        const LightData& GetSceneLight() const;
-        /**
-         * @brief シーンライトのアドレスを取得(定数バッファー登録用)
-         * @note  ModelRender::Init から m_expandConstantBuffer に渡すために使う。
-         * @return シーンライトのアドレス
-         */
-        LightData* GetAddress();
-        /**
-         * @brief ライトカメラから見た位置への変換行列を設定
-         * @param lvp ライトカメラから見た位置への変換行列
-         */
-        void SetLightLVP(const Matrix& lvp);
-
-
-
-    private:
         /** シーンライト */
         LightData m_sceneLight;
 

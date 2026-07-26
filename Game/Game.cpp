@@ -3,6 +3,7 @@
 #include "Game.h"
 
 #include "Camera/GameCamera.h"
+#include "imgui.h"
 
 
 namespace app
@@ -49,7 +50,7 @@ namespace app
         m_gameCamera->SetTargetPosition(modelPos);
         m_gameCamera->Start();
 
-        SceneLight::Get().SetAmbientColor({ 0.5f, 0.5f, 0.5f, 1.0f });
+        SceneLight::Get().m_sceneLight.ambientLight.lightColor.m_colorVec3.Set(0.3f, 0.3f, 0.3f);
 
         return true;
     }
@@ -58,6 +59,17 @@ namespace app
     void Game::Update()
     {
         // Per-frame logic goes here.
+
+        auto& sceneLight = SceneLight::Get().m_sceneLight;
+
+        ImGui::Begin("Light");
+        ImGui::SliderFloat3("Direction", &sceneLight.directionLight.lightDir.x, -1.0f, 1.0f);
+        ImGui::ColorEdit3("Color", &sceneLight.directionLight.lightColor.m_colorVec3.x);
+        ImGui::ColorEdit3("Ambient", &sceneLight.ambientLight.lightColor.m_colorVec3.x);
+        ImGui::SliderFloat("Shininess", &sceneLight.shininess, 1.0f, 200.0f);
+        ImGui::End();
+
+
 
         if (g_pad[0]->IsPress(enButtonA))
         {

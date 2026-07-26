@@ -71,7 +71,7 @@ namespace nsK2EngineLow
             modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
         }
 
-        modelInitData.m_expandConstantBuffer = SceneLight::Get().GetAddress();
+        modelInitData.m_expandConstantBuffer = &SceneLight::Get().m_sceneLight;
         modelInitData.m_expandConstantBufferSize = sizeof(LightData);
 
         m_model.Init(modelInitData);

@@ -124,7 +124,7 @@ float4 PSMain(SPSIn In) : SV_Target0
 
     // 鏡面反射光を計算
     // スペキュラーマップを使用
-    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f) * specPower;
+    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, shininess) * specPower;
     // スペキュラーマップを使用しない
     // const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f);
 
@@ -149,7 +149,7 @@ float4 PSMain(SPSIn In) : SV_Target0
 
         // PCF
         // 傾斜依存バイアス(これを使わないと、モデルに模様が出る)
-        float bias = max(0.005f * (1.0f - dot(N, -L)), 0.0001f);
+        float bias = max(localBias * (1.0f - dot(N, -L)), 0.0001f);
 
         shadow = g_shadowMap.SampleCmpLevelZero(
         g_shadowMapSampler, shadowMapUV, zInLVP - bias);
