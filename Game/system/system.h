@@ -2,6 +2,8 @@
 
 extern HWND g_hWnd; // Window handle.
 
+extern ID3D12DescriptorHeap* g_imguiSrvHeap;
+
 // Initialize the game (creates the window and the low-level engine).
 void InitGame(
     HINSTANCE hInstance,
