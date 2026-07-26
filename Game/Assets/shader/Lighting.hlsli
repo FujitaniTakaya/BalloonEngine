@@ -31,7 +31,10 @@ cbuffer LightCb : register(b1)
     DirectionLight dirLight;
     AmbientLight ambientLight;
     float3 eyePos;
-    float pad2;
+    float pad1;
+    float shininess;
+    float localBias;
+    float2 pad2;
     float4x4 mLVP;
 };
 
