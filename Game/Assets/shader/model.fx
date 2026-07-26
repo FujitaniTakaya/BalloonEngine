@@ -105,7 +105,7 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 float4 PSMain(SPSIn In) : SV_Target0
 {
     float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.uv);
-    const float specPower = g_specularTexture.Sample(g_sampler, In.uv).r;
+    const float specFactor = g_specularTexture.Sample(g_sampler, In.uv).r;
     
     // 法線
    const float3 normal = CalcNormalFromNormalMap(In.tangent, In.biNormal, In.normal, g_normalTexture.Sample(g_sampler, In.uv).xyz);

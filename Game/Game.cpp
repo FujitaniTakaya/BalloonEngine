@@ -50,8 +50,7 @@ namespace app
         m_gameCamera->SetTargetPosition(modelPos);
         m_gameCamera->Start();
 
-        SceneLight::Get().m_sceneLight.ambientLight.lightColor.m_colorVec3.Set(0.3f, 0.3f, 0.3f);
-
+        SceneLight::Get().m_sceneLight.ambientLight.lightColor = { 0.5f, 0.5f, 0.5f };
         return true;
     }
 
@@ -67,6 +66,7 @@ namespace app
         ImGui::ColorEdit3("Color", &sceneLight.directionLight.lightColor.m_colorVec3.x);
         ImGui::ColorEdit3("Ambient", &sceneLight.ambientLight.lightColor.m_colorVec3.x);
         ImGui::SliderFloat("Shininess", &sceneLight.shininess, 1.0f, 200.0f);
+        ImGui::SliderFloat("Bias", &light.localBias, 0.000001f, 1.0f);
         ImGui::End();
 
 
