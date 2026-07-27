@@ -124,15 +124,28 @@ float4 PSMain(SPSIn In) : SV_Target0
 
     // 鏡面反射光を計算
     // スペキュラーマップを使用
-    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, shininess) * specPower;
+    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, shininess) * specFactor;
     // スペキュラーマップを使用しない
     // const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f);
 
+    // ディレクションライトの反射光を合成
+    const float3 directionRef = diffuse + specular;
+
+    const float3 ptLigDir = normalize(In.worldPos - pointLight.position);
+    const float ptDist = length(In.worldPos - pointLight.position);
+
+    const float affect = pow(saturate(1.0f - (ptDist / pointLight.range)), 3.0f);
+    const float3 ptDiffuse = CalcDiffuseLighting(N, ptLigDir, pointLight.lightColor.xyz) * affect;
+    const float3 ptSpecular = CalcSpecularLighting(N, ptLigDir, eyePos, In.worldPos, pointLight.lightColor.xyz, shininess) * affect * specFactor;
+
+    // ポイントライトの反射光を合成
+    const float3 pointRef = ptDiffuse + ptSpecular;
+
     // 反射光を合成
-    const float3 refLight = diffuse + specular;
+    const float3 refLight = directionRef + pointRef;
 
     // ライトカメラから見た位置へ変換
-    float4 posInLVP = mul(mLVP, float4(In.worldPos, 1.0f));
+    const float4 posInLVP = mul(mLVP, float4(In.worldPos, 1.0f));
     float2 shadowMapUV = posInLVP.xy / posInLVP.w;
 
     shadowMapUV *= float2(0.5f, -0.5f);

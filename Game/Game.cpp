@@ -59,17 +59,20 @@ namespace app
     {
         // Per-frame logic goes here.
 
-        auto& sceneLight = SceneLight::Get().m_sceneLight;
+        auto& light = SceneLight::Get().m_sceneLight;
 
+#ifdef DEBUG
         ImGui::Begin("Light");
-        ImGui::SliderFloat3("Direction", &sceneLight.directionLight.lightDir.x, -1.0f, 1.0f);
-        ImGui::ColorEdit3("Color", &sceneLight.directionLight.lightColor.m_colorVec3.x);
-        ImGui::ColorEdit3("Ambient", &sceneLight.ambientLight.lightColor.m_colorVec3.x);
-        ImGui::SliderFloat("Shininess", &sceneLight.shininess, 1.0f, 200.0f);
+        ImGui::SliderFloat3("Direction", &light.directionLight.lightDir.x, -1.0f, 1.0f);
+        ImGui::ColorEdit3("Color", &light.directionLight.lightColor.m_colorVec3.x);
+        ImGui::ColorEdit3("Ambient", &light.ambientLight.lightColor.m_colorVec3.x);
+        ImGui::SliderFloat("Shininess", &light.shininess, 1.0f, 200.0f);
         ImGui::SliderFloat("Bias", &light.localBias, 0.000001f, 1.0f);
+        ImGui::SliderFloat3("Point Position", &light.pointLight.position.x, -1000.0f, 1000.0f);
+        ImGui::SliderFloat("Point Range", &light.pointLight.range, 0.0f, 1000.0f);
+        ImGui::ColorEdit3("Point Color", &light.pointLight.lightColor.m_colorVec3.x);
         ImGui::End();
-
-
+#endif // DEBUG
 
         if (g_pad[0]->IsPress(enButtonA))
         {
