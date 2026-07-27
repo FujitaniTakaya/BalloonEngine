@@ -118,19 +118,22 @@ float4 PSMain(SPSIn In) : SV_Target0
     // ノーマルマップ使用しない
     // const float3 N = normalize(In.normal);
 
+    // 視線方向を正規化(ライトに依存しないのでピクセル毎に1回だけ計算)
+    const float3 V = normalize(eyePos - In.worldPos);
+
 
     //==============================================================
     // ディレクションライトの反射光を計算
     //==============================================================
-    
+
     // 拡散反射光を計算
     const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
 
     // 鏡面反射光を計算
     // スペキュラーマップを使用
-    const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, shininess) * specFactor;
+    const float3 specular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, shininess) * specFactor;
     // スペキュラーマップを使用しない
-    // const float3 specular = CalcSpecularLighting(N, L, eyePos, In.worldPos, dirLight.lightColor.xyz, 64.0f);
+    // const float3 specular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, 64.0f);
 
     // ディレクションライトの反射光を合成
     const float3 directionRef = diffuse + specular;
@@ -152,14 +155,44 @@ float4 PSMain(SPSIn In) : SV_Target0
 
         const float affect = pow(saturate(1.0f - (ptDist / pointLight.range)), 3.0f);
         const float3 ptDiffuse = CalcDiffuseLighting(N, ptLigDir, pointLight.lightColor.xyz) * affect;
-        const float3 ptSpecular = CalcSpecularLighting(N, ptLigDir, eyePos, In.worldPos, pointLight.lightColor.xyz, shininess) * affect * specFactor;
+        const float3 ptSpecular = CalcSpecularLighting(N, ptLigDir, V, pointLight.lightColor.xyz, shininess) * affect * specFactor;
 
         const float3 currentRef = ptDiffuse + ptSpecular;
         // ポイントライトの反射光を合成
         pointRef += currentRef;
     }
+
+
+    //==============================================================
+    // スポットライトの反射光を計算
+    //==============================================================
+
+    float3 spotRef = float3(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < usingSpotLightNum; ++i)
+    {
+        const SpotLight spotLight = spotLights[i];
+
+        const float3 spLigDir = normalize(In.worldPos - spotLight.pointLight.position);
+        const float spDist = length(In.worldPos - spotLight.pointLight.position);
+        const float angle = abs(acos(dot(spLigDir, spotLight.direction)));
+
+        // スポットライトの距離による減衰を計算
+        const float distAffect = pow(saturate(1.0f - (spDist / spotLight.pointLight.range)), 3.0f);
+        // スポットライトの角度による減衰を計算
+        const float angleAffect = pow(saturate(1.0f - (angle / spotLight.spotAngle)), 3.0f);
+
+        const float3 spDiffuse = CalcDiffuseLighting(N, spLigDir, spotLight.pointLight.lightColor.xyz) * distAffect * angleAffect;
+        const float3 spSpecular = CalcSpecularLighting(N, spLigDir, V, spotLight.pointLight.lightColor.xyz, shininess) * distAffect * angleAffect * specFactor;
+
+        const float3 currentRef = spDiffuse + spSpecular;
+        // スポットライトの反射光を合成
+        spotRef += currentRef;
+    }
+
+
+
     // 反射光を合成
-    const float3 refLight = directionRef + pointRef;
+    const float3 refLight = directionRef + pointRef + spotRef;
 
     // ライトカメラから見た位置へ変換
     const float4 posInLVP = mul(mLVP, float4(In.worldPos, 1.0f));
