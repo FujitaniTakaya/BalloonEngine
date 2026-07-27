@@ -40,6 +40,20 @@ struct PointLight
 /** ポイントライトの最大数 */
 static const int MAX_POINT_LIGHT_NUM = 4;
 
+
+/*!
+ * @brief   Spot light data.
+ */
+struct SpotLight
+{
+    PointLight pointLight;
+    float3 direction;
+    float spotAngle;
+};
+
+/** スポットライトの最大数 */
+static const int MAX_SPOT_LIGHT_NUM = 4;
+
 /*!
  * @brief   Constant buffer for lighting data.
  */
@@ -48,8 +62,10 @@ cbuffer LightCb : register(b1)
     DirectionLight dirLight;
     AmbientLight ambientLight;
     int usingPointLightNum;
-    float3 pad1;
+    int usingSpotLightNum;
+    float2 pad1;
     PointLight pointLights[MAX_POINT_LIGHT_NUM];
+    SpotLight spotLights[MAX_SPOT_LIGHT_NUM];
     float3 eyePos;
     float pad2;
     float shininess;
@@ -77,15 +93,13 @@ float3 CalcDiffuseLighting(
 float3 CalcSpecularLighting(
     const float3 normedNormal,
     const float3 normedLightDir,
-    const float3 viewPos,
-    const float3 worldPos,
+    const float3 normedViewDir,
     const float3 lightColor,
     const float shininess
     )
 {
     const float3 R = reflect(normedLightDir, normedNormal);
-    const float3 V = normalize(viewPos - worldPos);
-    const float RdotV = max(dot(R, V), 0.0f);
+    const float RdotV = max(dot(R, normedViewDir), 0.0f);
     const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
     const float specular = pow(RdotV, shininess) * step(0.0001f, NdotL);
     return lightColor * specular;

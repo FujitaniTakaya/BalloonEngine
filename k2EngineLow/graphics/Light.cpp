@@ -50,12 +50,25 @@ namespace nsK2EngineLow
     /***************************************/
 
 
+    SpotLight::SpotLight()
+        : pointLight()
+        , lightDir(0.0f, -1.0f, 0.0f)
+        , angle(Math::DegToRad(45.0f))
+    {}
+
+
+
+
+    /***************************************/
+
+
     LightData::LightData()
         : directionLight()
         , ambientLight()
         , pointLights()
         , usingPointLightNum(0)
-        , pad1{ 0, 0, 0 }
+        , usingSpotLightNum(0)
+        , pad1{ 0, 0 }
         , eyePosition(g_vec3Zero)
         , pad2(0.0f)
         , shininess(32.0f)
