@@ -68,9 +68,24 @@ namespace app
         ImGui::ColorEdit3("Ambient", &light.ambientLight.lightColor.m_colorVec3.x);
         ImGui::SliderFloat("Shininess", &light.shininess, 1.0f, 200.0f);
         ImGui::SliderFloat("Bias", &light.localBias, 0.000001f, 1.0f);
-        ImGui::SliderFloat3("Point Position", &light.pointLight.position.x, -1000.0f, 1000.0f);
-        ImGui::SliderFloat("Point Range", &light.pointLight.range, 0.0f, 1000.0f);
-        ImGui::ColorEdit3("Point Color", &light.pointLight.lightColor.m_colorVec3.x);
+        ImGui::End();
+
+
+        ImGui::Begin("PointLights");
+        ImGui::SliderInt("PointLightNum", &light.usingPointLightNum, 0, LightData::MAX_POINT_LIGHT_NUM);
+        for (int i = 0; i < light.usingPointLightNum; ++i)
+        {
+            ImGui::PushID(i);
+            if (ImGui::TreeNode("", "Light %d", i))
+            {
+                auto& it = light.pointLights.at(i);
+                ImGui::SliderFloat3(("Position"), &it.position.x, -1000.0f, 1000.0f);
+                ImGui::DragFloat(("Range"), &it.range, 5.0f, 0.0f, 2000.0f);
+                ImGui::ColorEdit3(("Color"), &it.lightColor.m_colorVec3.x);
+                ImGui::TreePop();
+            }
+            ImGui::PopID();
+        }
         ImGui::End();
 #endif // DEBUG
 
