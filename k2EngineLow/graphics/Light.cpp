@@ -38,6 +38,18 @@ namespace nsK2EngineLow
     /***************************************/
 
 
+    PointLight::PointLight()
+        : position(g_vec3Zero)
+        , range(500.0f)
+        , lightColor(LightColor::White)
+    {}
+
+
+
+
+    /***************************************/
+
+
     LightData::LightData()
         : directionLight()
         , ambientLight()

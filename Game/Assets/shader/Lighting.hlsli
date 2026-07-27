@@ -16,8 +16,23 @@ struct DirectionLight
 };
 
 
+/*!
+ * @brief   Ambient light data.
+ */
 struct AmbientLight
 {
+    float3 lightColor;
+    float pad;
+};
+
+
+/*!
+ * @brief   Point light data.
+ */
+struct PointLight
+{
+    float3 position;
+    float range;
     float3 lightColor;
     float pad;
 };
@@ -30,6 +45,7 @@ cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
     AmbientLight ambientLight;
+    PointLight pointLight;
     float3 eyePos;
     float pad1;
     float shininess;

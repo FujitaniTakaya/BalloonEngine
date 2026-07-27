@@ -51,6 +51,29 @@ namespace nsK2EngineLow
 
 
     /**
+     * @brief ポイントライト
+     */
+    struct PointLight
+    {
+        /** ライトの位置 */
+        Vector3 position;
+        /** ライトの範囲 */
+        float range;
+        /** ライトの色 */
+        ColorVec3 lightColor;
+
+
+        PointLight();
+        ~PointLight() = default;
+    };
+
+
+
+
+    /**********************************************/
+
+
+    /**
      * @brief ライトデータ(model.fx の LightCb と1:1対応)
      * @note  ここを変更したらシェーダー側の cbuffer も必ず変更すること。
      */
@@ -60,6 +83,8 @@ namespace nsK2EngineLow
         DirectionLight directionLight;
         /** 環境光の色 */
         AmbientLight ambientLight;
+        /** ポイントライト */
+        PointLight pointLight;
         /** 視点(カメラ)位置。鏡面反射で使用 */
         Vector3 eyePosition;
         /** パディング */
