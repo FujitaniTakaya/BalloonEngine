@@ -37,6 +37,8 @@ struct PointLight
     float pad;
 };
 
+/** ポイントライトの最大数 */
+static const int MAX_POINT_LIGHT_NUM = 4;
 
 /*!
  * @brief   Constant buffer for lighting data.
@@ -45,12 +47,14 @@ cbuffer LightCb : register(b1)
 {
     DirectionLight dirLight;
     AmbientLight ambientLight;
-    PointLight pointLight;
+    int usingPointLightNum;
+    float3 pad1;
+    PointLight pointLights[MAX_POINT_LIGHT_NUM];
     float3 eyePos;
-    float pad1;
+    float pad2;
     float shininess;
     float localBias;
-    float2 pad2;
+    float2 pad3;
     float4x4 mLVP;
 };
 

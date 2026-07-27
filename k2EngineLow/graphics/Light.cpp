@@ -53,11 +53,14 @@ namespace nsK2EngineLow
     LightData::LightData()
         : directionLight()
         , ambientLight()
+        , pointLights()
+        , usingPointLightNum(0)
+        , pad1{ 0, 0, 0 }
         , eyePosition(g_vec3Zero)
-        , pad(0.0f)
+        , pad2(0.0f)
         , shininess(32.0f)
         , localBias(0.005f)
-        , pad2{ 0.0f, 0.0f }
+        , pad3{ 0.0f, 0.0f }
         , LVP(Matrix::Identity)
     {}
 
