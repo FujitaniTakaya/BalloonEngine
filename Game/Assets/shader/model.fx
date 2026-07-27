@@ -119,6 +119,10 @@ float4 PSMain(SPSIn In) : SV_Target0
     // const float3 N = normalize(In.normal);
 
 
+    //==============================================================
+    // ディレクションライトの反射光を計算
+    //==============================================================
+    
     // 拡散反射光を計算
     const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
 
@@ -131,16 +135,29 @@ float4 PSMain(SPSIn In) : SV_Target0
     // ディレクションライトの反射光を合成
     const float3 directionRef = diffuse + specular;
 
-    const float3 ptLigDir = normalize(In.worldPos - pointLight.position);
-    const float ptDist = length(In.worldPos - pointLight.position);
+    
+    //==============================================================
+    // ポイントライトの反射光を計算
+    //==============================================================
 
-    const float affect = pow(saturate(1.0f - (ptDist / pointLight.range)), 3.0f);
-    const float3 ptDiffuse = CalcDiffuseLighting(N, ptLigDir, pointLight.lightColor.xyz) * affect;
-    const float3 ptSpecular = CalcSpecularLighting(N, ptLigDir, eyePos, In.worldPos, pointLight.lightColor.xyz, shininess) * affect * specFactor;
 
-    // ポイントライトの反射光を合成
-    const float3 pointRef = ptDiffuse + ptSpecular;
+    float3 pointRef = float3(0.0f, 0.0f, 0.0f);
+    for (int i = 0; i < usingPointLightNum; ++i)
+    {
+        const PointLight pointLight = pointLights[i];
 
+        // ポイントライトの反射光を計算
+        const float3 ptLigDir = normalize(In.worldPos - pointLight.position);
+        const float ptDist = length(In.worldPos - pointLight.position);
+
+        const float affect = pow(saturate(1.0f - (ptDist / pointLight.range)), 3.0f);
+        const float3 ptDiffuse = CalcDiffuseLighting(N, ptLigDir, pointLight.lightColor.xyz) * affect;
+        const float3 ptSpecular = CalcSpecularLighting(N, ptLigDir, eyePos, In.worldPos, pointLight.lightColor.xyz, shininess) * affect * specFactor;
+
+        const float3 currentRef = ptDiffuse + ptSpecular;
+        // ポイントライトの反射光を合成
+        pointRef += currentRef;
+    }
     // 反射光を合成
     const float3 refLight = directionRef + pointRef;
 
