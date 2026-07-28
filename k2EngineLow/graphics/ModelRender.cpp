@@ -217,7 +217,11 @@ namespace nsK2EngineLow
         //========================================================================
         if (m_isReceiveShadow)
         {
-            modelInitData.m_expandShaderResoruceView[0] = &RenderingEngine::Get().GetShadowMapTexture();
+            int srv = 0;
+            RenderingEngine::Get().QueryShadowMapTexture([&](Texture& shadowMapTexutre) {
+                modelInitData.m_expandShaderResoruceView[srv] = &shadowMapTexutre;
+                ++srv;
+            });
         }
     }
 } // namespace nsK2EngineLow

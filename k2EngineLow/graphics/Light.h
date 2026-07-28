@@ -3,6 +3,7 @@
  * @brief ライト関連
  */
 #pragma once
+#include "RenderingEngine.h"
 #include "math/LightColor.h"
 
 
@@ -125,7 +126,7 @@ namespace nsK2EngineLow
         /** パディング */
         float pad3[2];
         /** ライトカメラから見た位置への変換行列 */
-        Matrix LVP;
+        std::array<Matrix, RenderingEngine::MAX_SHADOW_NUM> LVP;
 
 
         LightData();

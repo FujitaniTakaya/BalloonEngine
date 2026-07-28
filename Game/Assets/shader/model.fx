@@ -101,9 +101,9 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 ////////////////////////////////////////////////
 // 影(0=影なし、1=影)を計算。PCF + 傾斜依存バイアス。
 ////////////////////////////////////////////////
-float CalcShadow(const float3 worldPos, const float3 N, const float3 L)
+float CalcShadow(const float3 worldPos, const float3 N, const float3 L, const int shadowIndex)
 {
-    const float4 posInLVP = mul(mLVP, float4(worldPos, 1.0f));
+    const float4 posInLVP = mul(mLVP[shadowIndex], float4(worldPos, 1.0f));
     float2 shadowMapUV = posInLVP.xy / posInLVP.w;
     shadowMapUV = shadowMapUV * float2(0.5f, -0.5f) + 0.5f;
 
@@ -138,9 +138,10 @@ float4 PSMain(SPSIn In) : SV_Target0
     const float3 V = normalize(eyePos - In.worldPos);
 
     // ディレクションライトの反射光を計算
-    const float3 directionRef =
-        CalcDiffuseLighting(N, L, dirLight.lightColor.xyz)
-        + CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, shininess) * specFactor;
+    const float dirShadow = CalcShadow(In.worldPos, N, L, 0);
+    const float3 dirDiffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
+    const float3 dirSpecular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, shininess) * specFactor;
+    const float3 directionRef = (dirDiffuse + dirSpecular) * (1.0f - dirShadow);
 
     // ポイントライトの反射光を計算
     float3 pointRef = float3(0.0f, 0.0f, 0.0f);
@@ -153,17 +154,21 @@ float4 PSMain(SPSIn In) : SV_Target0
     float3 spotRef = float3(0.0f, 0.0f, 0.0f);
     for (int j = 0; j < usingSpotLightNum; ++j)
     {
+        float spotShadow = 0.0f;
+        if (j == 0)
+        {
+            const float3 spotDir = normalize(spotLights[j].pointLight.position - In.worldPos);
+            spotShadow = CalcShadow(In.worldPos, N, spotDir, 1);
+        }
         spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor);
     }
 
     // 反射光を合成
     const float3 refLight = directionRef + pointRef + spotRef;
 
-    // 影(0=影なし、1=影)。アンビエントには掛けず、直接光(refLight)だけを減衰させる。
-    const float shadow = CalcShadow(In.worldPos, N, L);
 
     // アンビエントは影の影響を受けない。直接光だけを影で減衰させる。
-    const float3 ligColor = ambientLight.lightColor.xyz + refLight * (1.0f - shadow);
+    const float3 ligColor = ambientLight.lightColor.xyz + refLight;
     albedoColor.xyz *= ligColor;
 
     return albedoColor;

@@ -54,6 +54,9 @@ struct SpotLight
 /** スポットライトの最大数 */
 static const int MAX_SPOT_LIGHT_NUM = 4;
 
+/** シャドウマップの最大数 */
+static const int MAX_SHADOW_NUM = 2;
+
 /*!
  * @brief   Constant buffer for lighting data.
  */
@@ -71,7 +74,7 @@ cbuffer LightCb : register(b1)
     float shininess;
     float localBias;
     float2 pad3;
-    float4x4 mLVP;
+    float4x4 mLVP[MAX_SHADOW_NUM];
 };
 
 ////////////////////////////////////////////////

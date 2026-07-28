@@ -74,17 +74,10 @@ namespace nsK2EngineLow
 
 
         /**
-         * @brief ライトカメラを取得する。
-         * @return ライトカメラ
+         * @brief シャドウマップのテクスチャを取得する。
+         * @param queryFunc シャドウマップのテクスチャを取得するための関数
          */
-        Camera& GetLightCamera();
-
-
-        /**
-         * @brief シャドウマップテクスチャを取得する。
-         * @return シャドウマップテクスチャ
-         */
-        Texture& GetShadowMapTexture();
+        void QueryShadowMapTexture(std::function<void(Texture&)>);
 
 
     private:
@@ -101,18 +94,14 @@ namespace nsK2EngineLow
 
         /**
          * @brief ライトカメラを現在のシーンライトの方向に合わせて更新する。
-         * @note  シーンライトの方向は Game::Start など Initialize より後に設定されることがあるため、
-         *        毎フレーム呼び直して同期を取る。
          */
-        void InitializeLightCamera();
+        void InitializeLightCamera(Camera& cmr, const int index);
 
 
         /**
          * @brief ライトカメラを現在のシーンライトの方向に合わせて更新する。
-         * @note  シーンライトの方向は Game::Start など Initialize より後に設定されることがあるため、
-         *        毎フレーム呼び直して同期を取る。
          */
-        void UpdateLightCamera();
+        void UpdateLightCamera(Camera& cmr, const int index);
 
 
     private:
@@ -125,11 +114,24 @@ namespace nsK2EngineLow
         /** 遅延描画用レンダーターゲット */
         std::array<RenderTarget, static_cast<size_t>(RTType::Max)> m_rts;
 
-        /** ライトカメラ */
-        Camera m_lightCamera;
 
-        RenderTarget m_shadowMap;
+        //=======================================================================
+        // シャドウマップ
+        //=======================================================================
+    public:
+        struct ShadowData
+        {
+            /** ライトカメラ */
+            Camera ligCamera;
+            /** シャドウマップ */
+            RenderTarget map;
+        };
+        /** シャドウマップの最大数 */
+        static constexpr uint8_t MAX_SHADOW_NUM = 2;
 
+
+    private:
+        std::array<ShadowData, MAX_SHADOW_NUM> m_shadowDatas;
         std::vector<Model*> m_shadowCasters;
 
 
