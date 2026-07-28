@@ -157,10 +157,10 @@ float4 PSMain(SPSIn In) : SV_Target0
         float spotShadow = 0.0f;
         if (j == 0)
         {
-            const float3 spotDir = normalize(spotLights[j].pointLight.position - In.worldPos);
+            const float3 spotDir = normalize(In.worldPos - spotLights[j].pointLight.position);
             spotShadow = CalcShadow(In.worldPos, N, spotDir, 1);
         }
-        spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor);
+        spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor) * (1.0f - spotShadow);
     }
 
     // 反射光を合成

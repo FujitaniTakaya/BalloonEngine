@@ -145,7 +145,8 @@ float3 CalcSpotLightLighting(
 {
     const float3 ligDir = normalize(worldPos - spotLight.pointLight.position);
     const float dist = length(worldPos - spotLight.pointLight.position);
-    const float angle = abs(acos(dot(ligDir, spotLight.direction)));
+    const float3 spotDir = normalize(spotLight.direction);
+    const float angle = abs(acos(clamp(dot(ligDir, spotDir), -1.0f, 1.0f)));
 
     const float distAffect = pow(saturate(1.0f - (dist / spotLight.pointLight.range)), 3.0f);
     const float angleAffect = pow(saturate(1.0f - (angle / spotLight.spotAngle)), 3.0f);
