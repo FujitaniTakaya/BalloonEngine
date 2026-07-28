@@ -56,8 +56,10 @@ float4 PSMainDeferred(PSInput In) : SV_Target0
 	const float3 N = normalize(normal);
 	const float3 L = normalize(dirLight.lightDir);
 
+	const float3 V = normalize(eyePos - worldPos);
+
 	const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
-	const float3 specular = CalcSpecularLighting(N, L, eyePos, worldPos, dirLight.lightColor.xyz, 64.0f);
+	const float3 specular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, 64.0f);
 
 	const float3 refLight = diffuse + (specular * specPower);
 

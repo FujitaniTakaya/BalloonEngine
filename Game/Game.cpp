@@ -95,6 +95,26 @@ namespace app
             }
         }
 
+        if (ImGui::CollapsingHeader("Spot Lights"))
+        {
+            ImGui::SliderInt("SpotLightNum", &light.usingSpotLightNum, 0, LightData::MAX_SPOT_LIGHT_NUM);
+            for (int i = 0; i < light.usingSpotLightNum; ++i)
+            {
+                ImGui::PushID(i);
+                if (ImGui::TreeNode("", "Light %d", i))
+                {
+                    auto& it = light.spotLights.at(i);
+                    ImGui::SliderFloat3(("Position"), &it.pointLight.position.x, -1000.0f, 1000.0f);
+                    ImGui::DragFloat(("Range"), &it.pointLight.range, 5.0f, 0.0f, 2000.0f);
+                    ImGui::ColorEdit3(("Color"), &it.pointLight.lightColor.m_colorVec3.x);
+                    ImGui::SliderFloat3(("Direction"), &it.lightDir.x, -1.0f, 1.0f);
+                    ImGui::SliderFloat(("Angle"), &it.angle, 0.0f, Math::DegToRad(90.0f));
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+            }
+        }
+
         ImGui::End();
 #endif // DEBUG
 

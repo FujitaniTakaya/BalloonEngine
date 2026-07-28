@@ -73,6 +73,23 @@ namespace nsK2EngineLow
     /**********************************************/
 
 
+    struct SpotLight
+    {
+        PointLight pointLight;
+        Vector3 lightDir;
+        float angle;
+
+
+        SpotLight();
+        ~SpotLight() = default;
+    };
+
+
+
+
+    /**********************************************/
+
+
     /**
      * @brief ライトデータ(model.fx の LightCb と1:1対応)
      * @note  ここを変更したらシェーダー側の cbuffer も必ず変更すること。
@@ -85,12 +102,18 @@ namespace nsK2EngineLow
         AmbientLight ambientLight;
         /** ポイントライトの最大数 */
         static constexpr int MAX_POINT_LIGHT_NUM = 4;
+        /** スポットライトの最大数 */
+        static constexpr int MAX_SPOT_LIGHT_NUM = 4;
         /** 使用するポイントライトの数 */
         int usingPointLightNum;
+        /** 使用するスポットライトの数 */
+        int usingSpotLightNum;
         /** パディング */
-        int pad1[3];
+        int pad1[2];
         /** ポイントライト */
         std::array<PointLight, MAX_POINT_LIGHT_NUM> pointLights;
+        /** スポットライト */
+        std::array<SpotLight, MAX_SPOT_LIGHT_NUM> spotLights;
         /** 視点(カメラ)位置。鏡面反射で使用 */
         Vector3 eyePosition;
         /** パディング */
