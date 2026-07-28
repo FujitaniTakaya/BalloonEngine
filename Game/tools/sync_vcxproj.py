@@ -181,6 +181,18 @@ class ProjectDoc:
         self.tree.write(self.path, encoding="utf-8", xml_declaration=True)
 
 
+def is_outside_game_dir(rel: str) -> bool:
+    """GAME_DIR の外を指す登録(''..\\ThirdParty\\...'' のような
+    「既存の項目を追加」で持ち込まれたファイル)かどうか。
+
+    scan_disk() は GAME_DIR の中しか見ていないため、外を指す登録は
+    常に disk に存在しないように見える。削除判定に混ぜると、
+    VSCode で作成していないファイル(サードパーティのソースなど)まで
+    誤って削除対象にしてしまう。
+    """
+    return rel.replace("/", "\\").startswith("..\\")
+
+
 def plan_changes(disk: dict, previous: dict, registered: set):
     """追加・削除・リネームの対象を決める。
 
@@ -188,8 +200,12 @@ def plan_changes(disk: dict, previous: dict, registered: set):
     (マニフェストが無くても安全に動く)。
     リネームの判定だけ、前回実行時のハッシュ値との突き合わせを使う(履歴が無ければ
     単純な削除+追加として扱われる)。
+    GAME_DIR の外を指す登録(「既存の項目を追加」で持ち込んだファイルなど)は
+    スキャン対象外なので、削除判定からは除外する。
     """
-    to_remove = sorted(rel for rel in registered if rel not in disk)
+    to_remove = sorted(
+        rel for rel in registered if rel not in disk and not is_outside_game_dir(rel)
+    )
     to_add = sorted(rel for rel in disk if rel not in registered)
 
     renames = []
