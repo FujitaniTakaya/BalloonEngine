@@ -83,7 +83,10 @@ namespace nsK2EngineLow
         m_model.UpdateWorldMatrix(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale);
         if (m_isCastShadow)
         {
-            m_shadowModel.UpdateWorldMatrix(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale);
+            for (auto& shadowModel : m_shadowModel)
+            {
+                shadowModel.UpdateWorldMatrix(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale);
+            }
         }
 
         if (m_skeleton.IsInited())
@@ -110,7 +113,10 @@ namespace nsK2EngineLow
         }
         if (m_isCastShadow)
         {
-            RenderingEngine::Get().AddShadowCaster(&m_shadowModel);
+            for (int i = 0; i < MAX_SHADOW_NUM; ++i)
+            {
+                RenderingEngine::Get().AddShadowCaster(&m_shadowModel.at(i), static_cast<EnShadowLightType>(i));
+            }
         }
     }
 
@@ -210,7 +216,11 @@ namespace nsK2EngineLow
             shadowModelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
             shadowModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
             shadowModelInitData.m_skeleton = &m_skeleton;
-            m_shadowModel.Init(shadowModelInitData);
+
+            for (auto& shadowModel : m_shadowModel)
+            {
+                shadowModel.Init(shadowModelInitData);
+            }
         }
         //========================================================================
         // 影を受ける場合の処理

@@ -3,7 +3,6 @@
  * @brief ライト関連
  */
 #pragma once
-#include "RenderingEngine.h"
 #include "math/LightColor.h"
 
 
@@ -105,6 +104,8 @@ namespace nsK2EngineLow
         static constexpr int MAX_POINT_LIGHT_NUM = 4;
         /** スポットライトの最大数 */
         static constexpr int MAX_SPOT_LIGHT_NUM = 4;
+        /** シャドウマップの最大数 */
+        static constexpr int MAX_SHADOW_NUM = 2;
         /** 使用するポイントライトの数 */
         int usingPointLightNum;
         /** 使用するスポットライトの数 */
@@ -126,7 +127,7 @@ namespace nsK2EngineLow
         /** パディング */
         float pad3[2];
         /** ライトカメラから見た位置への変換行列 */
-        std::array<Matrix, RenderingEngine::MAX_SHADOW_NUM> LVP;
+        std::array<Matrix, MAX_SHADOW_NUM> LVP;
 
 
         LightData();

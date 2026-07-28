@@ -3,14 +3,11 @@
  * @brief 描画エンジンクラスの宣言
  */
 #pragma once
+#include "ShadowRef.h"
 
 
 namespace nsK2EngineLow
 {
-    /** 前方宣言 */
-    class ModelRender;
-
-
     /**
      * @brief レンダーターゲットの種類
      * @note 遅延描画用のレンダーターゲットの種類を表す列挙型
@@ -69,8 +66,9 @@ namespace nsK2EngineLow
         /**
          * @brief シャドウキャスターを追加する。
          * @param model シャドウキャスターとなるモデル
+         * @param shadowType シャドウの種類
          */
-        void AddShadowCaster(Model* model);
+        void AddShadowCaster(Model* model, EnShadowLightType shadowType);
 
 
         /**
@@ -125,14 +123,14 @@ namespace nsK2EngineLow
             Camera ligCamera;
             /** シャドウマップ */
             RenderTarget map;
+            /** シャドウキャスターのリスト */
+            std::vector<Model*> casters;
         };
-        /** シャドウマップの最大数 */
-        static constexpr uint8_t MAX_SHADOW_NUM = 2;
 
 
     private:
+        /** シャドウデータの配列 */
         std::array<ShadowData, MAX_SHADOW_NUM> m_shadowDatas;
-        std::vector<Model*> m_shadowCasters;
 
 
         //=======================================================================
