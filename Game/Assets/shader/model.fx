@@ -62,7 +62,7 @@ struct SPSOut
 Texture2D<float4> g_albedoTexture : register(t0);
 Texture2D<float4> g_normalTexture : register(t1);
 Texture2D<float4> g_specularTexture : register(t2);
-Texture2D<float4> g_shadowMap : register(t10);
+Texture2D<float4> g_shadowMap[MAX_SHADOW_NUM] : register(t10);
 sampler g_sampler : register(s0);
 SamplerComparisonState g_shadowMapSampler : register(s1);
 
@@ -117,7 +117,7 @@ float CalcShadow(const float3 worldPos, const float3 N, const float3 L, const in
     // 傾斜依存バイアス(これを使わないと、モデルに模様が出る)
     const float bias = max(localBias * (1.0f - dot(N, -L)), 0.0001f);
 
-    return g_shadowMap.SampleCmpLevelZero(g_shadowMapSampler, shadowMapUV, zInLVP - bias);
+    return g_shadowMap[shadowIndex].SampleCmpLevelZero(g_shadowMapSampler, shadowMapUV, zInLVP - bias);
 }
 
 ////////////////////////////////////////////////
