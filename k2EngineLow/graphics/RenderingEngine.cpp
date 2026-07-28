@@ -65,7 +65,7 @@ namespace nsK2EngineLow
 
         float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-        for (int i = 0; i < MAX_SHADOW_NUM; ++i)
+        for (int i = 0; i < LightData::MAX_SHADOW_NUM; ++i)
         {
             auto& data = m_shadowDatas.at(i);
 
@@ -78,9 +78,24 @@ namespace nsK2EngineLow
             //========================================================================
             // シャドウマップ用のライトカメラを初期化
             //========================================================================
-            data.ligCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
+
             data.ligCamera.SetWidth(500.0f);
             data.ligCamera.SetHeight(500.0f);
+            switch (static_cast<EnShadowLightType>(i))
+            {
+            case EnShadowLightType::Directional:
+                // ディレクションライトは平行光源なので平行投影。
+                data.ligCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
+                break;
+            case EnShadowLightType::Spot:
+                // スポットライトは一点から円錐状に広がる光源なので透視投影。
+                // 視野角(spotAngleに応じた値)はUpdateLightCameraで毎フレーム設定する。
+                data.ligCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Perspective);
+                break;
+            default:
+                K2_ASSERT(false, "error: index is out of range.");
+                break;
+            }
             InitializeLightCamera(data.ligCamera, i);
         }
     }
@@ -90,7 +105,7 @@ namespace nsK2EngineLow
     {
         auto& rc = g_graphicsEngine->GetRenderContext();
 
-        for (int i = 0; i < MAX_SHADOW_NUM; ++i)
+        for (int i = 0; i < LightData::MAX_SHADOW_NUM; ++i)
         {
             auto& data = m_shadowDatas.at(i);
 
@@ -108,16 +123,17 @@ namespace nsK2EngineLow
             rc.SetRenderTargetAndViewport(data.map);
             rc.ClearRenderTargetView(data.map);
 
-            for (auto* model : m_shadowCasters)
+            auto& casters = data.casters;
+            for (auto* model : casters)
             {
                 // NOTE: シャドウマップ用の描画はライトカメラを使う
                 model->Draw(rc, data.ligCamera);
             }
+            casters.clear();
 
             rc.WaitUntilFinishDrawingToRenderTarget(data.map);
         }
 
-        m_shadowCasters.clear();
 
         g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
 
@@ -191,9 +207,9 @@ namespace nsK2EngineLow
     //=======================================================================
     // シャドウマップ
     //=======================================================================
-    void RenderingEngine::AddShadowCaster(Model* model)
+    void RenderingEngine::AddShadowCaster(Model* model, EnShadowLightType shadowType)
     {
-        m_shadowCasters.push_back(model);
+        m_shadowDatas[static_cast<size_t>(shadowType)].casters.push_back(model);
     }
 
 
@@ -225,10 +241,27 @@ namespace nsK2EngineLow
     {
         auto& light = SceneLight::Get().m_sceneLight;
 
-        auto lightDir = light.directionLight.lightDir;
+        switch (static_cast<EnShadowLightType>(index))
+        {
+        case EnShadowLightType::Directional: {
+            cmr.SetPosition(light.directionLight.lightDir * -500.0f);
+            cmr.SetTarget(Vector3::Zero);
+            break;
+        }
+        case EnShadowLightType::Spot: {
+            const auto& spotLight = light.spotLights.at(0);
+            cmr.SetPosition(spotLight.pointLight.position);
+            cmr.SetTarget(spotLight.pointLight.position + spotLight.lightDir * 100.0f);
+            // imguiでangle/rangeが変わりうるので、毎フレーム視野角と遠平面を合わせ直す。
+            cmr.SetViewAngle(spotLight.angle);
+            cmr.SetFar(spotLight.pointLight.range);
+            break;
+        }
+        default:
+            K2_ASSERT(false, "error: index is out of range.");
+            break;
+        }
 
-        cmr.SetPosition(lightDir * -500.0f);
-        cmr.SetTarget(Vector3::Zero);
         cmr.SetUp({ 1.0f, 0.0f, 0.0f });
         cmr.Update();
 
