@@ -84,6 +84,9 @@ namespace nsK2EngineLow
     {
         auto& rc = g_graphicsEngine->GetRenderContext();
 
+
+        UpdateLightCamera();
+
         //========================================================================
         // シャドウマップを描画
         //========================================================================
@@ -199,8 +202,15 @@ namespace nsK2EngineLow
         lightVec.Normalize();
         light.m_sceneLight.directionLight.lightDir.Set(lightVec);
 
+        UpdateLightCamera();
+    }
 
-        auto lightDir = light.m_sceneLight.directionLight.lightDir;
+
+    void RenderingEngine::UpdateLightCamera()
+    {
+        auto& light = SceneLight::Get().m_sceneLight;
+
+        auto lightDir = light.directionLight.lightDir;
 
         // NOTE: ターゲットからの距離が近すぎると、キャラクターの上半身などが
         //       ニアクリップ面より手前(カメラの後ろ側)に入ってしまい、影が途中で欠けてしまう。
@@ -211,6 +221,6 @@ namespace nsK2EngineLow
         m_lightCamera.Update();
 
         // ライトカメラから見た位置への変換行列をシーンライトに設定
-        light.m_sceneLight.LVP = m_lightCamera.GetViewProjectionMatrix();
+        light.LVP = m_lightCamera.GetViewProjectionMatrix();
     }
 } // namespace nsK2EngineLow

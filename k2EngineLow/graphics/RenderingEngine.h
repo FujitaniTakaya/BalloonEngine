@@ -107,6 +107,14 @@ namespace nsK2EngineLow
         void InitializeLightCamera();
 
 
+        /**
+         * @brief ライトカメラを現在のシーンライトの方向に合わせて更新する。
+         * @note  シーンライトの方向は Game::Start など Initialize より後に設定されることがあるため、
+         *        毎フレーム呼び直して同期を取る。
+         */
+        void UpdateLightCamera();
+
+
     private:
         /** 描画オブジェクトのリスト */
         std::vector<Model*> m_rendering3dObjects;
