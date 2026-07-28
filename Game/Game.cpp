@@ -87,7 +87,7 @@ namespace app
                 {
                     auto& it = light.pointLights.at(i);
                     ImGui::SliderFloat3(("Position"), &it.position.x, -1000.0f, 1000.0f);
-                    ImGui::DragFloat(("Range"), &it.range, 5.0f, 0.0f, 2000.0f);
+                    ImGui::DragFloat(("Range"), &it.range, 5.0f, 10.0f, 2000.0f);
                     ImGui::ColorEdit3(("Color"), &it.lightColor.m_colorVec3.x);
                     ImGui::TreePop();
                 }
@@ -105,10 +105,10 @@ namespace app
                 {
                     auto& it = light.spotLights.at(i);
                     ImGui::SliderFloat3(("Position"), &it.pointLight.position.x, -1000.0f, 1000.0f);
-                    ImGui::DragFloat(("Range"), &it.pointLight.range, 5.0f, 0.0f, 2000.0f);
+                    ImGui::DragFloat(("Range"), &it.pointLight.range, 5.0f, 10.0f, 2000.0f);
                     ImGui::ColorEdit3(("Color"), &it.pointLight.lightColor.m_colorVec3.x);
                     ImGui::SliderFloat3(("Direction"), &it.lightDir.x, -1.0f, 1.0f);
-                    ImGui::SliderFloat(("Angle"), &it.angle, 0.0f, Math::DegToRad(90.0f));
+                    ImGui::SliderFloat(("Angle"), &it.angle, Math::DegToRad(1.0f), Math::DegToRad(90.0f));
                     ImGui::TreePop();
                 }
                 ImGui::PopID();
