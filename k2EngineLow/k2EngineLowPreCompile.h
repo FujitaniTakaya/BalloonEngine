@@ -1,7 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NON_CONFORMING_SWPRINTFS
-#pragma comment( lib, "xinput.lib")
+#pragma comment(lib, "xinput.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
 // NOTE: このファイルは #include の順序に強く依存している(型の前方宣言に頼らず、
@@ -28,8 +28,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
-#include <winsock2.h> // Windows.h より前にインクルードしないと sockaddr 等が再定義されてビルドエラーになる。
 #include <Windows.h>
+#include <winsock2.h> // Windows.h より前にインクルードしないと sockaddr 等が再定義されてビルドエラーになる。
 #include <Xinput.h>
 
 
@@ -91,7 +91,6 @@ using namespace nsK2EngineLow;
 #include "graphics/IRenderObject.h"
 #include "graphics/Light.h"
 #include "graphics/RenderingEngine.h"
-#include "graphics/ShadowRender.h"
 #include "graphics/ModelRender.h"
 #include "graphics/SpriteRender.h"
 #include "HID/GamePad.h"
