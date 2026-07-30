@@ -253,8 +253,11 @@ namespace nsK2EngineLow
             cmr.SetPosition(spotLight.pointLight.position);
             cmr.SetTarget(spotLight.pointLight.position + spotLight.lightDir * 100.0f);
             // imguiでangle/rangeが変わりうるので、毎フレーム視野角と遠平面を合わせ直す。
-            cmr.SetViewAngle(spotLight.angle);
-            cmr.SetFar(spotLight.pointLight.range);
+            // NOTE: spotLight.angleは中心軸から円錐の縁までの半頂角。
+            //       カメラのSetViewAngleは全画角(FovAngleY)を取るため2倍にする。
+            //       180°ちょうどだとtanが発散して射影行列が破綻するのでクランプする。
+            cmr.SetViewAngle(std::min<float>(spotLight.angle * 2.0f, Math::DegToRad(179.0f)));
+            cmr.SetFar(spotLight.pointLight.range * 100.0f);
             break;
         }
         default:

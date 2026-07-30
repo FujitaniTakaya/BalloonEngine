@@ -4,6 +4,12 @@
 #pragma comment( lib, "xinput.lib")
 #pragma comment(lib, "dxcompiler.lib")
 
+// NOTE: このファイルは #include の順序に強く依存している(型の前方宣言に頼らず、
+//       依存先ヘッダーが先にインクルードされている前提でコンパイルされるため)。
+//       SortIncludes 等の自動整形で並び替えるとビルドが壊れるので、
+//       ファイル末尾までフォーマッタの対象外にしている。
+// clang-format off
+
 #include <algorithm>
 #include <array>
 #include <atlbase.h>
@@ -22,8 +28,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <winsock2.h> // Windows.h より前にインクルードしないと sockaddr 等が再定義されてビルドエラーになる。
 #include <Windows.h>
-#include <winsock2.h>
 #include <Xinput.h>
 
 
@@ -85,6 +91,7 @@ using namespace nsK2EngineLow;
 #include "graphics/IRenderObject.h"
 #include "graphics/Light.h"
 #include "graphics/RenderingEngine.h"
+#include "graphics/ShadowRender.h"
 #include "graphics/ModelRender.h"
 #include "graphics/SpriteRender.h"
 #include "HID/GamePad.h"
@@ -123,3 +130,4 @@ inline constexpr int MAX_BONE = 512;	// �{�[���̍ő吔�B
 #include "graphics/effect/EffectEngine.h"
 #include "sound/SoundSource.h"
 #include "graphics/effect/EffectEmitter.h"
+// clang-format on
