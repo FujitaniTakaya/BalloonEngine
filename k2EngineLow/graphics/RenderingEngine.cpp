@@ -6,9 +6,6 @@
 
 #include "RenderingEngine.h"
 
-#include "Light.h"
-#include "ModelRender.h"
-
 
 namespace nsK2EngineLow
 {
@@ -27,16 +24,134 @@ namespace nsK2EngineLow
     {
         m_rendering3dObjects.reserve(DRAW_OBUJECT_MAX);
 
-        constexpr UINT width = FRAME_BUFFER_W;
-        constexpr UINT height = FRAME_BUFFER_H;
+        //========================================================================
+        // ポストプロセスを初期化
+        //========================================================================
+        InitializePostProcess();
 
 
+        //========================================================================
+        // デファードレンダリングを初期化
+        //========================================================================
+        InitializeDeferredRendering();
+
+
+        //========================================================================
+        // シャドウマップ用の変数を初期化
+        //========================================================================
+        InitializeShadowMap();
+    }
+
+
+    void RenderingEngine::Execute()
+    {
+        auto& rc = g_graphicsEngine->GetRenderContext();
+
+
+        //========================================================================
+        // シャドウマップを描画
+        //========================================================================
+        ExecuteShadowMap(rc);
+
+
+        //========================================================================
+        // ポストプロセス用のレンダーターゲットを描画
+        //========================================================================
+        ExecutePostProcess(rc);
+
+
+        //========================================================================
+        // デファードレンダリング用のレンダーターゲットを描画
+        //========================================================================
+        ExecuteDeferredRendering(rc);
+    }
+
+
+    void RenderingEngine::Add3dObject(Model* render3dObject)
+    {
+        /** 最大数を超えたら追加しない */
+        if (m_rendering3dObjects.size() >= DRAW_OBUJECT_MAX)
+        {
+            return;
+        }
+
+        m_rendering3dObjects.push_back(render3dObject);
+    }
+
+    void RenderingEngine::AddDeferredRendering3dObject(Model* render3dObject)
+    {
+        m_deferredRendering3dObjects.push_back(render3dObject);
+    }
+
+
+    //=======================================================================
+    // シャドウマップ
+    //=======================================================================
+    void RenderingEngine::AddShadowCaster(Model* model, EnShadowLightType shadowType)
+    {
+        m_shadowDatas[static_cast<size_t>(shadowType)].casters.push_back(model);
+    }
+
+
+    void RenderingEngine::QueryShadowMapTexture(std::function<void(Texture&)> queryFunc)
+    {
+        for (auto& shadowData : m_shadowDatas)
+        {
+            auto& shadowMapTexture = shadowData.map.GetRenderTargetTexture();
+            queryFunc(shadowMapTexture);
+        }
+    }
+
+
+    //=======================================================================
+    // ヘルパー
+    //=======================================================================
+    void RenderingEngine::InitializePostProcess()
+    {
+        m_mainRenderTarget.Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_D32_FLOAT);
+
+        SpriteInitData initData;
+        initData.m_width = FRAME_BUFFER_W;
+        initData.m_height = FRAME_BUFFER_H;
+        initData.m_fxFilePath = "Assets/shader/sprite.fx";
+        initData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
+
+        m_copyToFrameBufferSprite.Init(initData);
+    }
+
+
+    void RenderingEngine::ExecutePostProcess(RenderContext& rc)
+    {
+        rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);
+        rc.SetRenderTargetAndViewport(m_mainRenderTarget);
+        rc.ClearRenderTargetView(m_mainRenderTarget);
+
+        for (auto* object : m_rendering3dObjects)
+        {
+            object->Draw(rc);
+        }
+
+        m_rendering3dObjects.clear();
+
+
+        rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
+
+
+
+        g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
+        m_copyToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
+        m_copyToFrameBufferSprite.Draw(rc);
+    }
+
+
+    void RenderingEngine::InitializeDeferredRendering()
+    {
         //========================================================================
         // デファードレンダリング用のレンダーターゲットを初期化
         //========================================================================
-        GetRenderTarget(RTType::Albedo).Create(width, height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-        GetRenderTarget(RTType::Normal).Create(width, height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-        GetRenderTarget(RTType::WorldPos).Create(width, height, 1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN);
+        GetRenderTarget(RTType::Albedo).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+        GetRenderTarget(RTType::Normal).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+        GetRenderTarget(RTType::WorldPos).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN);
 
 
         //========================================================================
@@ -44,8 +159,8 @@ namespace nsK2EngineLow
         //========================================================================
 
         SpriteInitData initData;
-        initData.m_width = width;
-        initData.m_height = height;
+        initData.m_width = FRAME_BUFFER_W;
+        initData.m_height = FRAME_BUFFER_H;
         initData.m_fxFilePath = "Assets/shader/sprite.fx";
         initData.m_psEntryPoinFunc = "PSMainDeferred";
         initData.m_textures[0] = &GetRenderTarget(RTType::Albedo).GetRenderTargetTexture();
@@ -57,12 +172,50 @@ namespace nsK2EngineLow
         initData.m_expandConstantBufferSize = sizeof(LightData);
 
         m_deferredRenderingSprite.Init(initData);
+    }
 
 
-        //========================================================================
-        // シャドウマップ用の変数を初期化
-        //========================================================================
+    void RenderingEngine::ExecuteDeferredRendering(RenderContext& rc)
+    {
+        if (m_deferredRendering3dObjects.empty())
+        {
+            return;
+        }
+        std::array<RenderTarget*, static_cast<size_t>(RTType::Max)> rts;
+        for (size_t i = 0; i < rts.size(); ++i)
+        {
+            rts.at(i) = &m_rts.at(i);
+        }
+        const int numRt = static_cast<int>(rts.size());
 
+
+        // レンダーターゲットとして設定できるようになるまで待つ
+        rc.WaitUntilToPossibleSetRenderTargets(numRt, rts.data());
+        // レンダーターゲットを設定
+        rc.SetRenderTargets(numRt, rts.data());
+        // レンダーターゲットをクリア
+        rc.ClearRenderTargetViews(numRt, rts.data());
+
+        // 遅延描画オブジェクトを描画
+        for (auto* object : m_deferredRendering3dObjects)
+        {
+            object->Draw(rc);
+        }
+
+        // レンダーターゲットヘの書き込み待ち
+        rc.WaitUntilFinishDrawingToRenderTargets(numRt, rts.data());
+        // レンダリング先をフレームバッファーに戻してスプライトをレンダリングする
+        g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
+        // 遅延描画用スプライトを描画
+        m_deferredRenderingSprite.Draw(rc);
+
+        // 描画オブジェクトのリストをクリア
+        m_deferredRendering3dObjects.clear();
+    }
+
+
+    void RenderingEngine::InitializeShadowMap()
+    {
         float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
         for (int i = 0; i < LightData::MAX_SHADOW_NUM; ++i)
@@ -101,11 +254,9 @@ namespace nsK2EngineLow
     }
 
 
-    void RenderingEngine::Execute()
+    void RenderingEngine::ExecuteShadowMap(RenderContext& rc)
     {
-        auto& rc = g_graphicsEngine->GetRenderContext();
-
-        for (int i = 0; i < LightData::MAX_SHADOW_NUM; ++i)
+        for (int i = 0; i < MAX_SHADOW_NUM; ++i)
         {
             auto& data = m_shadowDatas.at(i);
 
@@ -139,87 +290,6 @@ namespace nsK2EngineLow
 
         // NOTE: これを書かないとうまくいかなかった
         rc.SetViewportAndScissor(g_graphicsEngine->GetFrameBufferViewport());
-
-
-        for (auto* object : m_rendering3dObjects)
-        {
-            object->Draw(rc);
-        }
-        m_rendering3dObjects.clear();
-
-        //========================================================================
-        // デファードレンダリング用のレンダーターゲットを描画
-        //========================================================================
-        if (m_deferredRendering3dObjects.empty())
-        {
-            return;
-        }
-        std::array<RenderTarget*, static_cast<size_t>(RTType::Max)> rts;
-        for (size_t i = 0; i < rts.size(); ++i)
-        {
-            rts.at(i) = &m_rts.at(i);
-        }
-        const int numRt = static_cast<int>(rts.size());
-
-
-        // レンダーターゲットとして設定できるようになるまで待つ
-        rc.WaitUntilToPossibleSetRenderTargets(numRt, rts.data());
-        // レンダーターゲットを設定
-        rc.SetRenderTargets(numRt, rts.data());
-        // レンダーターゲットをクリア
-        rc.ClearRenderTargetViews(numRt, rts.data());
-
-        // 遅延描画オブジェクトを描画
-        for (auto* object : m_deferredRendering3dObjects)
-        {
-            object->Draw(rc);
-        }
-
-        // レンダーターゲットヘの書き込み待ち
-        rc.WaitUntilFinishDrawingToRenderTargets(numRt, rts.data());
-        // レンダリング先をフレームバッファーに戻してスプライトをレンダリングする
-        g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
-        // 遅延描画用スプライトを描画
-        m_deferredRenderingSprite.Draw(rc);
-
-        // 描画オブジェクトのリストをクリア
-        m_deferredRendering3dObjects.clear();
-    }
-
-
-    void RenderingEngine::Add3dObject(Model* render3dObject)
-    {
-        /** 最大数を超えたら追加しない */
-        if (m_rendering3dObjects.size() >= DRAW_OBUJECT_MAX)
-        {
-            return;
-        }
-
-        m_rendering3dObjects.push_back(render3dObject);
-    }
-
-    void RenderingEngine::AddDeferredRendering3dObject(Model* render3dObject)
-    {
-        m_deferredRendering3dObjects.push_back(render3dObject);
-    }
-
-
-    //=======================================================================
-    // シャドウマップ
-    //=======================================================================
-    void RenderingEngine::AddShadowCaster(Model* model, EnShadowLightType shadowType)
-    {
-        m_shadowDatas[static_cast<size_t>(shadowType)].casters.push_back(model);
-    }
-
-
-    void RenderingEngine::QueryShadowMapTexture(std::function<void(Texture&)> queryFunc)
-    {
-        for (auto& shadowData : m_shadowDatas)
-        {
-            auto& shadowMapTexture = shadowData.map.GetRenderTargetTexture();
-            queryFunc(shadowMapTexture);
-        }
     }
 
 
