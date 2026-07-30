@@ -4,6 +4,7 @@
  */
 #pragma once
 #include "IRenderObject.h"
+#include "ShadowRef.h"
 #include "math/Transform.h"
 
 
@@ -155,7 +156,7 @@ namespace nsK2EngineLow
         /** モデルデータ */
         Model m_model;
         /** シャドウモデルデータ */
-        Model m_shadowModel;
+        std::array<Model, MAX_SHADOW_NUM> m_shadowModel;
         /** トランスフォーム */
         Transform m_transform;
 

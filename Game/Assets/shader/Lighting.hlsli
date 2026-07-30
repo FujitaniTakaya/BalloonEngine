@@ -54,6 +54,9 @@ struct SpotLight
 /** スポットライトの最大数 */
 static const int MAX_SPOT_LIGHT_NUM = 4;
 
+/** シャドウマップの最大数 */
+static const int MAX_SHADOW_NUM = 2;
+
 /*!
  * @brief   Constant buffer for lighting data.
  */
@@ -71,7 +74,7 @@ cbuffer LightCb : register(b1)
     float shininess;
     float localBias;
     float2 pad3;
-    float4x4 mLVP;
+    float4x4 mLVP[MAX_SHADOW_NUM];
 };
 
 ////////////////////////////////////////////////
@@ -142,7 +145,8 @@ float3 CalcSpotLightLighting(
 {
     const float3 ligDir = normalize(worldPos - spotLight.pointLight.position);
     const float dist = length(worldPos - spotLight.pointLight.position);
-    const float angle = abs(acos(dot(ligDir, spotLight.direction)));
+    const float3 spotDir = normalize(spotLight.direction);
+    const float angle = abs(acos(clamp(dot(ligDir, spotDir), -1.0f, 1.0f)));
 
     const float distAffect = pow(saturate(1.0f - (dist / spotLight.pointLight.range)), 3.0f);
     const float angleAffect = pow(saturate(1.0f - (angle / spotLight.spotAngle)), 3.0f);

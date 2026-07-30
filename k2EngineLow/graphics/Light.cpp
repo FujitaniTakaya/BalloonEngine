@@ -74,7 +74,7 @@ namespace nsK2EngineLow
         , shininess(32.0f)
         , localBias(0.005f)
         , pad3{ 0.0f, 0.0f }
-        , LVP(Matrix::Identity)
+        , LVP()
     {}
 
 

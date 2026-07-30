@@ -3,14 +3,11 @@
  * @brief 描画エンジンクラスの宣言
  */
 #pragma once
+#include "ShadowRef.h"
 
 
 namespace nsK2EngineLow
 {
-    /** 前方宣言 */
-    class ModelRender;
-
-
     /**
      * @brief レンダーターゲットの種類
      * @note 遅延描画用のレンダーターゲットの種類を表す列挙型
@@ -69,22 +66,16 @@ namespace nsK2EngineLow
         /**
          * @brief シャドウキャスターを追加する。
          * @param model シャドウキャスターとなるモデル
+         * @param shadowType シャドウの種類
          */
-        void AddShadowCaster(Model* model);
+        void AddShadowCaster(Model* model, EnShadowLightType shadowType);
 
 
         /**
-         * @brief ライトカメラを取得する。
-         * @return ライトカメラ
+         * @brief シャドウマップのテクスチャを取得する。
+         * @param queryFunc シャドウマップのテクスチャを取得するための関数
          */
-        Camera& GetLightCamera();
-
-
-        /**
-         * @brief シャドウマップテクスチャを取得する。
-         * @return シャドウマップテクスチャ
-         */
-        Texture& GetShadowMapTexture();
+        void QueryShadowMapTexture(std::function<void(Texture&)>);
 
 
     private:
@@ -101,10 +92,14 @@ namespace nsK2EngineLow
 
         /**
          * @brief ライトカメラを現在のシーンライトの方向に合わせて更新する。
-         * @note  シーンライトの方向は Game::Start など Initialize より後に設定されることがあるため、
-         *        毎フレーム呼び直して同期を取る。
          */
-        void InitializeLightCamera();
+        void InitializeLightCamera(Camera& cmr, const int index);
+
+
+        /**
+         * @brief ライトカメラを現在のシーンライトの方向に合わせて更新する。
+         */
+        void UpdateLightCamera(Camera& cmr, const int index);
 
 
     private:
@@ -117,12 +112,25 @@ namespace nsK2EngineLow
         /** 遅延描画用レンダーターゲット */
         std::array<RenderTarget, static_cast<size_t>(RTType::Max)> m_rts;
 
-        /** ライトカメラ */
-        Camera m_lightCamera;
 
-        RenderTarget m_shadowMap;
+        //=======================================================================
+        // シャドウマップ
+        //=======================================================================
+    public:
+        struct ShadowData
+        {
+            /** ライトカメラ */
+            Camera ligCamera;
+            /** シャドウマップ */
+            RenderTarget map;
+            /** シャドウキャスターのリスト */
+            std::vector<Model*> casters;
+        };
 
-        std::vector<Model*> m_shadowCasters;
+
+    private:
+        /** シャドウデータの配列 */
+        std::array<ShadowData, MAX_SHADOW_NUM> m_shadowDatas;
 
 
         //=======================================================================
