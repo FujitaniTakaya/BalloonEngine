@@ -78,7 +78,30 @@ namespace nsK2EngineLow
         void QueryShadowMapTexture(std::function<void(Texture&)>);
 
 
+        //=======================================================================
+        // ヘルパー
+        //=======================================================================
     private:
+        /** @brief ポストプロセスを初期化する。 */
+        void InitializePostProcess();
+
+        /** @brief ポストプロセスを実行する。 */
+        void ExecutePostProcess(RenderContext& rc);
+
+        /** @brief 遅延描画を初期化する。 */
+        void InitializeDeferredRendering();
+
+        /** @brief 遅延描画を実行する。 */
+        void ExecuteDeferredRendering(RenderContext& rc);
+
+        /** @brief シャドウマップを初期化する。 */
+        void InitializeShadowMap();
+
+        /** @brief シャドウマップを実行する。 */
+        void ExecuteShadowMap(RenderContext& rc);
+
+
+
         /**
          * @brief レンダーターゲットの種類を指定して取得する。
          * @param type レンダーターゲットの種類
@@ -111,6 +134,16 @@ namespace nsK2EngineLow
         Sprite m_deferredRenderingSprite;
         /** 遅延描画用レンダーターゲット */
         std::array<RenderTarget, static_cast<size_t>(RTType::Max)> m_rts;
+
+
+        //========================================================================
+        // ポストプロセス
+        //========================================================================
+    private:
+        /** メインレンダーターゲット */
+        RenderTarget m_mainRenderTarget;
+        /** フレームバッファーにコピーするためのスプライト */
+        Sprite m_copyToFrameBufferSprite;
 
 
         //=======================================================================

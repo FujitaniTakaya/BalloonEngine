@@ -59,6 +59,7 @@ namespace nsK2EngineLow
         //========================================================================
         InitShadow(tkmFilePath, modelInitData);
 
+        modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
         //========================================================================
         // 遅延描画用の処理
@@ -66,7 +67,6 @@ namespace nsK2EngineLow
         if (m_isDeferred)
         {
             modelInitData.m_psEntryPointFunc = "PSMainDeferred";
-            modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
             modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
             modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
         }
