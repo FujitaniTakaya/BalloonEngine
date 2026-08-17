@@ -17,6 +17,7 @@ namespace nsK2EngineLow
 
 
     RenderingEngine::RenderingEngine()
+        : m_screenBlurPower(0.0f)
     {}
 
 
@@ -116,6 +117,8 @@ namespace nsK2EngineLow
         initData.m_fxFilePath = "Assets/shader/sprite.fx";
         initData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
 
+        m_screenBlur.Init(&m_mainRenderTarget.GetRenderTargetTexture(), false, false);
+        m_screenBlur.GetBokeTexture();
         m_copyToFrameBufferSprite.Init(initData);
     }
 
@@ -133,10 +136,16 @@ namespace nsK2EngineLow
 
         m_rendering3dObjects.clear();
 
-
         rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
 
-
+        if (m_screenBlurPower > 0.0f)
+        {
+            m_screenBlur.ExecuteOnGPU(rc, m_screenBlurPower);
+        }
+        else
+        {
+            m_screenBlur.ExecuteOnGPU(rc, 0.0f);
+        }
 
         g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
         m_copyToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
