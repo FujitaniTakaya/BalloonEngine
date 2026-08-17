@@ -157,6 +157,8 @@ namespace nsK2EngineLow
         RenderTarget m_mainRenderTarget;
         /** フレームバッファーにコピーするためのスプライト */
         Sprite m_copyToFrameBufferSprite;
+        /** ブラー済みの画像をフレームバッファーにコピーするためのスプライト */
+        Sprite m_copyBlurToFrameBufferSprite;
         /** ガウシアンブラー */
         GaussianBlur m_screenBlur;
         /** ブラーの値 */
