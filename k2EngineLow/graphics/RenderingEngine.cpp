@@ -122,6 +122,7 @@ namespace nsK2EngineLow
 
         // ブラー済みテクスチャをフレームバッファーにコピーするスプライトを初期化する。
         SpriteInitData blurInitData = initData;
+        blurInitData.m_alphaBlendMode = AlphaBlendMode::AlphaBlendMode_Add;
         blurInitData.m_textures[0] = &m_screenBlur.GetBokeTexture();
         m_copyBlurToFrameBufferSprite.Init(blurInitData);
     }
@@ -151,6 +152,9 @@ namespace nsK2EngineLow
 
         if (m_screenBlurPower > 0.0f)
         {
+            m_copyToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
+            m_copyToFrameBufferSprite.Draw(rc);
+
             m_copyBlurToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
             m_copyBlurToFrameBufferSprite.Draw(rc);
         }
