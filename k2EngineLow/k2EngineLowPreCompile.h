@@ -90,12 +90,12 @@ using namespace nsK2EngineLow;
 #include "graphics/Model.h"
 #include "graphics/IRenderObject.h"
 #include "graphics/Light.h"
+#include "graphics/GaussianBlur.h"
 #include "graphics/RenderingEngine.h"
 #include "graphics/ModelRender.h"
 #include "graphics/SpriteRender.h"
 #include "HID/GamePad.h"
 
-#include "graphics/GaussianBlur.h"
 
 inline constexpr UINT FRAME_BUFFER_W = 1920;	// �t���[���o�b�t�@�̕��B
 inline constexpr UINT FRAME_BUFFER_H = 1080;	// �t���[���o�b�t�@�̍����B

@@ -35,5 +35,7 @@ namespace app
 
 
         AnimationClip m_animationClips[2];
+
+        float m_screenBlurPower;
     };
 } // namespace app

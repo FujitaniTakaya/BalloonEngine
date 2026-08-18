@@ -115,8 +115,12 @@ namespace app
             }
         }
 
+        ImGui::SliderFloat("ScreenBlur", &m_screenBlurPower, 0.0f, 10.0f);
+
         ImGui::End();
 #endif // DEBUG
+
+        RenderingEngine::Get().SetScreenBlurPower(m_screenBlurPower);
 
         if (g_pad[0]->IsPress(enButtonA))
         {

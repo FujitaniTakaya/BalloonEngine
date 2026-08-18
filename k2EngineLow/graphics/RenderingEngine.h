@@ -58,6 +58,19 @@ namespace nsK2EngineLow
         void AddDeferredRendering3dObject(Model* render3dObject);
 
 
+        //=======================================================================
+        // ポストプロセス
+        //=======================================================================
+    public:
+        /**
+         * @brief スクリーンブラーの強さを設定する。
+         * @param power ブラーの強さ
+         */
+        void SetScreenBlurPower(float& power)
+        {
+            m_screenBlurPower = power;
+        }
+
 
         //=======================================================================
         // シャドウマップ
@@ -144,6 +157,12 @@ namespace nsK2EngineLow
         RenderTarget m_mainRenderTarget;
         /** フレームバッファーにコピーするためのスプライト */
         Sprite m_copyToFrameBufferSprite;
+        /** ブラー済みの画像をフレームバッファーにコピーするためのスプライト */
+        Sprite m_copyBlurToFrameBufferSprite;
+        /** ガウシアンブラー */
+        GaussianBlur m_screenBlur;
+        /** ブラーの値 */
+        float m_screenBlurPower;
 
 
         //=======================================================================
