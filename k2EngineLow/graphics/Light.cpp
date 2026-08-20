@@ -62,7 +62,7 @@ namespace nsK2EngineLow
     /***************************************/
 
 
-    LightData::LightData()
+    LightingCB::LightingCB()
         : directionLight()
         , ambientLight()
         , pointLights()

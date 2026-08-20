@@ -79,7 +79,7 @@ namespace app
 
         if (ImGui::CollapsingHeader("Point Lights"))
         {
-            ImGui::SliderInt("PointLightNum", &light.usingPointLightNum, 0, LightData::MAX_POINT_LIGHT_NUM);
+            ImGui::SliderInt("PointLightNum", &light.usingPointLightNum, 0, LightingCB::MAX_POINT_LIGHT_NUM);
             for (int i = 0; i < light.usingPointLightNum; ++i)
             {
                 ImGui::PushID(i);
@@ -97,7 +97,7 @@ namespace app
 
         if (ImGui::CollapsingHeader("Spot Lights"))
         {
-            ImGui::SliderInt("SpotLightNum", &light.usingSpotLightNum, 0, LightData::MAX_SPOT_LIGHT_NUM);
+            ImGui::SliderInt("SpotLightNum", &light.usingSpotLightNum, 0, LightingCB::MAX_SPOT_LIGHT_NUM);
             for (int i = 0; i < light.usingSpotLightNum; ++i)
             {
                 ImGui::PushID(i);

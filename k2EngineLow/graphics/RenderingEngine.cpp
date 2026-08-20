@@ -196,7 +196,7 @@ namespace nsK2EngineLow
 
         auto& light = SceneLight::Get();
         initData.m_expandConstantBuffer = &light.m_sceneLight;
-        initData.m_expandConstantBufferSize = sizeof(LightData);
+        initData.m_expandConstantBufferSize = sizeof(LightingCB);
 
         m_deferredRenderingSprite.Init(initData);
     }
@@ -245,7 +245,7 @@ namespace nsK2EngineLow
     {
         float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-        for (int i = 0; i < LightData::MAX_SHADOW_NUM; ++i)
+        for (int i = 0; i < LightingCB::MAX_SHADOW_NUM; ++i)
         {
             auto& data = m_shadowDatas.at(i);
 
