@@ -18,6 +18,8 @@ namespace nsK2EngineLow
 
     RenderingEngine::RenderingEngine()
         : m_screenBlurPower(0.0f)
+        , m_isDualBlurEnabl(false)
+        , m_bloomIntensity(1.0f)
     {}
 
 
@@ -29,6 +31,12 @@ namespace nsK2EngineLow
         // ポストプロセスを初期化
         //========================================================================
         InitializePostProcess();
+
+
+        //========================================================================
+        // デュアルブラーを初期化
+        //========================================================================
+        InitializeDualBlur();
 
 
         //========================================================================
@@ -59,6 +67,12 @@ namespace nsK2EngineLow
         // ポストプロセス用のレンダーターゲットを描画
         //========================================================================
         ExecutePostProcess(rc);
+
+
+        //========================================================================
+        // デュアルブラー用のレンダーターゲットを描画
+        //========================================================================
+        ExecuteDualBlur(rc);
 
 
         //========================================================================
@@ -168,6 +182,132 @@ namespace nsK2EngineLow
             m_copyToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
             m_copyToFrameBufferSprite.Draw(rc);
         }
+    }
+
+
+    void RenderingEngine::InitializeDualBlur()
+    {
+        std::vector<BlurData*> blurInitList = {
+            &m_luminance,
+            &m_downBlur.at(0),
+            &m_downBlur.at(1),
+            &m_downBlur.at(2),
+            &m_downBlur.at(3),
+            &m_upBlur.at(0),
+            &m_upBlur.at(1),
+            &m_upBlur.at(2),
+            &m_mainBlur,
+        };
+
+
+        auto RTCreateFunc = [](RenderTarget& rt, int w, int h) {
+            rt.Create(w, h, 1, 1, DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_UNKNOWN);
+        };
+
+
+        for (int i = 0; i < blurInitList.size(); ++i)
+        {
+            auto& blurData = *blurInitList.at(i);
+            SpriteInitData initData;
+            initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+
+            if (i == 0)
+            {
+                const int w = FRAME_BUFFER_W;
+                const int h = FRAME_BUFFER_H;
+
+                initData.m_width = w;
+                initData.m_height = h;
+                initData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
+                initData.m_fxFilePath = "Assets/shader/bloom/samplingLuminance.fx";
+                initData.m_expandConstantBuffer = &m_bloomCB;
+                initData.m_expandConstantBufferSize = sizeof(BloomCB);
+                RTCreateFunc(blurData.rt, w, h);
+            }
+            else
+            {
+                initData.m_textures[0] = &blurInitList.at(i - 1)->rt.GetRenderTargetTexture();
+
+                if (i < 5)
+                {
+                    const int w = blurInitList.at(i - 1)->rt.GetWidth() >> 1;
+                    const int h = blurInitList.at(i - 1)->rt.GetHeight() >> 1;
+
+                    initData.m_width = w;
+                    initData.m_height = h;
+                    initData.m_fxFilePath = "Assets/shader/bloom/dualBlurDown.fx";
+                    RTCreateFunc(blurData.rt, w, h);
+                }
+
+                else
+                {
+                    const int w = blurInitList.at(i - 1)->rt.GetWidth() << 1;
+                    const int h = blurInitList.at(i - 1)->rt.GetHeight() << 1;
+                    initData.m_width = w;
+                    initData.m_height = h;
+                    initData.m_fxFilePath = "Assets/shader/bloom/dualBlurUp.fx";
+                    RTCreateFunc(blurData.rt, w, h);
+
+                    if (i == 8)
+                    {
+                        initData.m_fxFilePath = "Assets/shader/sprite.fx";
+                    }
+                }
+            }
+
+            blurData.sprite.Init(initData);
+        }
+
+
+        // ブラー済みの画像をフレームバッファーに加算合成するためのスプライトを初期化する。
+        SpriteInitData compositeInitData;
+        compositeInitData.m_width = FRAME_BUFFER_W;
+        compositeInitData.m_height = FRAME_BUFFER_H;
+        compositeInitData.m_fxFilePath = "Assets/shader/sprite.fx";
+        compositeInitData.m_textures[0] = &m_mainBlur.rt.GetRenderTargetTexture();
+        compositeInitData.m_alphaBlendMode = AlphaBlendMode::AlphaBlendMode_Add;
+        m_copyDualBlurToFrameBufferSprite.Init(compositeInitData);
+    }
+
+
+    void RenderingEngine::ExecuteDualBlur(RenderContext& rc)
+    {
+        if (!m_isDualBlurEnabl)
+        {
+            return;
+        }
+
+        std::vector<BlurData*> blurExecList = {
+            &m_luminance,
+            &m_downBlur.at(0),
+            &m_downBlur.at(1),
+            &m_downBlur.at(2),
+            &m_downBlur.at(3),
+            &m_upBlur.at(0),
+            &m_upBlur.at(1),
+            &m_upBlur.at(2),
+            &m_mainBlur,
+        };
+
+
+        for (auto* blurData : blurExecList)
+        {
+            rc.WaitUntilToPossibleSetRenderTarget(blurData->rt);
+            rc.SetRenderTargetAndViewport(blurData->rt);
+            rc.ClearRenderTargetView(blurData->rt);
+
+            blurData->sprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
+            blurData->sprite.Draw(rc);
+
+            rc.WaitUntilFinishDrawingToRenderTarget(blurData->rt);
+        }
+
+        // レンダリング先をフレームバッファーに戻し、ブラー結果を加算合成する。
+        g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
+
+        m_copyDualBlurToFrameBufferSprite.SetMulColor({ m_bloomIntensity, m_bloomIntensity, m_bloomIntensity, 1.0f });
+        m_copyDualBlurToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
+        m_copyDualBlurToFrameBufferSprite.Draw(rc);
     }
 
 
@@ -367,5 +507,32 @@ namespace nsK2EngineLow
 
         // ライトカメラから見た位置への変換行列をシーンライトに設定
         light.LVP.at(index) = cmr.GetViewProjectionMatrix();
+    }
+
+
+    BloomCB& RenderingEngine::GetBloomCB()
+    {
+        return m_bloomCB;
+    }
+
+    float& RenderingEngine::GetBloomIntensity()
+    {
+        return m_bloomIntensity;
+    }
+
+    void RenderingEngine::SetDualBlurEnable(bool enable)
+    {
+        m_isDualBlurEnabl = enable;
+    }
+
+
+
+
+    //=======================================================================
+    // BloomCB
+    //=======================================================================
+    BloomCB::BloomCB()
+        : threshold(1.0f)
+    {
     }
 } // namespace nsK2EngineLow

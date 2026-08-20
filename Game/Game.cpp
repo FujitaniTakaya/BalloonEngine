@@ -69,6 +69,7 @@ namespace app
             ImGui::SliderFloat3("Direction", &light.directionLight.lightDir.x, -1.0f, 1.0f);
             ImGui::ColorEdit3("Color", &light.directionLight.lightColor.m_colorVec3.x);
             ImGui::SliderFloat("Shininess", &light.shininess, 1.0f, 200.0f);
+            ImGui::SliderFloat("Spec Intensity", &light.specIntensity, 0.0f, 5.0f);
             ImGui::SliderFloat("Bias", &light.localBias, 0.000001f, 1.0f);
         }
 
@@ -117,6 +118,14 @@ namespace app
 
         ImGui::SliderFloat("ScreenBlur", &m_screenBlurPower, 0.0f, 10.0f);
 
+        ImGui::Checkbox("Dual Blur", &m_isDualBlurEnable);
+        RenderingEngine::Get().SetDualBlurEnable(m_isDualBlurEnable);
+
+        auto& bloomCB = RenderingEngine::Get().GetBloomCB();
+        ImGui::SliderFloat("BloomThreshold", &bloomCB.threshold, 1.0f, 3.0f);
+        ImGui::SliderFloat("BloomIntensity", &RenderingEngine::Get().GetBloomIntensity(), 0.0f, 3.0f);
+
+
         ImGui::End();
 #endif // DEBUG
 
@@ -131,11 +140,6 @@ namespace app
             m_modelRender.PlayAnimation(0, 0.3f);
         }
 
-
-        Quaternion rot = m_modelRender.GetTransform().m_rotation;
-
-        rot.AddRotationDegY(0.1);
-        m_modelRender.SetRotation(rot);
         m_modelRender.Update();
 
         m_gameCamera->SetTargetPosition(m_modelRender.GetTransform().m_position);
