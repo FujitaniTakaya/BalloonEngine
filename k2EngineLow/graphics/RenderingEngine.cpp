@@ -155,6 +155,11 @@ namespace nsK2EngineLow
             m_copyToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
             m_copyToFrameBufferSprite.Draw(rc);
 
+            // GaussianBlurは中心ピクセルを直接サンプリングしないため、blurPowerが小さくても
+            // 加算するボケ画像はほぼ元画像と同じ明るさになってしまう。
+            // そのため、blurPowerに応じて加算量自体をフェードさせ、0付近で急に明るくならないようにする。
+            const float fade = std::clamp(m_screenBlurPower, 0.0f, 1.0f);
+            m_copyBlurToFrameBufferSprite.SetMulColor({ fade, fade, fade, 1.0f });
             m_copyBlurToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
             m_copyBlurToFrameBufferSprite.Draw(rc);
         }

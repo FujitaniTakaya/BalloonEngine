@@ -73,7 +73,8 @@ namespace nsK2EngineLow
         , pad2(0.0f)
         , shininess(32.0f)
         , localBias(0.005f)
-        , pad3{ 0.0f, 0.0f }
+        , specIntensity(1.0f)
+        , pad3(0.0f)
         , LVP()
     {}
 

@@ -124,8 +124,10 @@ namespace nsK2EngineLow
         float shininess;
         /** ローカルバイアス */
         float localBias;
+        /** スペキュラの強度倍率 */
+        float specIntensity;
         /** パディング */
-        float pad3[2];
+        float pad3;
         /** ライトカメラから見た位置への変換行列 */
         std::array<Matrix, MAX_SHADOW_NUM> LVP;
 
