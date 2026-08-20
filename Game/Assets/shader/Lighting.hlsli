@@ -60,7 +60,7 @@ static const int MAX_SHADOW_NUM = 2;
 /*!
  * @brief   Constant buffer for lighting data.
  */
-cbuffer LightCb : register(b1)
+cbuffer LightingCB : register(b1)
 {
     DirectionLight dirLight;
     AmbientLight ambientLight;
@@ -73,7 +73,8 @@ cbuffer LightCb : register(b1)
     float pad2;
     float shininess;
     float localBias;
-    float2 pad3;
+    float specIntensity;
+    float pad3;
     float4x4 mLVP[MAX_SHADOW_NUM];
 };
 
@@ -98,14 +99,15 @@ float3 CalcSpecularLighting(
     const float3 normedLightDir,
     const float3 normedViewDir,
     const float3 lightColor,
-    const float shininess
+    const float shininess,
+    const float specIntensity
     )
 {
     const float3 R = reflect(normedLightDir, normedNormal);
     const float RdotV = max(dot(R, normedViewDir), 0.0f);
     const float NdotL = max(dot(normedNormal, normedLightDir) * -1, 0.0f);
     const float specular = pow(RdotV, shininess) * step(0.0001f, NdotL);
-    return lightColor * specular;
+    return lightColor * specular * specIntensity;
 }
 
 
@@ -118,7 +120,8 @@ float3 CalcPointLightLighting(
     const float3 worldPos,
     const PointLight pointLight,
     const float shininess,
-    const float specFactor
+    const float specFactor,
+    const float specIntensity
     )
 {
     const float3 ligDir = normalize(worldPos - pointLight.position);
@@ -126,7 +129,7 @@ float3 CalcPointLightLighting(
     const float affect = pow(saturate(1.0f - (dist / pointLight.range)), 3.0f);
 
     const float3 diffuse = CalcDiffuseLighting(N, ligDir, pointLight.lightColor) * affect;
-    const float3 specular = CalcSpecularLighting(N, ligDir, V, pointLight.lightColor, shininess) * affect * specFactor;
+    const float3 specular = CalcSpecularLighting(N, ligDir, V, pointLight.lightColor, shininess, specIntensity) * affect * specFactor;
 
     return diffuse + specular;
 }
@@ -140,7 +143,8 @@ float3 CalcSpotLightLighting(
     const float3 worldPos,
     const SpotLight spotLight,
     const float shininess,
-    const float specFactor
+    const float specFactor,
+    const float specIntensity
     )
 {
     const float3 ligDir = normalize(worldPos - spotLight.pointLight.position);
@@ -153,7 +157,7 @@ float3 CalcSpotLightLighting(
     const float affect = distAffect * angleAffect;
 
     const float3 diffuse = CalcDiffuseLighting(N, ligDir, spotLight.pointLight.lightColor) * affect;
-    const float3 specular = CalcSpecularLighting(N, ligDir, V, spotLight.pointLight.lightColor, shininess) * affect * specFactor;
+    const float3 specular = CalcSpecularLighting(N, ligDir, V, spotLight.pointLight.lightColor, shininess, specIntensity) * affect * specFactor;
 
     return diffuse + specular;
 }

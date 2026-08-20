@@ -140,14 +140,14 @@ float4 PSMain(SPSIn In) : SV_Target0
     // ディレクションライトの反射光を計算
     const float dirShadow = CalcShadow(In.worldPos, N, L, 0);
     const float3 dirDiffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
-    const float3 dirSpecular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, shininess) * specFactor;
+    const float3 dirSpecular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, shininess, specIntensity) * specFactor;
     const float3 directionRef = (dirDiffuse + dirSpecular) * (1.0f - dirShadow);
 
     // ポイントライトの反射光を計算
     float3 pointRef = float3(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < usingPointLightNum; ++i)
     {
-        pointRef += CalcPointLightLighting(N, V, In.worldPos, pointLights[i], shininess, specFactor);
+        pointRef += CalcPointLightLighting(N, V, In.worldPos, pointLights[i], shininess, specFactor, specIntensity);
     }
 
     // スポットライトの反射光を計算
@@ -160,7 +160,7 @@ float4 PSMain(SPSIn In) : SV_Target0
             const float3 spotDir = normalize(In.worldPos - spotLights[j].pointLight.position);
             spotShadow = CalcShadow(In.worldPos, N, spotDir, 1);
         }
-        spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor) * (1.0f - spotShadow);
+        spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor, specIntensity) * (1.0f - spotShadow);
     }
 
     // 反射光を合成

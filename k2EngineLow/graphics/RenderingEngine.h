@@ -27,6 +27,22 @@ namespace nsK2EngineLow
 
 
     /**
+     * @brief ブラー用の定数バッファ
+     */
+    struct BloomCB
+    {
+        /** ブラーのしきい値 */
+        float threshold;
+        float padding[3];
+
+
+        BloomCB();
+        ~BloomCB() = default;
+    };
+
+
+
+    /**
      * @brief 描画エンジンクラス
      */
     class RenderingEngine
@@ -101,6 +117,12 @@ namespace nsK2EngineLow
         /** @brief ポストプロセスを実行する。 */
         void ExecutePostProcess(RenderContext& rc);
 
+        /** @brief デュアルブラーを初期化する。 */
+        void InitializeDualBlur();
+
+        /** @brief デュアルブラーを実行する。 */
+        void ExecuteDualBlur(RenderContext& rc);
+
         /** @brief 遅延描画を初期化する。 */
         void InitializeDeferredRendering();
 
@@ -138,6 +160,28 @@ namespace nsK2EngineLow
         void UpdateLightCamera(Camera& cmr, const int index);
 
 
+
+        //=======================================================================
+        // ブラー用
+        //=======================================================================
+    public:
+        /**
+         * @brief ブラー用の定数バッファを取得する。
+         * @return ブラー用の定数バッファ
+         */
+        BloomCB& GetBloomCB();
+
+
+        /**
+         * @brief ブラーの強さを取得する(加算合成時の乗算値)。
+         * @return ブラーの強さ
+         */
+        float& GetBloomIntensity();
+
+
+        void SetDualBlurEnable(bool enable);
+
+
     private:
         /** 描画オブジェクトのリスト */
         std::vector<Model*> m_rendering3dObjects;
@@ -163,6 +207,38 @@ namespace nsK2EngineLow
         GaussianBlur m_screenBlur;
         /** ブラーの値 */
         float m_screenBlurPower;
+
+
+        //=======================================================================
+        // デュアルブラー
+        //=======================================================================
+    private:
+        struct BlurData
+        {
+            /** ブラー用レンダーターゲット */
+            RenderTarget rt;
+            /** ブラー用スプライト */
+            Sprite sprite;
+        };
+
+
+        /** 輝度抽出の結果 */
+        BlurData m_luminance;
+        /** メイン用のブラー */
+        BlurData m_mainBlur;
+        /** ダウンスケール用のブラー */
+        std::array<BlurData, 4> m_downBlur;
+        /** アップスケール用のブラー */
+        std::array<BlurData, 3> m_upBlur;
+        /** ブラー用の定数バッファ */
+        BloomCB m_bloomCB;
+        /** ブラー済みの画像をフレームバッファーにコピーするためのスプライト */
+        Sprite m_copyDualBlurToFrameBufferSprite;
+        /** デュアルブラーの有効化フラグ */
+        bool m_isDualBlurEnabl;
+        /** ブラーの強さ(加算合成時の乗算値) */
+        float m_bloomIntensity;
+
 
 
         //=======================================================================

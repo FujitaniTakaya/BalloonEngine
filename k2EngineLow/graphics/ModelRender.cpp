@@ -72,7 +72,7 @@ namespace nsK2EngineLow
         }
 
         modelInitData.m_expandConstantBuffer = &SceneLight::Get().m_sceneLight;
-        modelInitData.m_expandConstantBufferSize = sizeof(LightData);
+        modelInitData.m_expandConstantBufferSize = sizeof(LightingCB);
 
         m_model.Init(modelInitData);
     }

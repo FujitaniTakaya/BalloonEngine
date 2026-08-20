@@ -94,7 +94,7 @@ namespace nsK2EngineLow
      * @brief ライトデータ(model.fx の LightCb と1:1対応)
      * @note  ここを変更したらシェーダー側の cbuffer も必ず変更すること。
      */
-    struct LightData
+    struct LightingCB
     {
         /** ディレクションライト */
         DirectionLight directionLight;
@@ -124,14 +124,16 @@ namespace nsK2EngineLow
         float shininess;
         /** ローカルバイアス */
         float localBias;
+        /** スペキュラの強度倍率 */
+        float specIntensity;
         /** パディング */
-        float pad3[2];
+        float pad3;
         /** ライトカメラから見た位置への変換行列 */
         std::array<Matrix, MAX_SHADOW_NUM> LVP;
 
 
-        LightData();
-        ~LightData() = default;
+        LightingCB();
+        ~LightingCB() = default;
     };
 
 
@@ -163,7 +165,7 @@ namespace nsK2EngineLow
         //=======================================================================
     public:
         /** シーンライト */
-        LightData m_sceneLight;
+        LightingCB m_sceneLight;
 
 
         //=======================================================================
