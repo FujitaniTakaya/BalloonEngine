@@ -90,6 +90,7 @@ using namespace nsK2EngineLow;
 #include "graphics/Model.h"
 #include "graphics/IRenderObject.h"
 #include "graphics/Light.h"
+#include "graphics/DualBlur.h"
 #include "graphics/GaussianBlur.h"
 #include "graphics/RenderingEngine.h"
 #include "graphics/ModelRender.h"
