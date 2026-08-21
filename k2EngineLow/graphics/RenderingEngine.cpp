@@ -19,6 +19,7 @@ namespace nsK2EngineLow
     RenderingEngine::RenderingEngine()
         : m_screenBlurPower(0.0f)
         , m_isDualBlurEnable(false)
+        , m_isDoFEnable(false)
         , m_bloomIntensity(1.0f)
     {}
 
@@ -38,6 +39,11 @@ namespace nsK2EngineLow
         //========================================================================
         InitializeBloom();
 
+
+        //========================================================================
+        // 被写界深度を初期化
+        //========================================================================
+        InitializeDoF();
 
 
         //========================================================================
@@ -73,7 +79,13 @@ namespace nsK2EngineLow
         //========================================================================
         // デュアルブラー用のレンダーターゲットを描画
         //========================================================================
-        ExecuteDualBlur(rc);
+        ExecuteBloom(rc);
+
+
+        //========================================================================
+        // 被写界深度用のレンダーターゲットを描画
+        //========================================================================
+        ExecuteDoF(rc);
 
 
         //========================================================================
@@ -242,14 +254,40 @@ namespace nsK2EngineLow
         m_bloomSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
         m_bloomSprite.Draw(rc);
     }
+
+
+    void RenderingEngine::InitializeDoF()
+    {
+        m_dofBlur.Init(&m_mainRenderTarget.GetRenderTargetTexture());
+
+        SpriteInitData initData;
+        initData.m_width = FRAME_BUFFER_W;
+        initData.m_height = FRAME_BUFFER_H;
+        initData.m_fxFilePath = "Assets/shader/bloom/dof.fx";
+        initData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
+        initData.m_textures[1] = &m_dofBlur.GetResultTexture();
+        initData.m_expandConstantBuffer = &m_dofCB;
+        initData.m_expandConstantBufferSize = sizeof(DoFCB);
+        m_dofSprite.Init(initData);
+    }
+
+
+    void RenderingEngine::ExecuteDoF(RenderContext& rc)
+    {
+        if (!m_isDoFEnable)
+        {
+            return;
         }
 
-        // レンダリング先をフレームバッファーに戻し、ブラー結果を加算合成する。
+        m_dofBlur.ExecuteOnGPU(rc);
+
         g_graphicsEngine->ChangeRenderTargetToFrameBuffer(rc);
 
-        m_copyDualBlurToFrameBufferSprite.SetMulColor({ m_bloomIntensity, m_bloomIntensity, m_bloomIntensity, 1.0f });
-        m_copyDualBlurToFrameBufferSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
-        m_copyDualBlurToFrameBufferSprite.Draw(rc);
+        // NOTE: これを書かないとうまくいかなかった
+        rc.SetViewportAndScissor(g_graphicsEngine->GetFrameBufferViewport());
+
+        m_dofSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
+        m_dofSprite.Draw(rc);
     }
 
 
@@ -471,6 +509,19 @@ namespace nsK2EngineLow
     }
 
 
+    //=======================================================================
+    // 被写界深度用の定数バッファ
+    //=======================================================================
+    DoFCB& RenderingEngine::GetDoFCB()
+    {
+        return m_dofCB;
+    }
+
+
+    bool& RenderingEngine::GetDoFEnable()
+    {
+        return m_isDoFEnable;
+    }
 
 
     //=======================================================================
@@ -478,6 +529,16 @@ namespace nsK2EngineLow
     //=======================================================================
     BloomCB::BloomCB()
         : threshold(1.0f)
+    {
+    }
+
+
+    //=======================================================================
+    // DoFCB
+    //=======================================================================
+    DoFCB::DoFCB()
+        : focusDistance(10.0f)
+        , focusRange(5.0f)
     {
     }
 } // namespace nsK2EngineLow

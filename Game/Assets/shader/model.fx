@@ -171,7 +171,8 @@ float4 PSMain(SPSIn In) : SV_Target0
     const float3 ligColor = ambientLight.lightColor.xyz + refLight;
     albedoColor.xyz *= ligColor;
 
-    return albedoColor;
+    // αにカメラからの距離を格納する(DoFで使用)。
+    return float4(albedoColor.xyz, length(In.worldPos - eyePos));
 }
 
 

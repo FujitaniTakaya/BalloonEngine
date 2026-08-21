@@ -41,6 +41,22 @@ namespace nsK2EngineLow
     };
 
 
+    /**
+     * @brief 被写界深度用の定数バッファ
+     */
+    struct DoFCB
+    {
+        /** ピントが合う距離 */
+        float focusDistance;
+        /** ピントが合う幅 */
+        float focusRange;
+        float padding[2];
+
+        DoFCB();
+        ~DoFCB() = default;
+    };
+
+
 
     /**
      * @brief 描画エンジンクラス
@@ -123,6 +139,11 @@ namespace nsK2EngineLow
         /** @brief ブルームを実行する。 */
         void ExecuteBloom(RenderContext& rc);
 
+        /** @brief 被写界深度を初期化する。 */
+        void InitializeDoF();
+
+        /** @brief 被写界深度を実行する。 */
+        void ExecuteDoF(RenderContext& rc);
 
         /** @brief 遅延描画を初期化する。 */
         void InitializeDeferredRendering();
@@ -187,6 +208,24 @@ namespace nsK2EngineLow
         bool& SetDualBlurEnable();
 
 
+        //=======================================================================
+        // DoF用
+        //=======================================================================
+    public:
+        /**
+         * @brief 被写界深度用の定数バッファを取得する。
+         * @return 被写界深度用の定数バッファ
+         */
+        DoFCB& GetDoFCB();
+
+
+        /**
+         * @brief 被写界深度の有効化フラグを取得する。
+         * @return 被写界深度の有効化フラグ
+         */
+        bool& GetDoFEnable();
+
+
     private:
         /** 描画オブジェクトのリスト */
         std::vector<Model*> m_rendering3dObjects;
@@ -236,6 +275,19 @@ namespace nsK2EngineLow
         /** ブルームの強さ(加算合成時の乗算値) */
         float m_bloomIntensity;
 
+
+        //=======================================================================
+        // DoF
+        //=======================================================================
+    private:
+        /** 被写界深度用の定数バッファ */
+        DoFCB m_dofCB;
+        /** DoF用 */
+        DualBlur m_dofBlur;
+        /** 被写界深度合成用スプライト */
+        Sprite m_dofSprite;
+        /** 被写界深度の有効化フラグ */
+        bool m_isDoFEnable;
 
 
         //=======================================================================

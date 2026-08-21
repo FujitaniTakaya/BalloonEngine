@@ -128,6 +128,14 @@ namespace app
         }
 
 
+        if (ImGui::CollapsingHeader("Depth of Field"))
+        {
+            auto& dofCB = re.GetDoFCB();
+            ImGui::Checkbox("Enable DoF", &re.GetDoFEnable());
+            ImGui::SliderFloat("Focus Distance", &dofCB.focusDistance, 0.0f, 3000.0f);
+            ImGui::SliderFloat("Focus Range", &dofCB.focusRange, 10.0f, 2000.0f);
+        }
+
 
         ImGui::End();
 #endif // DEBUG
