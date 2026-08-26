@@ -339,6 +339,7 @@
     <ClCompile Include="tkFile\TkmFile.cpp" />
     <ClCompile Include="tkFile\TknFile.cpp" />
     <ClCompile Include="tkFile\TksFile.cpp" />
+    <ClCompile Include="graphics\DualBlur.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AI\PathFinding\Cell.h" />
@@ -446,6 +447,7 @@
     <ClInclude Include="graphics\ShadowRef.h" />
     <ClInclude Include="util\Noncopyable.h" />
     <ClInclude Include="util\Util.h" />
+    <ClInclude Include="graphics\DualBlur.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

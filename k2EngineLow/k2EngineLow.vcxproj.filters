@@ -252,6 +252,9 @@
     <ClCompile Include="HID\GamePadVIbration.cpp">
       <Filter>HID</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\DualBlur.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -564,6 +567,9 @@
     </ClInclude>
     <ClInclude Include="util\Util.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\DualBlur.h">
+      <Filter>graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

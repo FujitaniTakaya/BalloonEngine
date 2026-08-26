@@ -41,6 +41,22 @@ namespace nsK2EngineLow
     };
 
 
+    /**
+     * @brief 被写界深度用の定数バッファ
+     */
+    struct DoFCB
+    {
+        /** ピントが合う距離 */
+        float focusDistance;
+        /** ピントが合う幅 */
+        float focusRange;
+        float padding[2];
+
+        DoFCB();
+        ~DoFCB() = default;
+    };
+
+
 
     /**
      * @brief 描画エンジンクラス
@@ -117,11 +133,17 @@ namespace nsK2EngineLow
         /** @brief ポストプロセスを実行する。 */
         void ExecutePostProcess(RenderContext& rc);
 
-        /** @brief デュアルブラーを初期化する。 */
-        void InitializeDualBlur();
+        /** @brief ブルームを初期化する。 */
+        void InitializeBloom();
 
-        /** @brief デュアルブラーを実行する。 */
-        void ExecuteDualBlur(RenderContext& rc);
+        /** @brief ブルームを実行する。 */
+        void ExecuteBloom(RenderContext& rc);
+
+        /** @brief 被写界深度を初期化する。 */
+        void InitializeDoF();
+
+        /** @brief 被写界深度を実行する。 */
+        void ExecuteDoF(RenderContext& rc);
 
         /** @brief 遅延描画を初期化する。 */
         void InitializeDeferredRendering();
@@ -162,24 +184,46 @@ namespace nsK2EngineLow
 
 
         //=======================================================================
-        // ブラー用
+        // ブルーム用
         //=======================================================================
     public:
         /**
-         * @brief ブラー用の定数バッファを取得する。
-         * @return ブラー用の定数バッファ
+         * @brief ブルーム用の定数バッファを取得する。
+         * @return ブルーム用の定数バッファ
          */
         BloomCB& GetBloomCB();
 
 
         /**
-         * @brief ブラーの強さを取得する(加算合成時の乗算値)。
-         * @return ブラーの強さ
+         * @brief ブルームの強さを取得する(加算合成時の乗算値)。
+         * @return ブルームの強さ
          */
         float& GetBloomIntensity();
 
 
-        void SetDualBlurEnable(bool enable);
+        /**
+         * @brief デュアルブラーの有効化フラグを取得する。
+         * @return デュアルブラーの有効化フラグ
+         */
+        bool& SetDualBlurEnable();
+
+
+        //=======================================================================
+        // DoF用
+        //=======================================================================
+    public:
+        /**
+         * @brief 被写界深度用の定数バッファを取得する。
+         * @return 被写界深度用の定数バッファ
+         */
+        DoFCB& GetDoFCB();
+
+
+        /**
+         * @brief 被写界深度の有効化フラグを取得する。
+         * @return 被写界深度の有効化フラグ
+         */
+        bool& GetDoFEnable();
 
 
     private:
@@ -210,35 +254,40 @@ namespace nsK2EngineLow
 
 
         //=======================================================================
-        // デュアルブラー
+        // ブルーム
         //=======================================================================
     private:
-        struct BlurData
-        {
-            /** ブラー用レンダーターゲット */
-            RenderTarget rt;
-            /** ブラー用スプライト */
-            Sprite sprite;
-        };
-
-
-        /** 輝度抽出の結果 */
-        BlurData m_luminance;
-        /** メイン用のブラー */
-        BlurData m_mainBlur;
-        /** ダウンスケール用のブラー */
-        std::array<BlurData, 4> m_downBlur;
-        /** アップスケール用のブラー */
-        std::array<BlurData, 3> m_upBlur;
-        /** ブラー用の定数バッファ */
+        /** ブルーム用の定数バッファ */
         BloomCB m_bloomCB;
-        /** ブラー済みの画像をフレームバッファーにコピーするためのスプライト */
-        Sprite m_copyDualBlurToFrameBufferSprite;
+
+        /** ブルーム用 */
+        DualBlur m_bloomBlur;
+
+        /** 高度抽出用RT */
+        RenderTarget m_luminanceRT;
+        /** 高度抽出RT */
+        Sprite m_luminanceSprite;
+        /** ブルーム合成用RT */
+        Sprite m_bloomSprite;
+
         /** デュアルブラーの有効化フラグ */
-        bool m_isDualBlurEnabl;
-        /** ブラーの強さ(加算合成時の乗算値) */
+        bool m_isDualBlurEnable;
+        /** ブルームの強さ(加算合成時の乗算値) */
         float m_bloomIntensity;
 
+
+        //=======================================================================
+        // DoF
+        //=======================================================================
+    private:
+        /** 被写界深度用の定数バッファ */
+        DoFCB m_dofCB;
+        /** DoF用 */
+        DualBlur m_dofBlur;
+        /** 被写界深度合成用スプライト */
+        Sprite m_dofSprite;
+        /** 被写界深度の有効化フラグ */
+        bool m_isDoFEnable;
 
 
         //=======================================================================

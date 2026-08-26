@@ -116,14 +116,25 @@ namespace app
             }
         }
 
-        ImGui::SliderFloat("ScreenBlur", &m_screenBlurPower, 0.0f, 10.0f);
+        auto& re = RenderingEngine::Get();
 
-        ImGui::Checkbox("Dual Blur", &m_isDualBlurEnable);
-        RenderingEngine::Get().SetDualBlurEnable(m_isDualBlurEnable);
+        if (ImGui::CollapsingHeader("Bloom"))
+        {
+            auto& bloomCB = re.GetBloomCB();
+            ImGui::SliderFloat("BloomThreshold", &bloomCB.threshold, 1.0f, 3.0f);
+            ImGui::Checkbox("Dual Blur", &re.SetDualBlurEnable());
 
-        auto& bloomCB = RenderingEngine::Get().GetBloomCB();
-        ImGui::SliderFloat("BloomThreshold", &bloomCB.threshold, 1.0f, 3.0f);
-        ImGui::SliderFloat("BloomIntensity", &RenderingEngine::Get().GetBloomIntensity(), 0.0f, 3.0f);
+            ImGui::SliderFloat("BloomIntensity", &re.GetBloomIntensity(), 0.0f, 3.0f);
+        }
+
+
+        if (ImGui::CollapsingHeader("Depth of Field"))
+        {
+            auto& dofCB = re.GetDoFCB();
+            ImGui::Checkbox("Enable DoF", &re.GetDoFEnable());
+            ImGui::SliderFloat("Focus Distance", &dofCB.focusDistance, 0.0f, 3000.0f);
+            ImGui::SliderFloat("Focus Range", &dofCB.focusRange, 10.0f, 2000.0f);
+        }
 
 
         ImGui::End();
