@@ -8,13 +8,13 @@ namespace nsK2EngineLow {
 
 	K2EngineLow::~K2EngineLow()
 	{
-		// ƒOƒ[ƒoƒ‹‚ÈƒAƒNƒZƒXƒ|ƒCƒ“ƒg‚Énullptr‚ğ‘ã“üB
+		// ï¿½Oï¿½ï¿½ï¿½[ï¿½oï¿½ï¿½ï¿½ÈƒAï¿½Nï¿½Zï¿½Xï¿½|ï¿½Cï¿½ï¿½ï¿½gï¿½ï¿½nullptrï¿½ï¿½ï¿½ï¿½ï¿½B
 		g_graphicsEngine = nullptr;
 		g_gameTime = nullptr;
 		
 		delete m_graphicsEngine;
 		
-		//ƒQ[ƒ€ƒIƒuƒWƒFƒNƒgƒ}ƒl[ƒWƒƒ[‚ğíœB
+		//ï¿½Qï¿½[ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½íœï¿½B
 		GameObjectManager::DeleteInstance();
 		PhysicsWorld::DeleteInstance();
 		EffectEngine::DeleteInstance();
@@ -29,7 +29,7 @@ namespace nsK2EngineLow {
 	)
 	{
 		if (hwnd) {
-			//ƒOƒ‰ƒtƒBƒbƒNƒGƒ“ƒWƒ“‚Ì‰Šú‰»B
+			//ï¿½Oï¿½ï¿½ï¿½tï¿½Bï¿½bï¿½Nï¿½Gï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 			m_graphicsEngine = new GraphicsEngine();
 			m_graphicsEngine->Init(
 				hwnd, 
@@ -39,7 +39,7 @@ namespace nsK2EngineLow {
 			);
 		}
 		g_gameTime = &m_gameTime;
-		//ƒQ[ƒ€ƒpƒbƒh‚Ì‰Šú‰»B
+		//ï¿½Qï¿½[ï¿½ï¿½ï¿½pï¿½bï¿½hï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 		for (int i = 0; i < GamePad::CONNECT_PAD_MAX; i++) {
 			g_pad[i] = &m_pad[i];
 		}
@@ -48,7 +48,7 @@ namespace nsK2EngineLow {
 		PhysicsWorld::CreateInstance();
 		g_soundEngine = new SoundEngine();
 		if (m_graphicsEngine) {
-			//ƒGƒtƒFƒNƒgƒGƒ“ƒWƒ“‚Ì‰Šú‰»B
+			//ï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½Gï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½ï¿½B
 			EffectEngine::CreateInstance();
 		}
 #ifdef K2_DEBUG
@@ -73,14 +73,14 @@ namespace nsK2EngineLow {
 	void K2EngineLow::EndFrame()
 	{
 #ifdef K2_DEBUG
-		m_fpsFont->Begin(g_graphicsEngine->GetRenderContext());
-		float time = g_gameTime->GetFrameDeltaTime();
-		wchar_t text[256];
-		swprintf(text, L"FPS = %0.2f", 1.0f / time);
-		m_fpsFontShadow->Draw(text, { UI_SPACE_WIDTH * -0.48f + 3.0f , UI_SPACE_HEIGHT * 0.48f - 3.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 1.0f });
-		m_fpsFont->Draw(text, { UI_SPACE_WIDTH * -0.48f, UI_SPACE_HEIGHT * 0.48f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 1.0f });
-		m_fpsFont->End(g_graphicsEngine->GetRenderContext());
-#endif 
+		//m_fpsFont->Begin(g_graphicsEngine->GetRenderContext());
+		//float time = g_gameTime->GetFrameDeltaTime();
+		//wchar_t text[256];
+		//swprintf(text, L"FPS = %0.2f", 1.0f / time);
+		//m_fpsFontShadow->Draw(text, { UI_SPACE_WIDTH * -0.48f + 3.0f , UI_SPACE_HEIGHT * 0.48f - 3.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 1.0f });
+		//m_fpsFont->Draw(text, { UI_SPACE_WIDTH * -0.48f, UI_SPACE_HEIGHT * 0.48f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 1.0f });
+		//m_fpsFont->End(g_graphicsEngine->GetRenderContext());
+#endif
 		m_graphicsEngine->EndRender();
 #ifdef USE_FPS_LIMITTER
 		m_fpsLimitter.Wait();
@@ -96,27 +96,27 @@ namespace nsK2EngineLow {
 		}
 		g_soundEngine->Update();
 		GameObjectManager::GetInstance()->ExecuteUpdate();
-		// ƒGƒtƒFƒNƒgƒGƒ“ƒWƒ“‚ÌXVB
+		// ï¿½Gï¿½tï¿½Fï¿½Nï¿½gï¿½Gï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½ÌXï¿½Vï¿½B
 		EffectEngine::GetInstance()->Update(g_gameTime->GetFrameDeltaTime());
 	}
 	/// <summary>
-	/// •`‰æˆ—‚ğÀsB
+	/// ï¿½`ï¿½æˆï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½B
 	/// </summary>
 	void K2EngineLow::ExecuteRender()
 	{
 		auto& renderContext = g_graphicsEngine->GetRenderContext();
-		// ƒQ[ƒ€ƒIƒuƒWƒFƒNƒgƒ}ƒl[ƒWƒƒ[‚Ì•`‰æˆ—‚ğÀsB
+		// ï¿½Qï¿½[ï¿½ï¿½ï¿½Iï¿½uï¿½Wï¿½Fï¿½Nï¿½gï¿½}ï¿½lï¿½[ï¿½Wï¿½ï¿½ï¿½[ï¿½Ì•`ï¿½æˆï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½B
 		GameObjectManager::GetInstance()->ExecuteRender(renderContext);
 		
 	}
 
 	/// <summary>
-	/// “–‚½‚è”»’è•`‰æˆ—‚ğÀsB
+	/// ï¿½ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½`ï¿½æˆï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½B
 	/// </summary>
 	void K2EngineLow::DebubDrawWorld()
 	{
 		auto& renderContext = g_graphicsEngine->GetRenderContext();
-		//“–‚½‚è”»’è•`‰æˆ—‚ğÀsB
+		//ï¿½ï¿½ï¿½ï¿½ï¿½è”»ï¿½ï¿½`ï¿½æˆï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sï¿½B
 		PhysicsWorld::GetInstance()->DebubDrawWorld(renderContext);
 	}
 }

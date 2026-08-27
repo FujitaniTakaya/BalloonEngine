@@ -62,7 +62,9 @@ namespace app
         auto& light = SceneLight::Get().m_sceneLight;
 
 #ifdef DEBUG
-        ImGui::Begin("Light");
+        ImGui::Begin("Parameter");
+
+        ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
         if (ImGui::CollapsingHeader("Direction Light"))
         {
