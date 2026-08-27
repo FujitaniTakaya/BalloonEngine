@@ -17,7 +17,6 @@ namespace nsK2EngineLow
         , m_isAnimated(false)
         , m_isReceiveShadow(false)
         , m_isCastShadow(false)
-        , m_isDeferred(false)
     {}
 
 
@@ -32,7 +31,6 @@ namespace nsK2EngineLow
         const EnModelUpAxis upAxis,
         const bool isReceiveShadow,
         const bool isCastShadow,
-        const bool isDeferredRendering,
         const char* fxFilePath
     )
     {
@@ -51,7 +49,6 @@ namespace nsK2EngineLow
 
         m_isReceiveShadow = isReceiveShadow;
         m_isCastShadow = isCastShadow;
-        m_isDeferred = isDeferredRendering;
 
 
         //========================================================================
@@ -60,27 +57,32 @@ namespace nsK2EngineLow
         InitShadow(tkmFilePath, modelInitData);
 
         modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        modelInitData.m_expandConstantBuffer = &SceneLight::Get().m_sceneLight;
+        modelInitData.m_expandConstantBufferSize = sizeof(LightingCB);
+
+        m_forwardModel.Init(modelInitData);
+
+
 
         //========================================================================
         // 遅延描画用の処理
         //========================================================================
-        if (m_isDeferred)
-        {
-            modelInitData.m_psEntryPointFunc = "PSMainDeferred";
-            modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
-            modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        }
-
-        modelInitData.m_expandConstantBuffer = &SceneLight::Get().m_sceneLight;
-        modelInitData.m_expandConstantBufferSize = sizeof(LightingCB);
-
-        m_model.Init(modelInitData);
+        ModelInitData deferredModelInitData;
+        deferredModelInitData.m_tkmFilePath = tkmFilePath;
+        deferredModelInitData.m_skeleton = &m_skeleton;
+        deferredModelInitData.m_fxFilePath = "Assets/shader/renderToGBuffer.fx";
+        deferredModelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
+        deferredModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        deferredModelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        deferredModelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        m_deferredModel.Init(deferredModelInitData);
     }
 
 
     void ModelRender::Update()
     {
-        m_model.UpdateWorldMatrix(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale);
+        m_forwardModel.UpdateWorldMatrix(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale);
+        m_deferredModel.UpdateWorldMatrix(m_transform.m_position, m_transform.m_rotation, m_transform.m_scale);
         if (m_isCastShadow)
         {
             for (auto& shadowModel : m_shadowModel)
@@ -91,7 +93,7 @@ namespace nsK2EngineLow
 
         if (m_skeleton.IsInited())
         {
-            m_skeleton.Update(m_model.GetWorldMatrix());
+            m_skeleton.Update(m_forwardModel.GetWorldMatrix());
         }
 
 
@@ -105,12 +107,9 @@ namespace nsK2EngineLow
     void ModelRender::Draw(RenderContext& rc)
     {
         // モデル描画オブジェクトを登録する
-        RenderingEngine::Get().Add3dObject(&m_model);
-        // 遅延描画用の場合は、遅延描画用のオブジェクトリストに追加する
-        if (m_isDeferred)
-        {
-            RenderingEngine::Get().AddDeferredRendering3dObject(&m_model);
-        }
+        RenderingEngine::Get().Add3dObject(&m_forwardModel);
+        RenderingEngine::Get().AddDeferredRendering3dObject(&m_deferredModel);
+
         if (m_isCastShadow)
         {
             for (int i = 0; i < MAX_SHADOW_NUM; ++i)
@@ -167,7 +166,7 @@ namespace nsK2EngineLow
     //=======================================================================
     Model& ModelRender::GetModel() const
     {
-        return const_cast<Model&>(m_model);
+        return const_cast<Model&>(m_forwardModel);
     }
 
 

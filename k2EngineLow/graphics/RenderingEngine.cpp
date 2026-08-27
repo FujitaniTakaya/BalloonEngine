@@ -297,8 +297,20 @@ namespace nsK2EngineLow
         // デファードレンダリング用のレンダーターゲットを初期化
         //========================================================================
         GetRenderTarget(RTType::Albedo).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
-        GetRenderTarget(RTType::Normal).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
+        GetRenderTarget(RTType::Normal).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN);
         GetRenderTarget(RTType::WorldPos).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN);
+
+
+        SpriteInitData rtInitData;
+        rtInitData.m_width = FRAME_BUFFER_W / 2;
+        rtInitData.m_height = FRAME_BUFFER_H / 2;
+        rtInitData.m_fxFilePath = "Assets/shader/sprite.fx";
+        rtInitData.m_textures[0] = &GetRenderTarget(RTType::Albedo).GetRenderTargetTexture();
+        m_rtSprites[static_cast<size_t>(RTType::Albedo)].Init(rtInitData);
+        rtInitData.m_textures[0] = &GetRenderTarget(RTType::Normal).GetRenderTargetTexture();
+        m_rtSprites[static_cast<size_t>(RTType::Normal)].Init(rtInitData);
+        rtInitData.m_textures[0] = &GetRenderTarget(RTType::WorldPos).GetRenderTargetTexture();
+        m_rtSprites[static_cast<size_t>(RTType::WorldPos)].Init(rtInitData);
 
 
         //========================================================================
@@ -358,6 +370,12 @@ namespace nsK2EngineLow
 
         // 描画オブジェクトのリストをクリア
         m_deferredRendering3dObjects.clear();
+
+        for (auto& rtSprite : m_rtSprites)
+        {
+            rtSprite.Update(g_vec3Zero, g_quatIdentity, g_vec3One);
+            rtSprite.Draw(rc);
+        }
     }
 
 

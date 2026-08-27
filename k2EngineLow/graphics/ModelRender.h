@@ -36,7 +36,6 @@ namespace nsK2EngineLow
             const EnModelUpAxis upAxis = EnModelUpAxis::enModelUpAxisZ,
             const bool isReceiveShadow = false,
             const bool isCastShadow = false,
-            const bool isDeferredRendering = false,
             const char* fxFilePath = "Assets/shader/model.fx"
         );
 
@@ -153,8 +152,10 @@ namespace nsK2EngineLow
         bool m_isAnimated;
 
 
-        /** モデルデータ */
-        Model m_model;
+        /** フォワードレンダリングモデルデータ */
+        Model m_forwardModel;
+        /** デファードレンダリングモデルデータ */
+        Model m_deferredModel;
         /** シャドウモデルデータ */
         std::array<Model, MAX_SHADOW_NUM> m_shadowModel;
         /** トランスフォーム */
@@ -165,9 +166,5 @@ namespace nsK2EngineLow
         bool m_isReceiveShadow;
         /** 影を落とすかどうか */
         bool m_isCastShadow;
-
-
-        /** デファードレンダリングするかどうか */
-        bool m_isDeferred;
     };
 } // namespace nsK2EngineLow
