@@ -229,12 +229,20 @@ namespace nsK2EngineLow
     private:
         /** 描画オブジェクトのリスト */
         std::vector<Model*> m_rendering3dObjects;
-        /** 遅延描画用オブジェクトのリスト */
+
+
+        //=======================================================================
+        // デファードレンダリング
+        //=======================================================================
+    private:
+        /** デファードレンダリング用オブジェクトのリスト */
         std::vector<Model*> m_deferredRendering3dObjects;
-        /** 遅延描画用スプライト */
+        /** スプライト */
         Sprite m_deferredRenderingSprite;
-        /** 遅延描画用レンダーターゲット */
+        /** レンダーターゲット */
         std::array<RenderTarget, static_cast<size_t>(RTType::Max)> m_rts;
+        // NOTE: テスト確認用のスプライト。後で消す。
+        std::array<Sprite, static_cast<size_t>(RTType::Max)> m_rtSprites;
 
 
         //========================================================================
