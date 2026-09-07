@@ -63,12 +63,13 @@ namespace nsK2EngineLow
 
 
     LightingCB::LightingCB()
-        : directionLight()
+        : directionLights()
         , ambientLight()
-        , pointLights()
+        , usingDirectionLightNum(1)
         , usingPointLightNum(0)
         , usingSpotLightNum(0)
-        , pad1{ 0, 0 }
+        , pad1(0)
+        , pointLights()
         , eyePosition(g_vec3Zero)
         , pad2(0.0f)
         , shininess(32.0f)

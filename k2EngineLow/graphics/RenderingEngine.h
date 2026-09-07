@@ -111,9 +111,9 @@ namespace nsK2EngineLow
         /**
          * @brief シャドウキャスターを追加する。
          * @param model シャドウキャスターとなるモデル
-         * @param shadowType シャドウの種類
+         * @param cascadeIndex 追加先のカスケード番号(0 ～ NUM_SHADOW_MAP-1)
          */
-        void AddShadowCaster(Model* model, EnShadowLightType shadowType);
+        void AddShadowCaster(Model* model, int cascadeIndex);
 
 
         /**

@@ -13,6 +13,12 @@ namespace nsK2EngineLow
     {
         /** 描画するオブジェクトの最大数 */
         inline constexpr UINT DRAW_OBUJECT_MAX = 1000;
+
+        /** シャドウマップ用ライトカメラの平行投影ボックスの一辺(ワールド単位)。 */
+        inline constexpr float SHADOW_AREA_SIZE = 500.0f;
+
+        /** シャドウマップ用ライトカメラを原点からライト方向へ後退させる距離。 */
+        inline constexpr float SHADOW_LIGHT_DISTANCE = 500.0f;
     } // namespace
 
 
@@ -115,9 +121,9 @@ namespace nsK2EngineLow
     //=======================================================================
     // シャドウマップ
     //=======================================================================
-    void RenderingEngine::AddShadowCaster(Model* model, EnShadowLightType shadowType)
+    void RenderingEngine::AddShadowCaster(Model* model, int cascadeIndex)
     {
-        m_shadowDatas[static_cast<size_t>(shadowType)].casters.push_back(model);
+        m_shadowDatas.at(static_cast<size_t>(cascadeIndex)).casters.push_back(model);
     }
 
 
@@ -383,7 +389,7 @@ namespace nsK2EngineLow
     {
         float clearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-        for (int i = 0; i < LightingCB::MAX_SHADOW_NUM; ++i)
+        for (int i = 0; i < NUM_SHADOW_MAP; ++i)
         {
             auto& data = m_shadowDatas.at(i);
 
@@ -396,24 +402,12 @@ namespace nsK2EngineLow
             //========================================================================
             // シャドウマップ用のライトカメラを初期化
             //========================================================================
+            // シャドウマップ i はディレクションライト i の影を落とすためのもの。
+            // ディレクションライトは平行光源なので平行投影。
+            data.ligCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
+            data.ligCamera.SetWidth(SHADOW_AREA_SIZE);
+            data.ligCamera.SetHeight(SHADOW_AREA_SIZE);
 
-            data.ligCamera.SetWidth(500.0f);
-            data.ligCamera.SetHeight(500.0f);
-            switch (static_cast<EnShadowLightType>(i))
-            {
-            case EnShadowLightType::Directional:
-                // ディレクションライトは平行光源なので平行投影。
-                data.ligCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Ortho);
-                break;
-            case EnShadowLightType::Spot:
-                // スポットライトは一点から円錐状に広がる光源なので透視投影。
-                // 視野角(spotAngleに応じた値)はUpdateLightCameraで毎フレーム設定する。
-                data.ligCamera.SetUpdateProjMatrixFunc(Camera::enUpdateProjMatrixFunc_Perspective);
-                break;
-            default:
-                K2_ASSERT(false, "error: index is out of range.");
-                break;
-            }
             InitializeLightCamera(data.ligCamera, i);
         }
     }
@@ -421,7 +415,7 @@ namespace nsK2EngineLow
 
     void RenderingEngine::ExecuteShadowMap(RenderContext& rc)
     {
-        for (int i = 0; i < MAX_SHADOW_NUM; ++i)
+        for (int i = 0; i < NUM_SHADOW_MAP; ++i)
         {
             auto& data = m_shadowDatas.at(i);
 
@@ -460,13 +454,16 @@ namespace nsK2EngineLow
 
     void RenderingEngine::InitializeLightCamera(Camera& cmr, const int index)
     {
-        auto& light = nsK2EngineLow::SceneLight::Get();
-
-        const Vector3 lightPos = { 500.0f, 500.0f, 0.0f };
-        // light.m_sceneLight.directionLight.lightColor.m_colorVec3.Set(g_vec4Yellow);
-        Vector3 lightVec = (Vector3::Zero - lightPos);
-        lightVec.Normalize();
-        light.m_sceneLight.directionLight.lightDir.Set(lightVec);
+        // 1灯目のディレクションライトの向きの初期値を1度だけ設定する。
+        // 2灯目以降は DirectionLight のデフォルト値(真下)のまま。ImGui で調整する。
+        if (index == 0)
+        {
+            auto& light = SceneLight::Get();
+            const Vector3 lightPos = { 500.0f, 500.0f, 0.0f };
+            Vector3 lightVec = (Vector3::Zero - lightPos);
+            lightVec.Normalize();
+            light.m_sceneLight.directionLights.at(0).lightDir.Set(lightVec);
+        }
 
         UpdateLightCamera(cmr, index);
     }
@@ -476,30 +473,15 @@ namespace nsK2EngineLow
     {
         auto& light = SceneLight::Get().m_sceneLight;
 
-        switch (static_cast<EnShadowLightType>(index))
-        {
-        case EnShadowLightType::Directional: {
-            cmr.SetPosition(light.directionLight.lightDir * -500.0f);
-            cmr.SetTarget(Vector3::Zero);
-            break;
-        }
-        case EnShadowLightType::Spot: {
-            const auto& spotLight = light.spotLights.at(0);
-            cmr.SetPosition(spotLight.pointLight.position);
-            cmr.SetTarget(spotLight.pointLight.position + spotLight.lightDir * 100.0f);
-            // imguiでangle/rangeが変わりうるので、毎フレーム視野角と遠平面を合わせ直す。
-            // NOTE: spotLight.angleは中心軸から円錐の縁までの半頂角。
-            //       カメラのSetViewAngleは全画角(FovAngleY)を取るため2倍にする。
-            //       180°ちょうどだとtanが発散して射影行列が破綻するのでクランプする。
-            cmr.SetViewAngle(std::min<float>(spotLight.angle * 2.0f, Math::DegToRad(179.0f)));
-            cmr.SetFar(spotLight.pointLight.range * 100.0f);
-            break;
-        }
-        default:
-            K2_ASSERT(false, "error: index is out of range.");
-            break;
-        }
+        // シャドウマップ index はディレクションライト index の影用。
+        // ワールド原点を中心に、そのライトの方向から見下ろす平行投影。
+        // カバー範囲(width/height)は InitializeShadowMap で設定済み。
+        // 毎フレーム変わるのはライト方向依存の位置だけ。
+        Vector3 lightDir = light.directionLights.at(index).lightDir;
+        lightDir.Normalize();
 
+        cmr.SetPosition(lightDir * -SHADOW_LIGHT_DISTANCE);
+        cmr.SetTarget(Vector3::Zero);
         cmr.SetUp({ 1.0f, 0.0f, 0.0f });
         cmr.Update();
 

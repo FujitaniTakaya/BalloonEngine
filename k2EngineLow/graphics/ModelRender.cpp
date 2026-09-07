@@ -112,9 +112,10 @@ namespace nsK2EngineLow
 
         if (m_isCastShadow)
         {
-            for (int i = 0; i < MAX_SHADOW_NUM; ++i)
+            // ディレクションライトごと(シャドウマップごと)に、専用のシャドウモデルを登録する。
+            for (int i = 0; i < NUM_SHADOW_MAP; ++i)
             {
-                RenderingEngine::Get().AddShadowCaster(&m_shadowModel.at(i), static_cast<EnShadowLightType>(i));
+                RenderingEngine::Get().AddShadowCaster(&m_shadowModel.at(i), i);
             }
         }
     }
@@ -215,6 +216,8 @@ namespace nsK2EngineLow
             shadowModelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
             shadowModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
             shadowModelInitData.m_skeleton = &m_skeleton;
+            // NOTE: 上方向の軸を本体モデルと揃える。揃えないと影だけ90度倒れる。
+            shadowModelInitData.m_modelUpAxis = modelInitData.m_modelUpAxis;
 
             for (auto& shadowModel : m_shadowModel)
             {

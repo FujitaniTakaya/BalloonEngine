@@ -15,6 +15,9 @@ struct DirectionLight
     float pad2;
 };
 
+/** ディレクションライトの最大数 */
+static const int MAX_DIRECTION_LIGHT_NUM = 4;
+
 
 /*!
  * @brief   Ambient light data.
@@ -54,19 +57,20 @@ struct SpotLight
 /** スポットライトの最大数 */
 static const int MAX_SPOT_LIGHT_NUM = 4;
 
-/** シャドウマップの最大数 */
-static const int MAX_SHADOW_NUM = 2;
+/** シャドウマップの最大数(= ディレクションライトの最大数。ShadowRef.h と一致させること) */
+static const int MAX_SHADOW_NUM = 4;
 
 /*!
  * @brief   Constant buffer for lighting data.
  */
 cbuffer LightingCB : register(b1)
 {
-    DirectionLight dirLight;
+    DirectionLight dirLights[MAX_DIRECTION_LIGHT_NUM];
     AmbientLight ambientLight;
+    int usingDirectionLightNum;
     int usingPointLightNum;
     int usingSpotLightNum;
-    float2 pad1;
+    int pad1;
     PointLight pointLights[MAX_POINT_LIGHT_NUM];
     SpotLight spotLights[MAX_SPOT_LIGHT_NUM];
     float3 eyePos;
