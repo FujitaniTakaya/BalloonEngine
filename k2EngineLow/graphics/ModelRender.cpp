@@ -17,6 +17,7 @@ namespace nsK2EngineLow
         , m_isAnimated(false)
         , m_isReceiveShadow(false)
         , m_isCastShadow(false)
+        , m_useForwardRendering(false)
     {}
 
 
@@ -106,16 +107,25 @@ namespace nsK2EngineLow
 
     void ModelRender::Draw(RenderContext& rc)
     {
+        auto& re = RenderingEngine::Get();
+
         // モデル描画オブジェクトを登録する
-        RenderingEngine::Get().Add3dObject(&m_forwardModel);
-        RenderingEngine::Get().AddDeferredRendering3dObject(&m_deferredModel);
+        if (m_useForwardRendering)
+        {
+            re.Add3dObject(&m_forwardModel);
+        }
+        else
+        {
+            re.AddDeferredRendering3dObject(&m_deferredModel);
+        }
+
 
         if (m_isCastShadow)
         {
             // ディレクションライトごと(シャドウマップごと)に、専用のシャドウモデルを登録する。
             for (int i = 0; i < NUM_SHADOW_MAP; ++i)
             {
-                RenderingEngine::Get().AddShadowCaster(&m_shadowModel.at(i), i);
+                re.AddShadowCaster(&m_shadowModel.at(i), i);
             }
         }
     }
@@ -183,6 +193,12 @@ namespace nsK2EngineLow
     void ModelRender::SetAnimationSpeed(const float speed)
     {
         m_animationSpeed = std::max<float>(0.01f, speed);
+    }
+
+
+    void ModelRender::SetForwardOption(const bool isForwardOption)
+    {
+        m_useForwardRendering = isForwardOption;
     }
 
 

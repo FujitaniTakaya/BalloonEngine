@@ -150,6 +150,12 @@ namespace app
         }
 
 
+        if (ImGui::CollapsingHeader("Debug"))
+        {
+            ImGui::Checkbox("Draw G-Buffer", &re.GetDebugDrawGBufferEnable());
+        }
+
+
         ImGui::End();
 #endif // DEBUG
 

@@ -120,6 +120,15 @@ namespace nsK2EngineLow
         void SetAnimationSpeed(const float speed);
 
 
+    public:
+        /**
+         * @brief フォワードレンダリングモデルを使用するかどうかを設定する
+         * @param isForwardOption フォワードレンダリングモデルを使用するか
+         */
+        void SetForwardOption(const bool isForwardOption);
+
+
+
         //=======================================================================
         // ヘルパー
         //=======================================================================
@@ -166,5 +175,7 @@ namespace nsK2EngineLow
         bool m_isReceiveShadow;
         /** 影を落とすかどうか */
         bool m_isCastShadow;
+        /** フォワードを使って特殊レンダリングをするかどうか */
+        bool m_useForwardRendering;
     };
 } // namespace nsK2EngineLow
