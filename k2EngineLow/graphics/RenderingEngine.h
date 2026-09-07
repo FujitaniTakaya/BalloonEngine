@@ -111,9 +111,9 @@ namespace nsK2EngineLow
         /**
          * @brief シャドウキャスターを追加する。
          * @param model シャドウキャスターとなるモデル
-         * @param shadowType シャドウの種類
+         * @param cascadeIndex 追加先のカスケード番号(0 ～ NUM_SHADOW_MAP-1)
          */
-        void AddShadowCaster(Model* model, EnShadowLightType shadowType);
+        void AddShadowCaster(Model* model, int cascadeIndex);
 
 
         /**
@@ -124,8 +124,51 @@ namespace nsK2EngineLow
 
 
         //=======================================================================
-        // ヘルパー
+        // カプセル
         //=======================================================================
+    private:
+        /** @brief シャドウマップを初期化する。 */
+        void InitializeShadowMap();
+
+        /** @brief シャドウマップを実行する。 */
+        void ExecuteShadowMap(RenderContext& rc);
+
+
+    private:
+        /** @brief G-Bufferを初期化する。 */
+        void InitializeGBuffer();
+
+        /** @brief G-Bufferを実行する。 */
+        void ExecuteGBuffer(RenderContext& rc);
+
+        /** @brief G-Bufferデバッグ表示用スプライトを初期化する。 */
+        void InitializeDebugSprite();
+
+        /** @brief G-Bufferデバッグ表示用スプライトを描画する(フラグが立っている時のみ)。 */
+        void ExecuteDebugSprite(RenderContext& rc);
+
+
+    private:
+        /** @brief 遅延描画を初期化する。 */
+        void InitializeDeferredRendering();
+
+        /** @brief 遅延描画を実行する。 */
+        void ExecuteDeferredRendering(RenderContext& rc);
+
+
+    private:
+        /** @brief フォワード描画を実行する。 */
+        void ExecuteForwardRendering(RenderContext& rc);
+
+
+    private:
+        /** @brief ブルームを初期化する。 */
+        void InitializeBloom();
+
+        /** @brief ブルームを実行する。 */
+        void ExecuteBloom(RenderContext& rc);
+
+
     private:
         /** @brief ポストプロセスを初期化する。 */
         void InitializePostProcess();
@@ -133,29 +176,6 @@ namespace nsK2EngineLow
         /** @brief ポストプロセスを実行する。 */
         void ExecutePostProcess(RenderContext& rc);
 
-        /** @brief ブルームを初期化する。 */
-        void InitializeBloom();
-
-        /** @brief ブルームを実行する。 */
-        void ExecuteBloom(RenderContext& rc);
-
-        /** @brief 被写界深度を初期化する。 */
-        void InitializeDoF();
-
-        /** @brief 被写界深度を実行する。 */
-        void ExecuteDoF(RenderContext& rc);
-
-        /** @brief 遅延描画を初期化する。 */
-        void InitializeDeferredRendering();
-
-        /** @brief 遅延描画を実行する。 */
-        void ExecuteDeferredRendering(RenderContext& rc);
-
-        /** @brief シャドウマップを初期化する。 */
-        void InitializeShadowMap();
-
-        /** @brief シャドウマップを実行する。 */
-        void ExecuteShadowMap(RenderContext& rc);
 
 
 
@@ -226,6 +246,17 @@ namespace nsK2EngineLow
         bool& GetDoFEnable();
 
 
+        //=======================================================================
+        // デバッグ表示用
+        //=======================================================================
+    public:
+        /**
+         * @brief G-Bufferデバッグ表示の有効化フラグを取得する。
+         * @return G-Bufferデバッグ表示の有効化フラグ
+         */
+        bool& GetDebugDrawGBufferEnable();
+
+
     private:
         /** 描画オブジェクトのリスト */
         std::vector<Model*> m_rendering3dObjects;
@@ -241,8 +272,10 @@ namespace nsK2EngineLow
         Sprite m_deferredRenderingSprite;
         /** レンダーターゲット */
         std::array<RenderTarget, static_cast<size_t>(RTType::Max)> m_rts;
-        // NOTE: テスト確認用のスプライト。後で消す。
+        /** G-Buffer デバッグ表示用スプライト(各 G-Buffer を画面隅に並べる) */
         std::array<Sprite, static_cast<size_t>(RTType::Max)> m_rtSprites;
+        /** G-Buffer デバッグ表示の有効化フラグ(ImGui から操作) */
+        bool m_isDebugDrawGBuffer = false;
 
 
         //========================================================================
@@ -272,7 +305,7 @@ namespace nsK2EngineLow
         DualBlur m_bloomBlur;
 
         /** 高度抽出用RT */
-        RenderTarget m_luminanceRT;
+        RenderTarget m_bloomRT;
         /** 高度抽出RT */
         Sprite m_luminanceSprite;
         /** ブルーム合成用RT */
@@ -288,10 +321,10 @@ namespace nsK2EngineLow
         // DoF
         //=======================================================================
     private:
+        /** 被写界深度用のブラー */
+        DualBlur m_dofBlur;
         /** 被写界深度用の定数バッファ */
         DoFCB m_dofCB;
-        /** DoF用 */
-        DualBlur m_dofBlur;
         /** 被写界深度合成用スプライト */
         Sprite m_dofSprite;
         /** 被写界深度の有効化フラグ */

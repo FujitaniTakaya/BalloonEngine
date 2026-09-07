@@ -68,8 +68,19 @@ namespace app
 
         if (ImGui::CollapsingHeader("Direction Light"))
         {
-            ImGui::SliderFloat3("Direction", &light.directionLight.lightDir.x, -1.0f, 1.0f);
-            ImGui::ColorEdit3("Color", &light.directionLight.lightColor.m_colorVec3.x);
+            ImGui::SliderInt("DirectionLightNum", &light.usingDirectionLightNum, 0, LightingCB::MAX_DIRECTION_LIGHT_NUM);
+            for (int i = 0; i < light.usingDirectionLightNum; ++i)
+            {
+                ImGui::PushID(i);
+                if (ImGui::TreeNode("", "Light %d", i))
+                {
+                    auto& it = light.directionLights.at(i);
+                    ImGui::SliderFloat3("Direction", &it.lightDir.x, -1.0f, 1.0f);
+                    ImGui::ColorEdit3("Color", &it.lightColor.m_colorVec3.x);
+                    ImGui::TreePop();
+                }
+                ImGui::PopID();
+            }
             ImGui::SliderFloat("Shininess", &light.shininess, 1.0f, 200.0f);
             ImGui::SliderFloat("Spec Intensity", &light.specIntensity, 0.0f, 5.0f);
             ImGui::SliderFloat("Bias", &light.localBias, 0.000001f, 1.0f);
@@ -136,6 +147,12 @@ namespace app
             ImGui::Checkbox("Enable DoF", &re.GetDoFEnable());
             ImGui::SliderFloat("Focus Distance", &dofCB.focusDistance, 0.0f, 3000.0f);
             ImGui::SliderFloat("Focus Range", &dofCB.focusRange, 10.0f, 2000.0f);
+        }
+
+
+        if (ImGui::CollapsingHeader("Debug"))
+        {
+            ImGui::Checkbox("Draw G-Buffer", &re.GetDebugDrawGBufferEnable());
         }
 
 

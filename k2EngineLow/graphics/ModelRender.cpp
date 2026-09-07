@@ -17,6 +17,7 @@ namespace nsK2EngineLow
         , m_isAnimated(false)
         , m_isReceiveShadow(false)
         , m_isCastShadow(false)
+        , m_useForwardRendering(false)
     {}
 
 
@@ -106,15 +107,25 @@ namespace nsK2EngineLow
 
     void ModelRender::Draw(RenderContext& rc)
     {
+        auto& re = RenderingEngine::Get();
+
         // モデル描画オブジェクトを登録する
-        RenderingEngine::Get().Add3dObject(&m_forwardModel);
-        RenderingEngine::Get().AddDeferredRendering3dObject(&m_deferredModel);
+        if (m_useForwardRendering)
+        {
+            re.Add3dObject(&m_forwardModel);
+        }
+        else
+        {
+            re.AddDeferredRendering3dObject(&m_deferredModel);
+        }
+
 
         if (m_isCastShadow)
         {
-            for (int i = 0; i < MAX_SHADOW_NUM; ++i)
+            // ディレクションライトごと(シャドウマップごと)に、専用のシャドウモデルを登録する。
+            for (int i = 0; i < NUM_SHADOW_MAP; ++i)
             {
-                RenderingEngine::Get().AddShadowCaster(&m_shadowModel.at(i), static_cast<EnShadowLightType>(i));
+                re.AddShadowCaster(&m_shadowModel.at(i), i);
             }
         }
     }
@@ -185,6 +196,12 @@ namespace nsK2EngineLow
     }
 
 
+    void ModelRender::SetForwardOption(const bool isForwardOption)
+    {
+        m_useForwardRendering = isForwardOption;
+    }
+
+
     //=======================================================================
     // ヘルパー
     //=======================================================================
@@ -215,6 +232,8 @@ namespace nsK2EngineLow
             shadowModelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
             shadowModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32_FLOAT;
             shadowModelInitData.m_skeleton = &m_skeleton;
+            // NOTE: 上方向の軸を本体モデルと揃える。揃えないと影だけ90度倒れる。
+            shadowModelInitData.m_modelUpAxis = modelInitData.m_modelUpAxis;
 
             for (auto& shadowModel : m_shadowModel)
             {

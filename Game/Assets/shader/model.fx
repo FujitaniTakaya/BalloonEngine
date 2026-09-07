@@ -18,7 +18,7 @@
  */
 
 
-#include "Lighting.hlsli"
+#include "common/Lighting.hlsli"
 
 
 ////////////////////////////////////////////////
@@ -41,7 +41,7 @@ struct SPSIn
 // Provides: ModelCb(b0: mWorld/mView/mProj), SVSIn, bone matrices (t3),
 //           and the entry points VSMain / VSMainSkin / VSMainInstancing, etc.
 ///////////////////////////////////////
-#include "ModelVSCommon.hlsli"
+#include "common/ModelVSCommon.hlsli"
 
 ///////////////////////////////////////
 // Shader resources.
@@ -51,9 +51,14 @@ struct SPSIn
 Texture2D<float4> g_albedoTexture : register(t0);
 Texture2D<float4> g_normalTexture : register(t1);
 Texture2D<float4> g_specularTexture : register(t2);
-Texture2D<float4> g_shadowMap[MAX_SHADOW_NUM] : register(t10);
 sampler g_sampler : register(s0);
-SamplerComparisonState g_shadowMapSampler : register(s1);
+
+///////////////////////////////////////
+// シャドウ共通処理。
+// g_shadowMap / g_shadowMapSampler のリソース宣言と CalcShadow() を提供する。
+// フォワード(このファイル)とデファード(deferredLighting.fx)で共有する。
+///////////////////////////////////////
+#include "common/Shadow.hlsli"
 
 ////////////////////////////////////////////////
 // Vertex shader core (called by the VSMain* entry points in ModelVSCommon.h).
@@ -88,28 +93,6 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 
 
 ////////////////////////////////////////////////
-// 影(0=影なし、1=影)を計算。PCF + 傾斜依存バイアス。
-////////////////////////////////////////////////
-float CalcShadow(const float3 worldPos, const float3 N, const float3 L, const int shadowIndex)
-{
-    const float4 posInLVP = mul(mLVP[shadowIndex], float4(worldPos, 1.0f));
-    float2 shadowMapUV = posInLVP.xy / posInLVP.w;
-    shadowMapUV = shadowMapUV * float2(0.5f, -0.5f) + 0.5f;
-
-    if (shadowMapUV.x <= 0.0f || shadowMapUV.x >= 1.0f
-     || shadowMapUV.y <= 0.0f || shadowMapUV.y >= 1.0f)
-    {
-        return 0.0f;
-    }
-
-    const float zInLVP = posInLVP.z / posInLVP.w;
-    // 傾斜依存バイアス(これを使わないと、モデルに模様が出る)
-    const float bias = max(localBias * (1.0f - dot(N, -L)), 0.0001f);
-
-    return g_shadowMap[shadowIndex].SampleCmpLevelZero(g_shadowMapSampler, shadowMapUV, zInLVP - bias);
-}
-
-////////////////////////////////////////////////
 // Pixel shader.
 // For now: just output the albedo texture. Add your lighting here.
 ////////////////////////////////////////////////
@@ -122,15 +105,23 @@ float4 PSMain(SPSIn In) : SV_Target0
     const float3 normal = CalcNormalFromNormalMap(In.tangent, In.biNormal, In.normal, g_normalTexture.Sample(g_sampler, In.uv).xyz);
     const float3 N = normalize(normal);
 
-    // ライトの方向、視線方向を正規化
-    const float3 L = normalize(dirLight.lightDir);
+    // 視線方向を正規化
     const float3 V = normalize(eyePos - In.worldPos);
 
-    // ディレクションライトの反射光を計算
-    const float dirShadow = CalcShadow(In.worldPos, N, L, 0);
-    const float3 dirDiffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
-    const float3 dirSpecular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, shininess, specIntensity) * specFactor;
-    const float3 directionRef = (dirDiffuse + dirSpecular) * (1.0f - dirShadow);
+    // ディレクションライトの反射光を計算(ライトごとに専用シャドウマップで影を落とす)
+    float3 directionRef = float3(0.0f, 0.0f, 0.0f);
+    [unroll]
+    for (int d = 0; d < MAX_DIRECTION_LIGHT_NUM; ++d)
+    {
+        if (d < usingDirectionLightNum)
+        {
+            const float3 Ld = normalize(dirLights[d].lightDir);
+            const float shadow = CalcShadow(In.worldPos, N, Ld, d);
+            const float3 diffuse = CalcDiffuseLighting(N, Ld, dirLights[d].lightColor);
+            const float3 specular = CalcSpecularLighting(N, Ld, V, dirLights[d].lightColor, shininess, specIntensity) * specFactor;
+            directionRef += (diffuse + specular) * (1.0f - shadow);
+        }
+    }
 
     // ポイントライトの反射光を計算
     float3 pointRef = float3(0.0f, 0.0f, 0.0f);
@@ -139,17 +130,11 @@ float4 PSMain(SPSIn In) : SV_Target0
         pointRef += CalcPointLightLighting(N, V, In.worldPos, pointLights[i], shininess, specFactor, specIntensity);
     }
 
-    // スポットライトの反射光を計算
+    // スポットライトの反射光を計算(影は落とさない)
     float3 spotRef = float3(0.0f, 0.0f, 0.0f);
     for (int j = 0; j < usingSpotLightNum; ++j)
     {
-        float spotShadow = 0.0f;
-        if (j == 0)
-        {
-            const float3 spotDir = normalize(In.worldPos - spotLights[j].pointLight.position);
-            spotShadow = CalcShadow(In.worldPos, N, spotDir, 1);
-        }
-        spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor, specIntensity) * (1.0f - spotShadow);
+        spotRef += CalcSpotLightLighting(N, V, In.worldPos, spotLights[j], shininess, specFactor, specIntensity);
     }
 
     // 反射光を合成

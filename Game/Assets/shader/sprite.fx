@@ -8,7 +8,7 @@ cbuffer cb : register(b0){
 };
 
 
-#include "Lighting.hlsli"
+#include "common/Lighting.hlsli"
 
 
 struct VSInput{
@@ -52,14 +52,14 @@ float4 PSMainDeferred(PSInput In) : SV_Target0
 	float3 worldPos = g_worldPosTexture.Sample(g_sampler, In.uv).xyz;
 	float specPower = g_normalTexture.Sample(g_sampler, In.uv).w;
 
-	// ライトの方向と法線を正規化
+	// ライトの方向と法線を正規化(このスプライト経路は 1 灯目のみ使用)
 	const float3 N = normalize(normal);
-	const float3 L = normalize(dirLight.lightDir);
+	const float3 L = normalize(dirLights[0].lightDir);
 
 	const float3 V = normalize(eyePos - worldPos);
 
-	const float3 diffuse = CalcDiffuseLighting(N, L, dirLight.lightColor.xyz);
-	const float3 specular = CalcSpecularLighting(N, L, V, dirLight.lightColor.xyz, 64.0f, specIntensity) * specPower;
+	const float3 diffuse = CalcDiffuseLighting(N, L, dirLights[0].lightColor.xyz);
+	const float3 specular = CalcSpecularLighting(N, L, V, dirLights[0].lightColor.xyz, 64.0f, specIntensity) * specPower;
 
 	const float3 refLight = diffuse + (specular * specPower);
 

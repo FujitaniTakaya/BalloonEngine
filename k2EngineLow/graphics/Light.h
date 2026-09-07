@@ -4,6 +4,7 @@
  */
 #pragma once
 #include "math/LightColor.h"
+#include "ShadowRef.h"
 
 
 namespace nsK2EngineLow
@@ -96,22 +97,27 @@ namespace nsK2EngineLow
      */
     struct LightingCB
     {
-        /** ディレクションライト */
-        DirectionLight directionLight;
-        /** 環境光の色 */
-        AmbientLight ambientLight;
+        /** ディレクションライトの最大数 */
+        static constexpr int MAX_DIRECTION_LIGHT_NUM = 4;
         /** ポイントライトの最大数 */
         static constexpr int MAX_POINT_LIGHT_NUM = 4;
         /** スポットライトの最大数 */
         static constexpr int MAX_SPOT_LIGHT_NUM = 4;
-        /** シャドウマップの最大数 */
-        static constexpr int MAX_SHADOW_NUM = 2;
+        /** シャドウマップの最大数(= ディレクションライトの最大数。ShadowRef.h と一致) */
+        static constexpr int MAX_SHADOW_NUM = NUM_SHADOW_MAP;
+
+        /** ディレクションライト(各ライトが自分専用のシャドウマップに影を落とす) */
+        std::array<DirectionLight, MAX_DIRECTION_LIGHT_NUM> directionLights;
+        /** 環境光の色 */
+        AmbientLight ambientLight;
+        /** 使用するディレクションライトの数 */
+        int usingDirectionLightNum;
         /** 使用するポイントライトの数 */
         int usingPointLightNum;
         /** 使用するスポットライトの数 */
         int usingSpotLightNum;
         /** パディング */
-        int pad1[2];
+        int pad1;
         /** ポイントライト */
         std::array<PointLight, MAX_POINT_LIGHT_NUM> pointLights;
         /** スポットライト */
