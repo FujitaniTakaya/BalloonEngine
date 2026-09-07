@@ -1,4 +1,4 @@
-#include "color.hlsli"
+#include "common/color.hlsli"
 
 
 ////////////////////////////////////////////////
@@ -14,7 +14,7 @@ struct SPSIn
 };
 
 
-#include "ModelVSCommon.hlsli"
+#include "common/ModelVSCommon.hlsli"
 
 
 /**

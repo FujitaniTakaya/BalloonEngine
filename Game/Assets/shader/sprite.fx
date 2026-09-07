@@ -8,7 +8,7 @@ cbuffer cb : register(b0){
 };
 
 
-#include "Lighting.hlsli"
+#include "common/Lighting.hlsli"
 
 
 struct VSInput{
