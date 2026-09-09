@@ -240,7 +240,7 @@ namespace nsK2EngineLow
     {
         GetRenderTarget(RTType::Albedo).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_D32_FLOAT);
         GetRenderTarget(RTType::Normal).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_UNKNOWN);
-        GetRenderTarget(RTType::WorldPos).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_UNKNOWN);
+        GetRenderTarget(RTType::Depth).Create(FRAME_BUFFER_W, FRAME_BUFFER_H, 1, 1, DXGI_FORMAT_R32_FLOAT, DXGI_FORMAT_UNKNOWN);
     }
 
 
@@ -324,7 +324,7 @@ namespace nsK2EngineLow
         initData.m_fxFilePath = "Assets/shader/deferredLighting.fx";
         initData.m_textures[0] = &GetRenderTarget(RTType::Albedo).GetRenderTargetTexture();
         initData.m_textures[1] = &GetRenderTarget(RTType::Normal).GetRenderTargetTexture();
-        initData.m_textures[2] = &GetRenderTarget(RTType::WorldPos).GetRenderTargetTexture();
+        initData.m_textures[2] = &GetRenderTarget(RTType::Depth).GetRenderTargetTexture();
 
         // シャドウマップを G-Buffer に続けて t3 ～ t3+MAX_SHADOW_NUM-1 に割り当てる。
         // NOTE: Model の拡張SRVは t10 始まりだが、Sprite の拡張SRVは t20 始まりなので、

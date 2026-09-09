@@ -72,6 +72,7 @@ namespace nsK2EngineLow
         , pointLights()
         , eyePosition(g_vec3Zero)
         , pad2(0.0f)
+        , mViewProjInv(Matrix::Identity)
         , shininess(32.0f)
         , localBias(0.005f)
         , specIntensity(1.0f)
@@ -90,6 +91,9 @@ namespace nsK2EngineLow
         // カメラ位置を毎フレーム反映(鏡面反射用)。
         // カメラの取得方法は自作エンジンの実装に合わせて置き換えること。
         m_sceneLight.eyePosition.Set(g_camera3D->GetPosition());
+
+        // ビュー-プロジェクション逆行列を毎フレーム反映(鏡面反射用)。
+        m_sceneLight.mViewProjInv = g_camera3D->GetViewProjectionMatrixInv();
     }
 
 

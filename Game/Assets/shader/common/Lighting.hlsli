@@ -75,6 +75,7 @@ cbuffer LightingCB : register(b1)
     SpotLight spotLights[MAX_SPOT_LIGHT_NUM];
     float3 eyePos;
     float pad2;
+    float4x4 mViewProjInv;
     float shininess;
     float localBias;
     float specIntensity;

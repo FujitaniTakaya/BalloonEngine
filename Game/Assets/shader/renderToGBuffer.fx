@@ -8,8 +8,7 @@ struct SPSIn
     float3 tangent : TANGENT;    // World-space tangent   (for normal mapping later).
     float3 biNormal : BINORMAL;  // World-space binormal  (for normal mapping later).
     float2 uv : TEXCOORD0;       // UV.
-    float3 worldPos : TEXCOORD1; // World-space position  (for specular later).
-    float4 posInLVP : TEXCOORD2; // Light View Projection space position.
+    float4 posInLVP : TEXCOORD1; // Light View Projection space position.
 };
 
 
@@ -20,7 +19,7 @@ struct SPSOut
 {
     float4 albedo : SV_Target0;   // Albedo (base color).
     float4 normal : SV_Target1;   // Normal (world-space, packed to 0~1).
-    float3 worldPos : SV_Target2; // World-space position.
+    float depth : SV_Target2; // Depth.
 };
 
 
@@ -51,7 +50,6 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal, uniform bool isUsePreComputed
 
     // Local space -> world space.
     psIn.pos = CalcVertexPositionInWorldSpace(vsIn.pos, mWorldLocal, isUsePreComputedVertexBuffer);
-    psIn.worldPos = psIn.pos;
 
     // World -> view -> projection (clip) space.
     psIn.pos = mul(mView, psIn.pos);
@@ -89,8 +87,10 @@ SPSOut PSMain(SPSIn psIn)
     psOut.normal.xyz = normalize(psIn.normal) * 0.5f + 0.5f;
     psOut.normal.w = 1.0f;
 
-    // ワールド座標:R32G32B32A32_FLOATなので、そのまま
-    psOut.worldPos = psIn.worldPos;
+    // 深度:射影空間の深度値(NDC z、0~1)。
+    // psIn.pos は SV_POSITION なので、この .z は既に w 除算済みの深度バッファ値。
+    // (もう一度 .w で割らないこと。ワールド座標はライティングパスで mViewProjInv から復元する)
+    psOut.depth = psIn.pos.z;
 
     return psOut;
 }
