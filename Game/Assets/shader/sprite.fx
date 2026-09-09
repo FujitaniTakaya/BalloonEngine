@@ -23,7 +23,6 @@ struct PSInput{
 
 Texture2D<float4> g_albedoTexture : register(t0);
 Texture2D<float4> g_normalTexture : register(t1);
-Texture2D<float4> g_worldPosTexture : register(t2);
 sampler g_sampler : register(s0);
 
 PSInput VSMain(VSInput In) 
@@ -42,30 +41,4 @@ float4 PSMainGamma( PSInput In ) : SV_Target0
 	float4 color = g_albedoTexture.Sample(g_sampler, In.uv) * mulColor;
 	color.xyz =  pow(max( color.xyz, 0.0001f ), 1.0f/2.2f);
 	return color;
-}
-
-
-float4 PSMainDeferred(PSInput In) : SV_Target0
-{
-	float4 albedo = g_albedoTexture.Sample(g_sampler, In.uv) * mulColor;
-	float3 normal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
-	float3 worldPos = g_worldPosTexture.Sample(g_sampler, In.uv).xyz;
-	float specPower = g_normalTexture.Sample(g_sampler, In.uv).w;
-
-	// ライトの方向と法線を正規化(このスプライト経路は 1 灯目のみ使用)
-	const float3 N = normalize(normal);
-	const float3 L = normalize(dirLights[0].lightDir);
-
-	const float3 V = normalize(eyePos - worldPos);
-
-	const float3 diffuse = CalcDiffuseLighting(N, L, dirLights[0].lightColor.xyz);
-	const float3 specular = CalcSpecularLighting(N, L, V, dirLights[0].lightColor.xyz, 64.0f, specIntensity) * specPower;
-
-	const float3 refLight = diffuse + (specular * specPower);
-
-	// 反射光を乗算し、環境光を加算する
-	const float3 finalColor = (albedo.xyz * refLight) + ambientLight.lightColor.xyz;
-	albedo.xyz = finalColor;
-
-	return albedo;
 }

@@ -13,13 +13,13 @@ namespace nsK2EngineLow
      * @note 遅延描画用のレンダーターゲットの種類を表す列挙型
      * Albedo: アルベド（拡散反射）カラー
      * Normal: 法線ベクトル
-     * WorldPos: ワールド座標
+     * Depth: 深度
      */
     enum class EnRenderTargetType
     {
         Albedo = 0,
         Normal,
-        WorldPos,
+        Depth,
         Max
     };
 

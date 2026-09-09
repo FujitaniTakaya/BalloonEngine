@@ -68,14 +68,11 @@ namespace nsK2EngineLow
         //========================================================================
         // 遅延描画用の処理
         //========================================================================
-        ModelInitData deferredModelInitData;
-        deferredModelInitData.m_tkmFilePath = tkmFilePath;
-        deferredModelInitData.m_skeleton = &m_skeleton;
+        ModelInitData deferredModelInitData = modelInitData;
         deferredModelInitData.m_fxFilePath = "Assets/shader/renderToGBuffer.fx";
-        deferredModelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
         deferredModelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         deferredModelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R8G8B8A8_UNORM;
-        deferredModelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        deferredModelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R32_FLOAT;
         m_deferredModel.Init(deferredModelInitData);
     }
 

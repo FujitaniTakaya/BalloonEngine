@@ -3,8 +3,8 @@
  * @brief ライト関連
  */
 #pragma once
-#include "math/LightColor.h"
 #include "ShadowRef.h"
+#include "math/LightColor.h"
 
 
 namespace nsK2EngineLow
@@ -126,6 +126,8 @@ namespace nsK2EngineLow
         Vector3 eyePosition;
         /** パディング */
         float pad2;
+        /** ビュー-プロジェクション逆行列 */
+        Matrix mViewProjInv;
         /** 鏡面反射の強さ */
         float shininess;
         /** ローカルバイアス */

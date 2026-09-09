@@ -14,7 +14,7 @@ cbuffer cb : register(b0)
 
 Texture2D<float4> g_albedoTexture : register(t0);
 Texture2D<float4> g_normalTexture : register(t1);
-Texture2D<float4> g_worldPos : register(t2);
+Texture2D<float> g_depth : register(t2);
 // シャドウマップ(ディレクションライト i → g_shadowMap[i])。t3 ～ t3+MAX_SHADOW_NUM-1。
 Texture2D<float4> g_shadowMap[MAX_SHADOW_NUM] : register(t3);
 
@@ -40,6 +40,24 @@ PSIn VSMain(VSIn In)
     psIn.pos = mul(mvp, In.pos);
     psIn.uv = In.uv;
     return psIn;
+}
+
+
+/*!
+ *@brief        UV座標と深度値からワールド座標を計算する
+ *@param[in]    uv：uv座標
+ *@param[in]    zInProjectionSpace：射影空間の深度値
+ *@param[in]    mViewProjInv：ビュープロジェクション行列の逆行列
+ */
+float3 CalcWorldPosFromUVZ(float2 uv, float zInProjectionSpace, float4x4 mViewProjInv)
+{
+    float3 screenPos;
+    screenPos.xy = (uv * float2(2.0f, -2.0f)) + float2(-1.0f, 1.0f);
+    screenPos.z = zInProjectionSpace;
+
+    float4 worldPos = mul(mViewProjInv, float4(screenPos, 1.0f));
+    worldPos.xyz /= worldPos.w;
+    return worldPos.xyz;
 }
 
 
@@ -83,7 +101,8 @@ float4 PSMain(PSIn In) : SV_Target0
     // G-Bufferから材料を取り出す
     const float4 albedoColor = g_albedoTexture.Sample(g_sampler, In.uv);
     const float3 normal = g_normalTexture.Sample(g_sampler, In.uv).xyz * 2.0f - 1.0f;
-    const float3 worldPos = g_worldPos.Sample(g_sampler, In.uv).xyz;
+    const float depth = g_depth.Sample(g_sampler, In.uv).r;
+    const float3 worldPos = CalcWorldPosFromUVZ(In.uv, depth, mViewProjInv);
     // G-Buffer にスペキュラマップは無いので係数は 1 固定
     const float specFactor = 1.0f;
 
