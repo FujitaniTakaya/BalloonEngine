@@ -255,6 +255,9 @@
     <ClCompile Include="graphics\DualBlur.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
+    <ClCompile Include="graphics\LightCulling.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -569,6 +572,9 @@
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="graphics\DualBlur.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics\LightCulling.h">
       <Filter>graphics</Filter>
     </ClInclude>
   </ItemGroup>
